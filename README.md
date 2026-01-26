@@ -41,10 +41,10 @@ All probability tables are computed using pre-2025 data and remain frozen during
 
 ## Reproducibility
 
-Data source: Daily adjusted close prices of SPY
-Training period: Inception – 2024-12-31
-Evaluation period: 2025 (out-of-sample)
-No parameters are tuned on test data
+- Data source: Daily adjusted close prices of SPY
+- Training period: Inception – 2024-12-31
+- Evaluation period: 2025 (out-of-sample)
+- No parameters are tuned on test data
 
 All results in the paper can be reproduced using the code in this repository.
 
@@ -53,10 +53,11 @@ All results in the paper can be reproduced using the code in this repository.
 ## Limitations
 
 This repository is intended for research and educational purposes only.
+
 Important limitations include:
-Transaction costs and market impact are not modeled
-Position sizing is simplified
-Results are shown for a single asset
+- Transaction costs and market impact are not modeled
+- Position sizing is simplified
+- Results are shown for a single asset
 
 The outputs should be interpreted as evidence of statistical structure, not as deployable trading strategies.
 
@@ -83,3 +84,4 @@ arXiv preprint.
 └── README.md
 
 ---
+
