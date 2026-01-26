@@ -39,18 +39,6 @@ All probability tables are computed using pre-2025 data and remain frozen during
 
 ---
 
-## Repository Structure
-
-```text
-.
-├── data/                  # Raw and processed price data
-├── notebooks/             # Exploratory and analysis notebooks
-├── src/                    # Core probability estimation and trading logic
-├── requirements.txt
-└── README.md
-
----
-
 ## Reproducibility
 
 Data source: Daily adjusted close prices of SPY
@@ -82,3 +70,16 @@ Ramanathan, A. (2026).
 A Simple Conditional Exceedance Framework for Interpretable Trading Decisions.
 arXiv preprint.
 
+---
+
+## Repository Structure
+
+```text
+.
+├── data/                  # Raw and processed price data
+├── notebooks/             # Exploratory and analysis notebooks
+├── src/                    # Core probability estimation and trading logic
+├── requirements.txt
+└── README.md
+
+---
