@@ -49,6 +49,8 @@ All probability tables are computed using pre-2025 data and remain frozen during
 ├── requirements.txt
 └── README.md
 
+---
+
 ## Reproducibility
 
 Data source: Daily adjusted close prices of SPY
@@ -57,6 +59,8 @@ Evaluation period: 2025 (out-of-sample)
 No parameters are tuned on test data
 
 All results in the paper can be reproduced using the code in this repository.
+
+---
 
 ## Limitations
 
@@ -68,6 +72,8 @@ Results are shown for a single asset
 
 The outputs should be interpreted as evidence of statistical structure, not as deployable trading strategies.
 
+---
+
 ## Citation
 
 If you find this work useful, please cite the accompanying paper:
@@ -75,3 +81,4 @@ If you find this work useful, please cite the accompanying paper:
 Ramanathan, A. (2026).
 A Simple Conditional Exceedance Framework for Interpretable Trading Decisions.
 arXiv preprint.
+
