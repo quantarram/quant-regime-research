@@ -67,9 +67,7 @@ The outputs should be interpreted as evidence of statistical structure, not as d
 
 If you find this work useful, please cite the accompanying paper:
 
-Ramanathan, A. (2026).
-A Simple Conditional Exceedance Framework for Interpretable Trading Decisions.
-arXiv preprint.
+RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS. Zenodo. https://doi.org/10.5281/zenodo.18382687
 
 ---
 
@@ -84,4 +82,5 @@ arXiv preprint.
 └── README.md
 
 ---
+
 
