@@ -41,7 +41,7 @@ print("Fetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
     fetch_list = list(set(GOLD_Y + [FX_TICKER,"SLV","SI=F","IBIT","FBTC","BITB",
-                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY"]))
+                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X"]))
     raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
@@ -106,10 +106,32 @@ print("Computing gold price stats...")
 gcf = prices["GC=F"].dropna()
 sgd_fx = prices[FX_TICKER].dropna()
 usd_per_sgd = 1.0 / float(sgd_fx.reindex(gcf.index).ffill().iloc[-1])
-gold_usd  = float(gcf.iloc[-1])
+
+# Use XAUUSD=X spot price for bar calculation if available
+# GC=F (futures) carries ~$10-15/oz above spot due to storage/financing
+if "XAUUSD=X" in prices.columns:
+    spot_series = prices["XAUUSD=X"].dropna()
+    if len(spot_series) > 0:
+        gold_spot_usd = float(spot_series.iloc[-1])
+        print(f"  Using XAUUSD=X spot: ${gold_spot_usd:.2f}/oz (GC=F futures: ${float(gcf.iloc[-1]):.2f}/oz)")
+    else:
+        gold_spot_usd = float(gcf.iloc[-1]) - 12.0
+        print(f"  XAUUSD=X empty, using GC=F - $12 carry adjustment")
+else:
+    gold_spot_usd = float(gcf.iloc[-1]) - 12.0
+    print(f"  XAUUSD=X not available, using GC=F - $12 carry adjustment")
+
+gold_usd = float(gcf.iloc[-1])  # keep futures price for chart/analysis
 gold_sgd_oz = gold_usd * usd_per_sgd
 gold_sgd_g  = gold_sgd_oz / 31.1035
-bar_sgd     = gold_sgd_g * 20 * 1.025
+
+# Bar price uses SPOT price (not futures) with 0.8% BullionStar dealer premium
+# 0.8% is calibrated to Britannia 20g bar — a competitive major-brand bar
+DEALER_PREMIUM = 1.008
+gold_spot_sgd_oz = gold_spot_usd * usd_per_sgd
+gold_spot_sgd_g  = gold_spot_sgd_oz / 31.1035
+bar_sgd = gold_spot_sgd_g * 20 * DEALER_PREMIUM
+print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | 20g bar est: S${bar_sgd:.2f} (0.8% premium)")
 
 def pct_chg(n):
     if len(gcf) > n:
@@ -326,7 +348,7 @@ print(f"  Composite buy score: {composite} — {buy_label}")
 # ── PRICE CHART DATA ──────────────────────────────────────────────────────────
 chart_dates  = [str(d.date()) for d in gcf.index[-365:]]
 chart_prices = [round(float(p),2) for p in gcf.iloc[-365:]]
-chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035*1.025*20,2) for p in gcf.iloc[-365:]]
+chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035*DEALER_PREMIUM*20,2) for p in gcf.iloc[-365:]]
 
 # 52-week high and peak drawdown
 peak_252     = float(gcf.iloc[-252:].max()) if len(gcf)>=252 else float(gcf.max())
@@ -341,11 +363,12 @@ cone_p25     = [gold_usd * (1+recovery_63[t]["p25"]/100) for t in cone_taus]
 cone_p50     = [gold_usd * (1+recovery_63[t]["p50"]/100) for t in cone_taus]
 cone_p75     = [gold_usd * (1+recovery_63[t]["p75"]/100) for t in cone_taus]
 cone_p90     = [gold_usd * (1+recovery_63[t]["p90"]/100) for t in cone_taus]
-cone_sgd_p10 = [p*usd_per_sgd/31.1035*20*1.025 for p in cone_p10]
-cone_sgd_p25 = [p*usd_per_sgd/31.1035*20*1.025 for p in cone_p25]
-cone_sgd_p50 = [p*usd_per_sgd/31.1035*20*1.025 for p in cone_p50]
-cone_sgd_p75 = [p*usd_per_sgd/31.1035*20*1.025 for p in cone_p75]
-cone_sgd_p90 = [p*usd_per_sgd/31.1035*20*1.025 for p in cone_p90]
+# Use 0.8% premium for cone projections (consistent with bar price calculation)
+cone_sgd_p10 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p10]
+cone_sgd_p25 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p25]
+cone_sgd_p50 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p50]
+cone_sgd_p75 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p75]
+cone_sgd_p90 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p90]
 
 # Historical return distribution for histogram
 hist_63_vals = [round(float(v),2) for v in gcf_63]
@@ -901,8 +924,9 @@ function renderBuyScore(){
   // Bar price
   document.getElementById('bar-price').textContent =
     'S$ ' + D.bar_sgd.toLocaleString('en-SG',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const spotOrFut = D.gold_spot_usd ? D.gold_spot_usd : D.gold_usd;
   document.getElementById('bar-sub').textContent =
-    'S$'+D.gold_sgd_g.toFixed(2)+'/g × 20g × 1.025 premium';
+    'Spot S$'+D.gold_spot_sgd_g.toFixed(2)+'/g × 20g × 0.8% BullionStar dealer premium';
 
   document.getElementById('dd-peak').innerHTML =
     '<span style="color:var(--bear)">'+D.dd_from_peak.toFixed(1)+'%</span> from 252d peak';
