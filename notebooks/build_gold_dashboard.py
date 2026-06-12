@@ -132,6 +132,11 @@ gold_spot_sgd_oz = gold_spot_usd * usd_per_sgd
 gold_spot_sgd_g  = gold_spot_sgd_oz / 31.1035
 bar_sgd = gold_spot_sgd_g * 20 * DEALER_PREMIUM
 print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | 20g bar est: S${bar_sgd:.2f} (0.8% premium)")
+# Always define these for the data bundle
+bar_sub_text = f"Spot S${gold_spot_sgd_g:.2f}/g × 20g × 0.8% BullionStar dealer premium"
+peak_252 = float(gcf.iloc[-252:].max()) if len(gcf) >= 252 else float(gcf.max())
+dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
+peak_bar_sgd = round(peak_252 * usd_per_sgd / 31.1035 * 20 * DEALER_PREMIUM, 2)
 
 def pct_chg(n):
     if len(gcf) > n:
@@ -350,10 +355,8 @@ chart_dates  = [str(d.date()) for d in gcf.index[-365:]]
 chart_prices = [round(float(p),2) for p in gcf.iloc[-365:]]
 chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035*DEALER_PREMIUM*20,2) for p in gcf.iloc[-365:]]
 
-# 52-week high and peak drawdown
-peak_252     = float(gcf.iloc[-252:].max()) if len(gcf)>=252 else float(gcf.max())
+# 52-week high and peak drawdown (already computed above)
 peak_date_idx= gcf.iloc[-252:].idxmax() if len(gcf)>=252 else gcf.idxmax()
-dd_from_peak = round((gold_usd/peak_252-1)*100,2)
 
 # ── FORWARD CONE ─────────────────────────────────────────────────────────────
 # Use the recovery_63 distribution to project forward
@@ -385,9 +388,13 @@ data = {
     "gold_sgd_g":    round(gold_sgd_g,4),
     "bar_sgd":       round(bar_sgd,2),
     "usd_per_sgd":   round(usd_per_sgd,4),
-    "chg":           chg,
-    "dd_from_peak":  dd_from_peak,
-    "peak_252":      round(peak_252,2),
+    "chg":              chg,
+    "dd_from_peak":     dd_from_peak,
+    "peak_252":         round(peak_252,2),
+    "peak_bar_sgd":     peak_bar_sgd,
+    "gold_spot_usd":    round(gold_spot_usd,2),
+    "gold_spot_sgd_g":  round(gold_spot_sgd_g,4),
+    "bar_sub_text":     bar_sub_text,
     "high_252":      round(float(gcf.iloc[-252:].max()) if len(gcf)>=252 else gold_usd,2),
     "low_252":       round(float(gcf.iloc[-252:].min()) if len(gcf)>=252 else gold_usd,2),
     "curr_pct_63":   round(curr_pct_63,1),
@@ -924,14 +931,13 @@ function renderBuyScore(){
   // Bar price
   document.getElementById('bar-price').textContent =
     'S$ ' + D.bar_sgd.toLocaleString('en-SG',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const spotOrFut = D.gold_spot_usd ? D.gold_spot_usd : D.gold_usd;
   document.getElementById('bar-sub').textContent =
-    'Spot S$'+D.gold_spot_sgd_g.toFixed(2)+'/g × 20g × 0.8% BullionStar dealer premium';
+    D.bar_sub_text || ('Spot S$'+(D.gold_spot_sgd_g||D.gold_sgd_g).toFixed(2)+'/g × 20g × 0.8% premium');
 
   document.getElementById('dd-peak').innerHTML =
     '<span style="color:var(--bear)">'+D.dd_from_peak.toFixed(1)+'%</span> from 252d peak';
   document.getElementById('dd-peak-sub').textContent =
-    'Peak: USD '+D.peak_252.toLocaleString()+' / S$'+(D.peak_252*D.usd_per_sgd/31.1035*20*1.025).toFixed(0);
+    'Peak: USD '+D.peak_252.toLocaleString()+' / S$'+(D.peak_bar_sgd||Math.round(D.peak_252*D.usd_per_sgd/31.1035*20*1.008));
 
   // Components
   const comps = [
