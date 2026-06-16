@@ -41,7 +41,7 @@ print("Fetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
     fetch_list = list(set(GOLD_Y + [FX_TICKER,"SLV","SI=F","IBIT","FBTC","BITB",
-                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X"]))
+                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X","GLD","IAU"]))
     raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
@@ -107,21 +107,52 @@ gcf = prices["GC=F"].dropna()
 sgd_fx = prices[FX_TICKER].dropna()
 usd_per_sgd = 1.0 / float(sgd_fx.reindex(gcf.index).ffill().iloc[-1])
 
-# Use XAUUSD=X spot price for bar calculation if available
-# GC=F (futures) carries ~$10-15/oz above spot due to storage/financing
-if "XAUUSD=X" in prices.columns:
+# ── GOLD SPOT PRICE: use GLD ETF as primary (most reliable, never rolls)
+# GLD tracks spot gold: 1 share = 0.0963 troy oz (NAV ratio)
+# Convert GLD price to USD/oz by dividing by 0.0963
+# Dynamically calibrate GLD-to-gold ratio using overlapping GC=F/GLD data
+# This avoids hardcoding a ratio that drifts over time due to GLD management fees
+if "GLD" in prices.columns:
+    gld_series = prices["GLD"].dropna()
+    if len(gld_series) > 30:
+        # Find dates where both GC=F and GLD have data
+        common_idx = gcf.index.intersection(gld_series.index)
+        if len(common_idx) >= 30:
+            # Compute ratio over last 30 overlapping days
+            gcf_common = gcf.reindex(common_idx).dropna()
+            gld_common = gld_series.reindex(common_idx).dropna()
+            shared = gcf_common.index.intersection(gld_common.index)
+            GLD_OZ_RATIO = float((gld_common.reindex(shared) / gcf_common.reindex(shared)).tail(30).median())
+            print(f"  GLD/GCF calibrated ratio: {GLD_OZ_RATIO:.5f} oz/share (last 30 days)")
+        else:
+            GLD_OZ_RATIO = 0.0861  # fallback from June 2026 calibration
+            print(f"  Using fallback GLD ratio: {GLD_OZ_RATIO:.5f}")
+
+        gold_spot_usd = float(gld_series.iloc[-1]) / GLD_OZ_RATIO
+        gold_usd = gold_spot_usd
+        print(f"  Using GLD ETF: ${float(gld_series.iloc[-1]):.2f}/share -> ${gold_usd:.2f}/oz")
+        # Extend gcf with GLD-derived prices for latest dates where GC=F is stale
+        gld_as_gcf = gld_series / GLD_OZ_RATIO
+        gcf = gcf.combine_first(gld_as_gcf).dropna().sort_index()
+    else:
+        GLD_OZ_RATIO = 0.0861
+        gold_spot_usd = float(gcf.iloc[-1]) - 12.0
+        gold_usd = float(gcf.iloc[-1])
+        print(f"  GLD insufficient data, using GC=F: ${gold_usd:.2f}/oz")
+elif "XAUUSD=X" in prices.columns:
     spot_series = prices["XAUUSD=X"].dropna()
     if len(spot_series) > 0:
         gold_spot_usd = float(spot_series.iloc[-1])
-        print(f"  Using XAUUSD=X spot: ${gold_spot_usd:.2f}/oz (GC=F futures: ${float(gcf.iloc[-1]):.2f}/oz)")
+        gold_usd = gold_spot_usd
+        print(f"  Using XAUUSD=X spot: ${gold_spot_usd:.2f}/oz")
     else:
         gold_spot_usd = float(gcf.iloc[-1]) - 12.0
-        print(f"  XAUUSD=X empty, using GC=F - $12 carry adjustment")
+        gold_usd = float(gcf.iloc[-1])
+        print(f"  Fallback GC=F - $12: ${gold_usd:.2f}/oz")
 else:
     gold_spot_usd = float(gcf.iloc[-1]) - 12.0
-    print(f"  XAUUSD=X not available, using GC=F - $12 carry adjustment")
-
-gold_usd = float(gcf.iloc[-1])  # keep futures price for chart/analysis
+    gold_usd = float(gcf.iloc[-1])
+    print(f"  Fallback GC=F - $12: ${gold_usd:.2f}/oz")
 gold_sgd_oz = gold_usd * usd_per_sgd
 gold_sgd_g  = gold_sgd_oz / 31.1035
 
@@ -133,7 +164,21 @@ gold_spot_sgd_g  = gold_spot_sgd_oz / 31.1035
 bar_sgd = gold_spot_sgd_g * 20 * DEALER_PREMIUM
 print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | 20g bar est: S${bar_sgd:.2f} (0.8% premium)")
 # Always define these for the data bundle
-bar_sub_text = f"Spot S${gold_spot_sgd_g:.2f}/g x 20g x 0.8% BullionStar dealer premium"
+# US market closes at 4 PM New York = 4 AM next day Singapore time
+# So when running in Singapore morning, the last US close was YESTERDAY Singapore date
+from datetime import timedelta
+_sgt_hour = (datetime.utcnow().hour + 8) % 24
+_us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y') if _sgt_hour < 4 else datetime.now().strftime('%d %b %Y')
+# Before 4 AM SGT: US market still open, so close was 2 days ago SGT
+if _sgt_hour < 4:
+    _us_close_label = (datetime.now() - timedelta(days=2)).strftime('%d %b %Y')
+elif _sgt_hour < 16:  # 4 AM to 4 PM SGT: last close was yesterday SGT
+    _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
+else:  # after 4 PM SGT: today's US session still open, last close was yesterday
+    _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
+bar_sub_text = (f"Spot S${gold_spot_sgd_g:.2f}/g x 20g x 0.8% dealer premium · "
+                f"Last US close: {_us_close_label} · "
+                f"BullionStar live price may differ by 1-2% due to intraday moves.")
 peak_252 = float(gcf.iloc[-252:].max()) if len(gcf) >= 252 else float(gcf.max())
 dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
 peak_bar_sgd = round(peak_252 * usd_per_sgd / 31.1035 * 20 * DEALER_PREMIUM, 2)
@@ -277,11 +322,12 @@ for ticker, params in KEY_PREDS.items():
         if curr is None: continue
         is_lower = q <= 0.20  # for GC=F mean-reversion, lower tail
         if is_lower:
-            # lower tail: condition fires when curr < lower threshold
-            th = thresholds.get((tau,round(1-q,10)),{}).get(ticker,float("nan"))
+            # lower tail: condition fires when curr < q-th percentile (e.g. below 10th pct)
+            # Use thresholds[(tau, q)] directly — the LOW end threshold
+            th = thresholds.get((tau, q),{}).get(ticker, float("nan"))
             if np.isnan(th): continue
             in_tail = bool(curr < th)
-            # dist: how close to threshold (negative = already past it)
+            # dist_pct: positive means curr is above threshold (not yet in lower tail)
             dist_pct = (curr - th) / abs(th) * 100 if th != 0 else 0
             rows.append({"tau":tau,"q":q,"current":round(curr*100,3),
                          "threshold":round(th*100,3),
@@ -789,6 +835,9 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
 
 <!-- STATS -->
 <div class="stats-grid" id="stats-grid"></div>
+<div style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-bottom:var(--gap);padding:8px 12px;background:var(--s2);border-radius:6px;border:1px solid var(--bdr)">
+  ⓘ Prices reflect last available US close: """ + _us_close_label + """ (GLD ETF). BullionStar updates live — expect 1–2% gap during Asian hours.
+</div>
 
 <!-- PRICE CHARTS -->
 <div class="g2">
@@ -1220,19 +1269,43 @@ function renderPredictorProximity(){
       const in_t = r.in_tail;
       const near = !in_t && Math.abs(r.dist_pct) < 20;
       const col = in_t?'in-bull':near?'near':'far';
-      const label = in_t?'IN TAIL ✓':near?'NEAR ('+r.dist_pct.toFixed(1)+'%)':''+r.dist_pct.toFixed(1)+'%';
-      const barW = in_t ? 100 : Math.max(0, 100 - Math.abs(r.dist_pct)*2);
+      // Plain English label
+      const gap = Math.abs(r.current - r.threshold).toFixed(1);
+      const direction = r.current >= r.threshold ? 'above' : 'below';
+      const label = in_t && r.tail_type==='lower' ? 'FALLING ✓ SIGNAL ACTIVE' :
+                    in_t ? 'SIGNAL FIRING ✓' :
+                    near ? 'CLOSE — ' + gap + '% away' :
+                    gap + '% away from firing';
+      const barW = in_t ? 100 : Math.max(0, 100 - Math.min(Math.abs(r.dist_pct), 50)*2);
       const barCol = in_t?'var(--bull)':near?'var(--warn)':'var(--neut)';
-      const tailLabel = r.tail_type==='lower'?'lower tail (mean-reversion)':'upper tail (bull signal)';
+      const tailLabel = r.tail_type==='lower' ? 
+  'Mean-reversion signal (gold needs to be falling)' : 
+  'Bull signal (needs to be rising/strong)';
+      // Plain English param description
+      const windowDesc = r.tau === 1 ? 'Today vs yesterday' :
+                         r.tau === 5 ? 'Past 5 days' :
+                         r.tau === 21 ? 'Past 1 month' :
+                         r.tau === 63 ? 'Past 3 months' :
+                         r.tau === 126 ? 'Past 6 months' :
+                         r.tau === 252 ? 'Past 1 year' :
+                         r.tau === 300 ? 'Past 14 months' : 'Past ' + r.tau + 'd';
+      const pctileDesc = r.tail_type === 'lower' ?
+        (r.q <= 0.10 ? 'gold must be in its bottom 10% (deeply falling)' :
+         r.q <= 0.20 ? 'gold must be in its bottom 20% (falling)' : 'falling') :
+        (r.q >= 0.95 ? 'needs to be in top 5%' :
+         r.q >= 0.90 ? 'needs to be in top 10%' :
+         r.q >= 0.80 ? 'needs to be in top 20%' :
+         r.q >= 0.60 ? 'needs to be above 60th pct' :
+         r.q >= 0.50 ? 'needs to be above average' : '');
       rowsHtml += `<div class="pred-row">
-        <span class="pred-p">τ=${r.tau}d · q=${r.q} · ${tailLabel}</span>
+        <span class="pred-p">${windowDesc} · ${pctileDesc}</span>
         <span class="pred-v ${col}">${label}</span>
       </div>
       <div class="prog-wrap">
         <div class="prog-fill" style="width:${barW}%;background:${barCol}"></div>
       </div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:8px">
-        curr=${r.current.toFixed(2)}% · threshold=${r.threshold.toFixed(2)}%
+        ${in_t && r.tail_type==='lower' ? 'Currently falling at '+r.current.toFixed(1)+'% — below the '+r.threshold.toFixed(1)+'% lower threshold ✓' : in_t ? 'Currently at '+r.current.toFixed(1)+'% — above the '+r.threshold.toFixed(1)+'% trigger ✓' : r.tail_type==='lower' ? 'Currently at '+r.current.toFixed(1)+'% — needs to fall below '+r.threshold.toFixed(1)+'% to fire' : 'Currently at '+r.current.toFixed(1)+'% — needs to reach '+r.threshold.toFixed(1)+'% to fire'}
       </div>`;
     }
     html += `<div class="pred-card">
@@ -1435,8 +1508,9 @@ function renderDecision() {
       col:D.chg['21']>=0?'var(--bull)':'var(--warn)', fired:D.chg['21']>=0 },
     { name:'Bitcoin ETFs turn positive (5-day)',
       desc:'IBIT+FBTC both above their 5-day median fires the short-term gold bull signal',
-      cur:ibit5 ? (ibit5.in_tail?'FIRING':'Currently '+ibit5.dist_pct.toFixed(1)+'% from threshold') : 'N/A',
-      prog:ibit5 ? Math.max(0,Math.min(100,100+ibit5.dist_pct/5)) : 0,
+      cur:ibit5 ? (ibit5.in_tail?'FIRING ✓':
+  'Currently '+(ibit5.current).toFixed(1)+'% — needs to reach '+(ibit5.threshold).toFixed(1)+'%') : 'N/A',
+      prog:ibit5 ? Math.max(0,Math.min(100, ibit5.in_tail ? 100 : Math.max(0,(ibit5.current-Math.min(ibit5.current,ibit5.threshold))/(Math.abs(ibit5.threshold)+0.01)*50))) : 0,
       col:'var(--bull)', fired:!!(ibit5&&ibit5.in_tail) },
     { name:'Composite score &ge; 60',
       desc:'When score crosses 60 the balance of evidence tips toward buying',
@@ -1444,8 +1518,9 @@ function renderDecision() {
       prog:score, col:score>=60?'var(--bull)':'var(--warn)', fired:score>=60 },
     { name:'SGD strengthens vs USD (300d)',
       desc:'Stronger SGD reduces the SGD cost of gold bars — also a CPE predictor',
-      cur:sgd ? (sgd.in_tail?'FIRING':''+sgd.dist_pct.toFixed(1)+'% from threshold') : 'N/A',
-      prog:sgd ? Math.max(0,Math.min(100,50+sgd.dist_pct/2)) : 0,
+      cur:sgd ? (sgd.in_tail?'FIRING ✓':
+  'Currently '+(sgd.current).toFixed(1)+'% — needs to reach '+(sgd.threshold).toFixed(1)+'%') : 'N/A',
+      prog:sgd ? Math.max(0,Math.min(100, sgd.in_tail ? 100 : Math.max(0,sgd.current/sgd.threshold*80))) : 0,
       col:'var(--gold)', fired:!!(sgd&&sgd.in_tail) },
   ];
 
