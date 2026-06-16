@@ -32,8 +32,10 @@ pair   = pd.read_parquet("cpe_results.parquet")
 
 GOLD_Y    = ["GLD","IAU","GC=F"]
 FX_TICKER = "SGDUSD=X"
-RATE_TICKERS = {"^VIX","^VXN","^OVX","^GVZ","^EVZ","^VVIX","^SKEW",
+RATE_TICKERS = {"^VIX","^VXN","^OVX","^EVZ","^VVIX","^SKEW",
                 "^TNX","^TYX","^FVX","^IRX"}
+# Note: ^GVZ (Gold Vol) and DX-Y.NYB (DXY) use log returns like price series
+# ^VIX family stays as level changes since they are pure vol levels
 price_tickers = [t for t in prices.columns if t not in RATE_TICKERS]
 rate_tickers  = [t for t in prices.columns if t in RATE_TICKERS]
 
@@ -41,7 +43,8 @@ print("Fetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
     fetch_list = list(set(GOLD_Y + [FX_TICKER,"SLV","SI=F","IBIT","FBTC","BITB",
-                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X","GLD","IAU"]))
+                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X","GLD","IAU",
+                                    "DX-Y.NYB","UUP","^GVZ"]))  # DXY index, USD ETF backup, Gold Vol Index
     raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
@@ -304,13 +307,17 @@ for (y,tf), grp in pd.DataFrame(signal_rows).groupby(["Y","tau_future"]):
 # ── PREDICTOR PROXIMITY ───────────────────────────────────────────────────────
 print("Computing predictor proximity to thresholds...")
 KEY_PREDS = {
-    "IBIT":    [(1,0.5),(5,0.5),(252,0.5),(126,0.6)],
-    "FBTC":    [(1,0.5),(5,0.5),(252,0.5),(126,0.6)],
-    "BITB":    [(1,0.5),(252,0.5),(126,0.6)],
-    "SLV":     [(252,0.95),(300,0.95),(252,0.8)],
-    "SI=F":    [(252,0.95),(300,0.95),(252,0.8)],
-    "SGDUSD=X":[(300,0.9),(252,0.9)],
-    "GC=F":    [(63,0.10),(126,0.10),(252,0.10)],  # mean-reversion: lower tail
+    "IBIT":      [(1,0.5),(5,0.5),(252,0.5),(126,0.6)],
+    "FBTC":      [(1,0.5),(5,0.5),(252,0.5),(126,0.6)],
+    "BITB":      [(1,0.5),(252,0.5),(126,0.6)],
+    "SLV":       [(252,0.95),(300,0.95),(252,0.8)],
+    "SI=F":      [(252,0.95),(300,0.95),(252,0.8)],
+    "SGDUSD=X":  [(300,0.9),(252,0.9)],
+    "GC=F":      [(63,0.10),(126,0.10),(252,0.10)],   # mean-reversion: lower tail
+    # NEW: USD and Gold Volatility
+    "DX-Y.NYB":  [(63,0.10),(252,0.10),(126,0.10)],   # weak USD (lower tail) = bullish gold
+    "UUP":       [(63,0.10),(252,0.10),(126,0.10)],   # USD ETF backup — same signal
+    "^GVZ":      [(21,0.10),(63,0.10)],                # falling vol (lower tail) = stabilising
 }
 
 pred_proximity = {}
@@ -320,7 +327,9 @@ for ticker, params in KEY_PREDS.items():
     for (tau,q) in params:
         curr = current_inc.get(tau,{}).get(ticker)
         if curr is None: continue
-        is_lower = q <= 0.20  # for GC=F mean-reversion, lower tail
+        # Lower tail signals: GC=F (mean-reversion), DXY (weak USD = bull gold),
+        # GVZ (falling volatility = stabilising)
+        is_lower = q <= 0.20  # q<=0.20 means lower tail condition
         if is_lower:
             # lower tail: condition fires when curr < q-th percentile (e.g. below 10th pct)
             # Use thresholds[(tau, q)] directly — the LOW end threshold
@@ -361,10 +370,13 @@ if 63 in auto_cpe and "fwd_126_pct_positive" in auto_cpe[63]:
 
 # 3. CPE predictor proximity score — how close are bull predictors to firing
 prox_scores = []
-for ticker in ["IBIT","FBTC","SLV","SI=F"]:
+for ticker in ["IBIT","FBTC","SLV","SI=F","DX-Y.NYB","UUP","^GVZ"]:
     rows = pred_proximity.get(ticker,[])
     for r in rows:
-        if r["tail_type"]=="upper":
+        # For lower tail predictors (DXY, GVZ, GC=F): in_tail IS the bull signal
+        if r["tail_type"]=="lower":
+            prox_scores.append(r["proximity_score"])
+        elif r["tail_type"]=="upper":
             prox_scores.append(r["proximity_score"])
 prox_score = float(np.mean(prox_scores)) if prox_scores else 50
 
@@ -1290,8 +1302,8 @@ function renderPredictorProximity(){
                          r.tau === 252 ? 'Past 1 year' :
                          r.tau === 300 ? 'Past 14 months' : 'Past ' + r.tau + 'd';
       const pctileDesc = r.tail_type === 'lower' ?
-        (r.q <= 0.10 ? 'gold must be in its bottom 10% (deeply falling)' :
-         r.q <= 0.20 ? 'gold must be in its bottom 20% (falling)' : 'falling') :
+        (r.q <= 0.10 ? 'needs to be in its lowest 10% historically' :
+         r.q <= 0.20 ? 'needs to be in its lowest 20% historically' : 'must be falling') :
         (r.q >= 0.95 ? 'needs to be in top 5%' :
          r.q >= 0.90 ? 'needs to be in top 10%' :
          r.q >= 0.80 ? 'needs to be in top 20%' :
