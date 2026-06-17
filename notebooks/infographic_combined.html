@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#F5F0E8;font-family:'Inter',sans-serif;width:1800px;min-height:960px;}
+
+.poster{
+  width:1800px;min-height:960px;
+  background:linear-gradient(145deg,#F7F3EA 0%,#EDE8DC 100%);
+  padding:52px 56px;
+  display:grid;
+  grid-template-columns:1fr 40px 1fr 40px 1fr;
+  gap:0;
+  position:relative;
+  overflow:hidden;
+}
+
+/* bg decoration */
+.bg-c{position:absolute;border-radius:50%;opacity:0.05;}
+
+/* Panel shared */
+.panel{display:flex;flex-direction:column;gap:16px;padding:0 8px;}
+
+/* Panel top label */
+.p-eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:#8B7355;margin-bottom:4px;
+}
+.p-num{
+  font-family:'DM Serif Display',serif;font-size:13px;
+  color:#C9882A;display:inline-block;margin-right:6px;
+}
+.p-title{
+  font-family:'DM Serif Display',serif;
+  font-size:28px;line-height:1.15;color:#1a1a1a;
+  margin-bottom:6px;
+}
+.p-title em{font-style:italic;color:#6B4F1A;}
+.p-sub{font-size:13px;color:#666;line-height:1.6;margin-bottom:10px;}
+
+/* Arrow divider */
+.arrow-div{
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:6px;
+}
+.arrow-svg{opacity:0.4;}
+
+/* Formula pill */
+.formula-pill{
+  background:#1a1a1a;border-radius:12px;
+  padding:14px 20px;
+}
+.formula-text{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;
+  color:#fff;margin-bottom:6px;
+}
+.formula-text .hl{color:#D4A843;}
+.formula-plain{font-size:11px;color:#aaa;line-height:1.5;}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.stat-card{
+  background:rgba(255,255,255,0.55);border-radius:10px;
+  padding:12px 10px;text-align:center;
+  border:1px solid rgba(0,0,0,0.06);
+}
+.stat-num{font-family:'DM Serif Display',serif;font-size:26px;color:#1a1a1a;line-height:1;}
+.stat-unit{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#8B7355;display:block;margin-top:3px;}
+.stat-desc{font-size:10px;color:#777;margin-top:4px;line-height:1.4;}
+
+/* Channel cards */
+.channels{display:flex;flex-direction:column;gap:8px;}
+.ch{background:rgba(255,255,255,0.6);border-radius:10px;padding:10px 14px;border-left:3px solid #ccc;}
+.ch.crypto{border-color:#F5A623;}
+.ch.silver{border-color:#8B9CB8;}
+.ch.vol{border-color:#9B59B6;}
+.ch.uup{border-color:#2E6CB8;}
+.ch-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-bottom:3px;}
+.ch-signal{font-size:12px;font-weight:600;color:#1a1a1a;}
+.ch-stats{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;margin-top:2px;}
+
+/* Trigger list */
+.triggers{display:flex;flex-direction:column;gap:7px;}
+.trig{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.55);border-radius:8px;padding:9px 12px;border-left:3px solid #ddd;}
+.trig.fire{border-color:#2A7A4B;background:rgba(42,122,75,0.06);}
+.trig.watch{border-color:#E8A020;background:rgba(232,160,32,0.05);}
+.t-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.t-dot.fire{background:#2A7A4B;}
+.t-dot.watch{background:#E8A020;}
+.t-dot.off{background:#ddd;}
+.t-name{font-size:11px;font-weight:600;color:#1a1a1a;}
+.t-val{font-family:'IBM Plex Mono',monospace;font-size:9px;margin-top:1px;}
+.t-val.fire{color:#2A7A4B;}
+.t-val.watch{color:#C87000;}
+.t-val.off{color:#aaa;}
+
+/* Footer */
+.footer{
+  position:absolute;bottom:28px;left:56px;right:56px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid rgba(0,0,0,0.1);padding-top:16px;
+}
+.footer-name{font-size:14px;font-weight:600;color:#1a1a1a;}
+.footer-links{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#aaa;text-align:right;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="bg-c" style="width:500px;height:500px;background:#8B7355;top:-200px;right:500px;"></div>
+  <div class="bg-c" style="width:300px;height:300px;background:#D4A843;bottom:-100px;left:200px;"></div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- PANEL 1: CPE CONCEPT                      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel">
+    <div>
+      <div class="p-eyebrow">The Framework</div>
+      <div class="p-title"><em>What is</em><br>Conditional<br>Exceedance?</div>
+      <div class="p-sub">A non-parametric way to ask: when X makes a big move, how often does Y follow?</div>
+    </div>
+
+    <!-- VENN + LIFT SVG -->
+    <svg width="100%" height="420" viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="520" height="420" rx="16" fill="white" fill-opacity="0.7"/>
+
+      <!-- Venn label -->
+      <text x="260" y="28" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#1a1a1a" letter-spacing="2" font-weight="600">CPE = P( Y big | X big )</text>
+
+      <!-- X circle -->
+      <circle cx="170" cy="210" r="120" fill="#D4A843" fill-opacity="0.13" stroke="#D4A843" stroke-width="2"/>
+      <!-- Y circle -->
+      <circle cx="320" cy="210" r="120" fill="#1a6b3a" fill-opacity="0.10" stroke="#1a6b3a" stroke-width="2"/>
+
+      <!-- Labels outside circles -->
+      <text x="36" y="175" font-family="Inter" font-size="11" fill="#7A4A00" font-weight="700">X big</text>
+      <text x="36" y="192" font-family="IBM Plex Mono" font-size="9" fill="#C9882A">past τ days</text>
+      <text x="36" y="208" font-family="IBM Plex Mono" font-size="9" fill="#C9882A">e.g. BTC ETF</text>
+
+      <text x="352" y="175" font-family="Inter" font-size="11" fill="#1a4a28" font-weight="700">Y big</text>
+      <text x="352" y="192" font-family="IBM Plex Mono" font-size="9" fill="#1a6b3a">next τ days</text>
+      <text x="352" y="208" font-family="IBM Plex Mono" font-size="9" fill="#1a6b3a">e.g. Gold</text>
+
+      <!-- Intersection -->
+      <text x="245" y="200" text-anchor="middle" font-family="DM Serif Display" font-size="44" fill="#1a1a1a">97%</text>
+      <text x="245" y="225" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">of episodes</text>
+
+      <!-- Vertical divider -->
+      <line x1="430" y1="30" x2="430" y2="390" stroke="#eee" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <!-- LIFT bars — right side -->
+      <text x="472" y="28" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#1a1a1a" letter-spacing="1" font-weight="600">LIFT</text>
+
+      <!-- Y axis -->
+      <line x1="440" y1="360" x2="440" y2="60" stroke="#ddd" stroke-width="1"/>
+
+      <!-- Base rate bar 20% → height = (20/100)*300 = 60px, bottom y=360, top y=300 -->
+      <rect x="446" y="300" width="24" height="60" rx="3" fill="#bbb"/>
+      <text x="458" y="294" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#888">20%</text>
+      <text x="458" y="378" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">base</text>
+
+      <!-- CPE bar 97% → height = (97/100)*300 = 291px, bottom y=360, top y=69 -->
+      <rect x="482" y="69" width="24" height="291" rx="3" fill="#C9882A" fill-opacity="0.85"/>
+      <text x="494" y="63" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#7A4A00">97%</text>
+      <text x="494" y="378" text-anchor="middle" font-family="Inter" font-size="8" fill="#7A4A00">CPE</text>
+
+      <!-- 4.85x label -->
+      <rect x="444" y="185" width="54" height="22" rx="11" fill="#1a1a1a"/>
+      <text x="471" y="200" text-anchor="middle" font-family="DM Serif Display" font-size="12" fill="#D4A843">4.85×</text>
+    </svg>
+
+    <div class="formula-pill">
+      <div class="formula-text">CPE = <span class="hl">P</span>( ΔY<sub>f</sub> &gt; r<sub>qY</sub> | ΔX<sub>p</sub> &gt; r<sub>qX</sub> )</div>
+      <div class="formula-plain">No model. No assumptions. Just a count from history.</div>
+    </div>
+  </div>
+
+  <!-- Arrow 1→2 -->
+  <div class="arrow-div">
+    <svg class="arrow-svg" width="40" height="40" viewBox="0 0 40 40">
+      <path d="M8 20 L32 20 M24 12 L32 20 L24 28" stroke="#8B7355" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#aaa;text-align:center;letter-spacing:.1em;">APPLIED<br>TO</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- PANEL 2: ATLAS FINDINGS                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel">
+    <div>
+      <div class="p-eyebrow">161 Instruments · 33 Years · 1993–2026</div>
+      <div class="p-title">When crypto runs,<br><em>gold follows.</em></div>
+      <div class="p-sub">The Multi-Asset CPE Atlas maps tail co-movement across 6 asset classes.</div>
+    </div>
+
+    <!-- Network SVG -->
+    <svg width="100%" height="280" viewBox="0 0 520 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="520" height="280" rx="16" fill="white" fill-opacity="0.7"/>
+
+      <!-- GOLD center -->
+      <circle cx="260" cy="140" r="52" fill="#C9882A" fill-opacity="0.15" stroke="#C9882A" stroke-width="2.5"/>
+      <text x="260" y="135" text-anchor="middle" font-family="DM Serif Display" font-size="18" fill="#5A3A00">GOLD</text>
+      <text x="260" y="153" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#aaa">GC=F · GLD</text>
+
+      <!-- IBIT -->
+      <circle cx="68" cy="68" r="34" fill="#F5A623" fill-opacity="0.15" stroke="#F5A623" stroke-width="1.5"/>
+      <text x="68" y="64" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">IBIT</text>
+      <text x="68" y="79" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">BTC ETF</text>
+      <line x1="100" y1="90" x2="212" y2="125" stroke="#F5A623" stroke-width="2"/>
+
+      <!-- FBTC -->
+      <circle cx="68" cy="140" r="34" fill="#F5A623" fill-opacity="0.15" stroke="#F5A623" stroke-width="1.5"/>
+      <text x="68" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">FBTC</text>
+      <text x="68" y="151" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">BTC ETF</text>
+      <line x1="102" y1="140" x2="208" y2="140" stroke="#F5A623" stroke-width="2"/>
+
+      <!-- BITB -->
+      <circle cx="68" cy="212" r="34" fill="#F5A623" fill-opacity="0.12" stroke="#F5A623" stroke-width="1.5"/>
+      <text x="68" y="208" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">BITB</text>
+      <text x="68" y="223" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">BTC ETF</text>
+      <line x1="100" y1="192" x2="212" y2="157" stroke="#F5A623" stroke-width="1.5"/>
+
+      <!-- CPE label -->
+      <rect x="108" y="108" width="88" height="18" rx="9" fill="#FFF3DC"/>
+      <text x="152" y="120" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#7A4A00" font-weight="600">0.97 CPE · 4.85×</text>
+
+      <!-- SLV -->
+      <circle cx="452" cy="68" r="34" fill="#8B9CB8" fill-opacity="0.2" stroke="#8B9CB8" stroke-width="1.5"/>
+      <text x="452" y="64" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">SLV</text>
+      <text x="452" y="79" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">Silver ETF</text>
+      <line x1="420" y1="90" x2="308" y2="125" stroke="#8B9CB8" stroke-width="2"/>
+
+      <!-- SI=F -->
+      <circle cx="452" cy="140" r="34" fill="#8B9CB8" fill-opacity="0.15" stroke="#8B9CB8" stroke-width="1.5"/>
+      <text x="452" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">SI=F</text>
+      <text x="452" y="151" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">Silver</text>
+      <line x1="418" y1="140" x2="312" y2="140" stroke="#8B9CB8" stroke-width="2"/>
+
+      <!-- Silver CPE -->
+      <rect x="324" y="108" width="84" height="18" rx="9" fill="#EEF0F8"/>
+      <text x="366" y="120" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#2A3A6B" font-weight="600">1.00 CPE · 5×</text>
+
+      <!-- GVZ top -->
+      <circle cx="260" cy="30" r="24" fill="#9B59B6" fill-opacity="0.15" stroke="#9B59B6" stroke-width="1.5"/>
+      <text x="260" y="26" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">GVZ</text>
+      <text x="260" y="40" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">Gold Vol</text>
+      <line x1="260" y1="54" x2="260" y2="88" stroke="#9B59B6" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+      <!-- UUP bottom -->
+      <circle cx="260" cy="252" r="24" fill="#2E6CB8" fill-opacity="0.15" stroke="#2E6CB8" stroke-width="1.5"/>
+      <text x="260" y="248" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">UUP</text>
+      <text x="260" y="262" text-anchor="middle" font-family="Inter" font-size="8" fill="#888">USD ETF</text>
+      <line x1="260" y1="228" x2="260" y2="192" stroke="#2E6CB8" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+      <!-- Firing badge -->
+      <rect x="168" y="196" width="184" height="18" rx="9" fill="#2A7A4B" fill-opacity="0.1" stroke="#2A7A4B" stroke-width="1"/>
+      <text x="260" y="209" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#1A5A35" font-weight="600">SLV + GVZ currently firing ✓</text>
+    </svg>
+
+    <div class="channels">
+      <div class="ch crypto">
+        <div class="ch-tag">Crypto → Gold</div>
+        <div class="ch-signal">Bitcoin ETFs in upper tail</div>
+        <div class="ch-stats">CPE 0.97 · lift 4.85×</div>
+      </div>
+      <div class="ch silver">
+        <div class="ch-tag">Silver → Gold · firing now ✓</div>
+        <div class="ch-signal">Silver in top 5% over 1 year</div>
+        <div class="ch-stats">CPE 1.00 · lift 5×</div>
+      </div>
+      <div class="ch vol">
+        <div class="ch-tag">Volatility → Gold · firing now ✓</div>
+        <div class="ch-signal">GVZ falling sharply</div>
+        <div class="ch-stats">63-day lower tail · fear subsiding</div>
+      </div>
+      <div class="ch uup">
+        <div class="ch-tag">USD → Gold · watching</div>
+        <div class="ch-signal">USD weakness (UUP)</div>
+        <div class="ch-stats">3.3% away from firing</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">161</div>
+        <span class="stat-unit">instruments</span>
+        <div class="stat-desc">6 asset classes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">169k</div>
+        <span class="stat-unit">signals</span>
+        <div class="stat-desc">CPE ≥ 0.80, lift ≥ 1.5×</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <span class="stat-unit">assumptions</span>
+        <div class="stat-desc">non-parametric</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow 2→3 -->
+  <div class="arrow-div">
+    <svg class="arrow-svg" width="40" height="40" viewBox="0 0 40 40">
+      <path d="M8 20 L32 20 M24 12 L32 20 L24 28" stroke="#8B7355" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#aaa;text-align:center;letter-spacing:.1em;">LIVE<br>SIGNAL</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- PANEL 3: GOLD DASHBOARD                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="panel">
+    <div>
+      <div class="p-eyebrow">Live Signal Dashboard · 16 Jun 2026</div>
+      <div class="p-title">Should you buy<br><em>gold</em> today?</div>
+      <div class="p-sub">The framework applied to a real daily decision — updated every trading day.</div>
+    </div>
+
+    <!-- Gauge SVG -->
+    <svg width="100%" height="280" viewBox="0 0 520 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="520" height="280" rx="16" fill="white" fill-opacity="0.7"/>
+
+      <!-- Arc background -->
+      <path d="M 60 240 A 200 200 0 0 1 460 240" stroke="#eee" stroke-width="26" fill="none" stroke-linecap="round"/>
+      <!-- WAIT zone filled -->
+      <path d="M 60 240 A 200 200 0 0 1 260 40" stroke="#C9882A" stroke-width="26" fill="none" stroke-linecap="round"/>
+      <!-- WATCH zone -->
+      <path d="M 260 40 A 200 200 0 0 1 370 82" stroke="#E8A020" stroke-width="26" fill="none" stroke-linecap="round" opacity="0.35"/>
+      <!-- BUY zone -->
+      <path d="M 370 82 A 200 200 0 0 1 460 240" stroke="#2A7A4B" stroke-width="26" fill="none" stroke-linecap="round" opacity="0.35"/>
+
+      <!-- Zone labels -->
+      <text x="44" y="262" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">WAIT</text>
+      <text x="260" y="26" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">WATCH</text>
+      <text x="476" y="262" text-anchor="end" font-family="IBM Plex Mono" font-size="10" fill="#1a1a1a" font-weight="600">BUY</text>
+
+      <!-- BUY threshold dot -->
+      <circle cx="370" cy="82" r="6" fill="#2A7A4B"/>
+      <text x="382" y="72" font-family="IBM Plex Mono" font-size="8" fill="#2A7A4B" font-weight="600">60 = BUY</text>
+
+      <!-- Needle pointing straight up = 49.5/100 -->
+      <line x1="260" y1="240" x2="260" y2="50" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="260" cy="240" r="12" fill="#1a1a1a"/>
+      <circle cx="260" cy="240" r="6" fill="white"/>
+
+      <!-- Score -->
+      <text x="260" y="180" text-anchor="middle" font-family="DM Serif Display" font-size="56" fill="#1a1a1a">49.5</text>
+      <text x="260" y="206" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#555">/ 100 · WAIT &amp; WATCH</text>
+
+      <!-- Bottom info -->
+      <text x="16" y="272" font-family="IBM Plex Mono" font-size="9" fill="#1a1a1a">Est. bar: ~S$3,727*</text>
+      <text x="504" y="272" text-anchor="end" font-family="IBM Plex Mono" font-size="9" fill="#1a1a1a">63d return: −12.4% (P2.1)</text>
+    </svg>
+
+    <!-- Triggers -->
+    <div class="triggers">
+      <div class="trig fire">
+        <div class="t-dot fire"></div>
+        <div>
+          <div class="t-name">Silver (SLV/SI=F)</div>
+          <div class="t-val fire">FIRING · top 5% over 1 year</div>
+        </div>
+      </div>
+      <div class="trig fire">
+        <div class="t-dot fire"></div>
+        <div>
+          <div class="t-name">Gold Volatility (GVZ)</div>
+          <div class="t-val fire">FIRING · vol fell 46% in 3 months</div>
+        </div>
+      </div>
+      <div class="trig fire">
+        <div class="t-dot fire"></div>
+        <div>
+          <div class="t-name">Gold Mean-Reversion</div>
+          <div class="t-val fire">FIRING · −13.2%, below threshold</div>
+        </div>
+      </div>
+      <div class="trig watch">
+        <div class="t-dot watch"></div>
+        <div>
+          <div class="t-name">Bitcoin ETFs (IBIT/FBTC)</div>
+          <div class="t-val watch">WATCHING · needs +0.3% over 5d</div>
+        </div>
+      </div>
+      <div class="trig">
+        <div class="t-dot off"></div>
+        <div>
+          <div class="t-name">Recovery Rate &gt; 50%</div>
+          <div class="t-val off">WATCHING · currently 43.7%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score breakdown pills -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:rgba(255,255,255,0.55);border-radius:8px;padding:10px 12px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;line-height:1;">62</div>
+        <div style="font-size:10px;color:#888;margin-top:2px;">Drawdown depth (35%)</div>
+        <div style="height:3px;background:#eee;border-radius:2px;margin-top:6px;"><div style="width:62%;height:100%;background:#C9882A;border-radius:2px;"></div></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.55);border-radius:8px;padding:10px 12px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;line-height:1;">45</div>
+        <div style="font-size:10px;color:#888;margin-top:2px;">Recovery rate (35%)</div>
+        <div style="height:3px;background:#eee;border-radius:2px;margin-top:6px;"><div style="width:45%;height:100%;background:#C9882A;border-radius:2px;"></div></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.55);border-radius:8px;padding:10px 12px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;line-height:1;">36</div>
+        <div style="font-size:10px;color:#888;margin-top:2px;">Predictor proximity (20%)</div>
+        <div style="height:3px;background:#eee;border-radius:2px;margin-top:6px;"><div style="width:36%;height:100%;background:#C9882A;border-radius:2px;"></div></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.55);border-radius:8px;padding:10px 12px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;line-height:1;">50</div>
+        <div style="font-size:10px;color:#888;margin-top:2px;">CPE signal score (10%)</div>
+        <div style="height:3px;background:#eee;border-radius:2px;margin-top:6px;"><div style="width:50%;height:100%;background:#C9882A;border-radius:2px;"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-name">Dr. Arun Ramanathan</div>
+    <div class="footer-links">
+      zenodo.org/records/20606184 · ssrn.com/abstract=6931838 · github.com/quantarram/quant-regime-research<br>
+      Live dashboard: quantarram.github.io/quant-regime-research/notebooks/gold_dashboard.html
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
