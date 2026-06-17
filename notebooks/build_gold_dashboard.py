@@ -70,6 +70,22 @@ try:
                 prices[col] = raw[col].reindex(prices.index)
     prices = prices.sort_index().loc[~prices.index.duplicated(keep="last")]
     print(f"  Latest date: {prices.index.max().date()}")
+    # ── STALENESS WARNINGS ──
+    from datetime import date as _date
+    _today = _date.today()
+    _latest = prices.index.max().date()
+    _age = (_today - _latest).days
+    if _age > 4:
+        print(f"  WARNING: latest data is {_age} days old ({_latest}). Yahoo may be lagging or markets closed.")
+    for _t in ["GLD","GC=F","SGDUSD=X"]:
+        if _t in prices.columns:
+            _last_valid = prices[_t].dropna()
+            if len(_last_valid):
+                _tage = (_latest - _last_valid.index[-1].date()).days
+                if _tage > 1:
+                    print(f"  WARNING: {_t} last valid {_last_valid.index[-1].date()} ({_tage}d behind latest). Price may be stale.")
+            else:
+                print(f"  WARNING: {_t} has NO valid data after merge.")
 except Exception as e:
     print(f"  yfinance error: {e}")
 
@@ -1206,30 +1222,30 @@ function renderCone(){
   const histY = D.chart_prices.slice(-hist_n);
   const histYSgd = D.chart_sgd_g.slice(-hist_n);
 
-  function coneTraces(p10,p25,p50,p75,p90,histYArr,currency,tickfmt){
+  function coneTraces(p10,p25,p50,p75,p90,histYArr,currency,tickfmt,startVal){
     return [
       {x:histX,y:histYArr,mode:'lines',name:'Historical (63d)',
        line:{color:'#C9A84C',width:2.5},
        hovertemplate:'Day %{x}<br>'+currency+'%{y:,.2f}<extra>Historical</extra>'},
       {x:[0,...taus,...[...taus].reverse()],
-       y:[curr,...p10,...[...p90].reverse()],
+       y:[startVal,...p10,...[...p90].reverse()],
        fill:'toself',fillcolor:'#E0555511',line:{color:'transparent'},
        name:'P10–P90',hoverinfo:'skip'},
       {x:[0,...taus,...[...taus].reverse()],
-       y:[curr,...p25,...[...p75].reverse()],
+       y:[startVal,...p25,...[...p75].reverse()],
        fill:'toself',fillcolor:'#E0555533',line:{color:'transparent'},
        name:'P25–P75',hoverinfo:'skip'},
-      {x:[0,...taus],y:[curr,...p50],mode:'lines+markers',name:'P50 Median',
+      {x:[0,...taus],y:[startVal,...p50],mode:'lines+markers',name:'P50 Median',
        line:{color:'#E05555',width:2.5},marker:{size:7},
        hovertemplate:'Day %{x}<br>'+currency+'%{y:,.2f}<extra>P50 Median</extra>'},
-      {x:[0,...taus],y:[curr,...p90],mode:'lines',name:'P90 Optimistic',
+      {x:[0,...taus],y:[startVal,...p90],mode:'lines',name:'P90 Optimistic',
        line:{color:'#4DB87A',width:1.5,dash:'dot'},
        hovertemplate:'Day %{x}<br>'+currency+'%{y:,.2f}<extra>P90 Optimistic</extra>'},
     ];
   }
 
   pl('cone-usd',
-    coneTraces(D.cone_p10,D.cone_p25,D.cone_p50,D.cone_p75,D.cone_p90,histY,'$','$,.0f'),
+    coneTraces(D.cone_p10,D.cone_p25,D.cone_p50,D.cone_p75,D.cone_p90,histY,'$','$,.0f',curr),
     {xaxis:{title:'Trading days from today (0 = current)',
             zeroline:true,zerolinecolor:'#C9A84C44',zerolinewidth:1.5},
      yaxis:{title:'GC=F (USD/oz)',tickformat:'$,.0f'},
@@ -1238,7 +1254,7 @@ function renderCone(){
               line:{color:'#C9A84C55',width:1.5,dash:'dot'}}]});
 
   pl('cone-sgd',
-    coneTraces(D.cone_sgd_p10,D.cone_sgd_p25,D.cone_sgd_p50,D.cone_sgd_p75,D.cone_sgd_p90,histYSgd,'S$','S$,.0f'),
+    coneTraces(D.cone_sgd_p10,D.cone_sgd_p25,D.cone_sgd_p50,D.cone_sgd_p75,D.cone_sgd_p90,histYSgd,'S$','S$,.2f',currSgd),
     {xaxis:{title:'Trading days from today (0 = current)',
             zeroline:true,zerolinecolor:'#C9A84C44',zerolinewidth:1.5},
      yaxis:{title:'SGD per gram',tickformat:'S$,.2f'},
