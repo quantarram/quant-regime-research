@@ -7,7 +7,7 @@ Comprehensive gold buy/sell signal dashboard using:
   3. All CPE predictors for gold (pairwise + joint)
   4. Gold autocorrelation CPE (mean-reversion signal)
   5. Composite buy score
-  6. 20g bar price cone in SGD
+  6. Gold spot price cone (SGD per gram)
 
 Run: python build_gold_dashboard.py
 Requires: multiasset_prices.parquet, joint_cpe_results.parquet, cpe_results.parquet
@@ -51,9 +51,23 @@ try:
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
     for col in raw.columns:
         if col in prices.columns:
+            # For existing columns: append new rows after parquet max date
             new = raw[[col]].loc[raw.index > prices.index.max()]
             if not new.empty:
                 prices = pd.concat([prices, new])
+            # Also fill NaN values in existing column with fresh data
+            fresh_col = raw[[col]].reindex(prices.index)
+            prices[col] = prices[col].fillna(fresh_col[col])
+        else:
+            # For new tickers (e.g. GLD, UUP, ^GVZ not in original parquet):
+            # add the full fresh series
+            prices = prices.join(raw[[col]], how='left', rsuffix='_new')
+            if col+'_new' in prices.columns:
+                prices[col] = prices.get(col, float('nan'))
+                prices[col] = prices[col].fillna(prices[col+'_new'])
+                prices = prices.drop(columns=[col+'_new'], errors='ignore')
+            else:
+                prices[col] = raw[col].reindex(prices.index)
     prices = prices.sort_index().loc[~prices.index.duplicated(keep="last")]
     print(f"  Latest date: {prices.index.max().date()}")
 except Exception as e:
@@ -159,13 +173,10 @@ else:
 gold_sgd_oz = gold_usd * usd_per_sgd
 gold_sgd_g  = gold_sgd_oz / 31.1035
 
-# Bar price uses SPOT price (not futures) with 0.8% BullionStar dealer premium
-# 0.8% is calibrated to Britannia 20g bar — a competitive major-brand bar
-DEALER_PREMIUM = 1.008
+# Spot price in SGD per gram — verifiable against published spot rates
 gold_spot_sgd_oz = gold_spot_usd * usd_per_sgd
 gold_spot_sgd_g  = gold_spot_sgd_oz / 31.1035
-bar_sgd = gold_spot_sgd_g * 20 * DEALER_PREMIUM
-print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | 20g bar est: S${bar_sgd:.2f} (0.8% premium)")
+print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | SGD/oz: S${gold_spot_sgd_oz:.2f}")
 # Always define these for the data bundle
 # US market closes at 4 PM New York = 4 AM next day Singapore time
 # So when running in Singapore morning, the last US close was YESTERDAY Singapore date
@@ -179,12 +190,12 @@ elif _sgt_hour < 16:  # 4 AM to 4 PM SGT: last close was yesterday SGT
     _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
 else:  # after 4 PM SGT: today's US session still open, last close was yesterday
     _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
-bar_sub_text = (f"Spot S${gold_spot_sgd_g:.2f}/g x 20g x 0.8% dealer premium · "
+bar_sub_text = (f"Gold spot price in Singapore dollars per gram · "
                 f"Last US close: {_us_close_label} · "
-                f"BullionStar live price may differ by 1-2% due to intraday moves.")
+                f"Derived from GLD ETF and USD/SGD rate.")
 peak_252 = float(gcf.iloc[-252:].max()) if len(gcf) >= 252 else float(gcf.max())
 dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
-peak_bar_sgd = round(peak_252 * usd_per_sgd / 31.1035 * 20 * DEALER_PREMIUM, 2)
+peak_spot_sgd_g = round(peak_252 * usd_per_sgd / 31.1035, 2)
 
 def pct_chg(n):
     if len(gcf) > n:
@@ -411,7 +422,7 @@ print(f"  Composite buy score: {composite} — {buy_label}")
 # ── PRICE CHART DATA ──────────────────────────────────────────────────────────
 chart_dates  = [str(d.date()) for d in gcf.index[-365:]]
 chart_prices = [round(float(p),2) for p in gcf.iloc[-365:]]
-chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035*DEALER_PREMIUM*20,2) for p in gcf.iloc[-365:]]
+chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035,2) for p in gcf.iloc[-365:]]
 
 # 52-week high and peak drawdown (already computed above)
 peak_date_idx= gcf.iloc[-252:].idxmax() if len(gcf)>=252 else gcf.idxmax()
@@ -424,12 +435,12 @@ cone_p25     = [gold_usd * (1+recovery_63[t]["p25"]/100) for t in cone_taus]
 cone_p50     = [gold_usd * (1+recovery_63[t]["p50"]/100) for t in cone_taus]
 cone_p75     = [gold_usd * (1+recovery_63[t]["p75"]/100) for t in cone_taus]
 cone_p90     = [gold_usd * (1+recovery_63[t]["p90"]/100) for t in cone_taus]
-# Use 0.8% premium for cone projections (consistent with bar price calculation)
-cone_sgd_p10 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p10]
-cone_sgd_p25 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p25]
-cone_sgd_p50 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p50]
-cone_sgd_p75 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p75]
-cone_sgd_p90 = [p*usd_per_sgd/31.1035*20*DEALER_PREMIUM for p in cone_p90]
+# Cone projections in SGD per gram (spot)
+cone_sgd_p10 = [p*usd_per_sgd/31.1035 for p in cone_p10]
+cone_sgd_p25 = [p*usd_per_sgd/31.1035 for p in cone_p25]
+cone_sgd_p50 = [p*usd_per_sgd/31.1035 for p in cone_p50]
+cone_sgd_p75 = [p*usd_per_sgd/31.1035 for p in cone_p75]
+cone_sgd_p90 = [p*usd_per_sgd/31.1035 for p in cone_p90]
 
 # Historical return distribution for histogram
 hist_63_vals = [round(float(v),2) for v in gcf_63]
@@ -444,14 +455,17 @@ data = {
     "gold_usd":      round(gold_usd,2),
     "gold_sgd_oz":   round(gold_sgd_oz,2),
     "gold_sgd_g":    round(gold_sgd_g,4),
-    "bar_sgd":       round(bar_sgd,2),
+    "spot_sgd_g":    round(gold_spot_sgd_g,2),
+    "spot_sgd_oz":   round(gold_spot_sgd_oz,2),
     "usd_per_sgd":   round(usd_per_sgd,4),
     "chg":              chg,
     "dd_from_peak":     dd_from_peak,
     "peak_252":         round(peak_252,2),
-    "peak_bar_sgd":     peak_bar_sgd,
+    "peak_spot_sgd_g":     peak_spot_sgd_g,
     "gold_spot_usd":    round(gold_spot_usd,2),
     "gold_spot_sgd_g":  round(gold_spot_sgd_g,4),
+    "spot_sgd_g":       round(gold_spot_sgd_g,2),
+    "spot_sgd_oz":      round(gold_spot_sgd_oz,2),
     "bar_sub_text":     bar_sub_text,
     "high_252":      round(float(gcf.iloc[-252:].max()) if len(gcf)>=252 else gold_usd,2),
     "low_252":       round(float(gcf.iloc[-252:].min()) if len(gcf)>=252 else gold_usd,2),
@@ -714,7 +728,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
 .b-bull{background:#4DB87A22;color:var(--bull);border:1px solid #4DB87A44;}
 .b-bear{background:#E0555522;color:var(--bear);border:1px solid #E0555544;}
 
-/* ── BAR / BULLION ── */
+/* ── GOLD SPOT PRICE ── */
 .bullion-price{font-family:var(--mono);font-size:clamp(24px,4vw,32px);
   font-weight:600;color:var(--gold);}
 
@@ -770,7 +784,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
     <div class="h-icon">⬡</div>
     <div>
       <div class="h-title">GOLD BUY SIGNAL DASHBOARD</div>
-      <div class="h-sub">CPE Multi-Asset Framework · BullionStar Singapore · 20g Bar</div>
+      <div class="h-sub">CPE Multi-Asset Framework · Gold Spot · Singapore</div>
     </div>
   </div>
   <div class="h-meta">
@@ -831,7 +845,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
   <div>
     <div style="font-family:var(--mono);font-size:11px;color:var(--text2);
                 text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">
-      20g Bar — BullionStar Singapore
+      Gold Spot — SGD per gram
     </div>
     <div style="font-family:var(--mono);font-size:32px;font-weight:600;
                 color:var(--gold)" id="bar-price">SGD —</div>
@@ -848,7 +862,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
 <!-- STATS -->
 <div class="stats-grid" id="stats-grid"></div>
 <div style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-bottom:var(--gap);padding:8px 12px;background:var(--s2);border-radius:6px;border:1px solid var(--bdr)">
-  ⓘ Prices reflect last available US close: """ + _us_close_label + """ (GLD ETF). BullionStar updates live — expect 1–2% gap during Asian hours.
+  ⓘ Prices reflect last available US close: """ + _us_close_label + """ (GLD ETF). Spot price derived from GLD ETF and USD/SGD rate.
 </div>
 
 <!-- PRICE CHARTS -->
@@ -858,7 +872,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
     <div id="chart-usd" style="height:260px"></div>
   </div>
   <div class="card">
-    <div class="ct">20g Bar Estimated Price — SGD (Last 365 Days)</div>
+    <div class="ct">Gold Price — SGD per gram (Last 365 Days)</div>
     <div id="chart-sgd" style="height:260px"></div>
   </div>
 </div>
@@ -885,7 +899,7 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
   <div class="ct">Forward Price Cone — Based on Historical Recovery After Similar Drawdowns</div>
   <div class="tabs" style="margin-bottom:12px">
     <button class="tb active" onclick="showCone('usd',this)">USD / oz</button>
-    <button class="tb" onclick="showCone('sgd',this)">SGD / 20g bar</button>
+    <button class="tb" onclick="showCone('sgd',this)">SGD / gram</button>
   </div>
   <div id="cone-usd" style="height:300px"></div>
   <div id="cone-sgd" style="height:300px;display:none"></div>
@@ -1055,14 +1069,14 @@ function renderBuyScore(){
 
   // Bar price
   document.getElementById('bar-price').textContent =
-    'S$ ' + D.bar_sgd.toLocaleString('en-SG',{minimumFractionDigits:2,maximumFractionDigits:2});
+    'S$ ' + (D.spot_sgd_g||D.gold_spot_sgd_g).toLocaleString('en-SG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' /g';
   document.getElementById('bar-sub').textContent =
-    D.bar_sub_text || ('Spot S$'+(D.gold_spot_sgd_g||D.gold_sgd_g).toFixed(2)+'/g x 20g x 0.8% premium');
+    D.bar_sub_text || ('Spot price in SGD per gram, derived from GLD ETF and USD/SGD');
 
   document.getElementById('dd-peak').innerHTML =
     '<span style="color:var(--bear)">'+D.dd_from_peak.toFixed(1)+'%</span> from 252d peak';
   document.getElementById('dd-peak-sub').textContent =
-    'Peak: USD '+D.peak_252.toLocaleString()+' / S$'+(D.peak_bar_sgd||Math.round(D.peak_252*D.usd_per_sgd/31.1035*20*1.008));
+    'Peak: USD '+D.peak_252.toLocaleString()+'/oz / S$'+(D.peak_spot_sgd_g||Math.round(D.peak_252*D.usd_per_sgd/31.1035))+'/g';
 
   // Components
   const comps = [
@@ -1121,8 +1135,8 @@ function renderPriceCharts(){
   pl('chart-sgd',[{
     x:D.chart_dates,y:D.chart_sgd_g,type:'scatter',mode:'lines',
     line:{color:'#E8C97A',width:2},fill:'tozeroy',fillcolor:'#E8C97A18',
-    hovertemplate:'%{x}<br>S$%{y:,.2f}<extra></extra>',name:'20g bar SGD',
-  }],{yaxis:{title:'SGD (20g bar)',tickformat:'S$,.0f'},xaxis:{type:'date'}});
+    hovertemplate:'%{x}<br>S$%{y:,.2f}/g<extra></extra>',name:'SGD per gram',
+  }],{yaxis:{title:'SGD per gram',tickformat:'S$,.2f'},xaxis:{type:'date'}});
 }
 
 // ── HISTOGRAM ────────────────────────────────────────────────────────────────
@@ -1184,7 +1198,7 @@ function renderAutoGrid(){
 function renderCone(){
   const taus = D.cone_taus;
   const curr = D.gold_usd;
-  const currSgd = D.bar_sgd;
+  const currSgd = D.spot_sgd_g||D.gold_spot_sgd_g;
 
   // Historical last 63 days for context
   const hist_n = 63;
@@ -1227,7 +1241,7 @@ function renderCone(){
     coneTraces(D.cone_sgd_p10,D.cone_sgd_p25,D.cone_sgd_p50,D.cone_sgd_p75,D.cone_sgd_p90,histYSgd,'S$','S$,.0f'),
     {xaxis:{title:'Trading days from today (0 = current)',
             zeroline:true,zerolinecolor:'#C9A84C44',zerolinewidth:1.5},
-     yaxis:{title:'20g Bar (SGD)',tickformat:'S$,.0f'},
+     yaxis:{title:'SGD per gram',tickformat:'S$,.2f'},
      showlegend:true,
      shapes:[{type:'line',x0:0,x1:0,y0:0,y1:1,xref:'x',yref:'paper',
               line:{color:'#C9A84C55',width:1.5,dash:'dot'}}]});
@@ -1529,7 +1543,7 @@ function renderDecision() {
       cur:score+'/100 — need 60',
       prog:score, col:score>=60?'var(--bull)':'var(--warn)', fired:score>=60 },
     { name:'SGD strengthens vs USD (300d)',
-      desc:'Stronger SGD reduces the SGD cost of gold bars — also a CPE predictor',
+      desc:'Stronger SGD reduces the SGD cost of gold — also a CPE predictor',
       cur:sgd ? (sgd.in_tail?'FIRING ✓':
   'Currently '+(sgd.current).toFixed(1)+'% — needs to reach '+(sgd.threshold).toFixed(1)+'%') : 'N/A',
       prog:sgd ? Math.max(0,Math.min(100, sgd.in_tail ? 100 : Math.max(0,sgd.current/sgd.threshold*80))) : 0,
