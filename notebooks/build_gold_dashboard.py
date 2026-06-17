@@ -43,7 +43,7 @@ print("Fetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
     fetch_list = list(set(GOLD_Y + [FX_TICKER,"SLV","SI=F","IBIT","FBTC","BITB",
-                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","XAUUSD=X","GLD","IAU",
+                                    "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","GLD","IAU",
                                     "DX-Y.NYB","UUP","^GVZ"]))  # DXY index, USD ETF backup, Gold Vol Index
     raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
@@ -69,7 +69,27 @@ try:
             else:
                 prices[col] = raw[col].reindex(prices.index)
     prices = prices.sort_index().loc[~prices.index.duplicated(keep="last")]
+    # ── CRITICAL: Override key price columns with fresh Yahoo data directly ──
+    # This ensures GLD, GC=F, SGDUSD=X are never stale regardless of parquet state
+    for _key in ["GLD","GC=F","IAU","SGDUSD=X","UUP","^GVZ","SLV","SI=F",
+                 "IBIT","FBTC","BITB"]:
+        if _key in raw.columns:
+            _fresh = raw[_key].dropna()
+            if len(_fresh) > 5:
+                # Fill ALL dates from fresh data, then append any new dates
+                prices[_key] = prices[_key].fillna(_fresh.reindex(prices.index))
+                # Also force-update the last 30 days from fresh data (overrides parquet)
+                _last30 = _fresh.index[-30:]
+                prices.loc[prices.index.isin(_last30), _key] = _fresh.reindex(
+                    prices.index[prices.index.isin(_last30)]
+                )
+    prices = prices.sort_index().loc[~prices.index.duplicated(keep="last")]
     print(f"  Latest date: {prices.index.max().date()}")
+    # Verify GLD is current
+    if "GLD" in prices.columns:
+        _gld_last = prices["GLD"].dropna()
+        if len(_gld_last):
+            print(f"  GLD last valid: {_gld_last.index[-1].date()} = ${_gld_last.iloc[-1]:.2f}")
     # ── STALENESS WARNINGS ──
     from datetime import date as _date
     _today = _date.today()

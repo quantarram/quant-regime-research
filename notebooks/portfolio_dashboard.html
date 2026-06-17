@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portfolio Tilt Dashboard — CPE Framework</title>
+<script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root{
+    --bg:#F5F0E8; --card:#fff; --border:#e5e5e5;
+    --text:#1a1a1a; --muted:#666; --faint:#f5f5f5;
+    --gold:#C9882A; --green:#1a6b3a; --red:#E05555;
+    --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
+    --blue:#4A90D9; --orange:#F5A623; --purple:#9B59B6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}
+  a{color:var(--gold);text-decoration:none;}
+
+  /* ── LAYOUT ── */
+  .page{max-width:1400px;margin:0 auto;padding:32px 24px 80px;}
+
+  /* ── HEADER ── */
+  .header{background:#1a1a1a;border-radius:16px;padding:32px 40px;margin-bottom:28px;
+           display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}
+  .h-title{font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:6px;}
+  .h-title em{font-style:italic;color:var(--gold);}
+  .h-sub{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:4px;}
+  .h-meta{font-size:12px;color:#aaa;}
+  .h-badge{background:rgba(201,136,42,0.15);border:1px solid rgba(201,136,42,0.3);
+            border-radius:12px;padding:12px 20px;text-align:center;}
+  .h-badge-num{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}
+  .h-badge-label{font-size:10px;color:#888;display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}
+
+  /* ── SECTION ── */
+  .section{margin-bottom:28px;}
+  .section-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+                  text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+
+  /* ── CARDS ── */
+  .card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px 24px;}
+  .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+  /* ── PRICE CARDS ── */
+  .price-card{background:var(--card);border-radius:14px;border:1px solid var(--border);
+               padding:16px 18px;}
+  .pc-ac{font-size:10px;font-family:var(--mono);letter-spacing:.12em;
+          text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .pc-price{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text);}
+  .pc-ticker{font-size:11px;color:var(--muted);margin-top:2px;}
+  .pc-rets{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .pc-ret{font-family:var(--mono);font-size:10px;}
+  .up{color:var(--green);} .dn{color:var(--red);} .nt{color:var(--muted);}
+
+  /* ── TILT TABLE ── */
+  .tilt-table{width:100%;border-collapse:collapse;}
+  .tilt-table th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+                  text-transform:uppercase;color:var(--muted);padding:10px 14px;
+                  border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}
+  .tilt-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .tilt-table tr:last-child td{border-bottom:none;}
+  .tilt-table tr:hover td{background:#fafafa;}
+
+  .ac-cell{display:flex;align-items:center;gap:10px;}
+  .ac-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .ac-name{font-weight:600;font-size:13px;}
+  .ac-desc{font-size:10px;color:var(--muted);margin-top:2px;}
+
+  .tilt-pill{display:inline-flex;align-items:center;padding:4px 10px;
+              border-radius:100px;font-family:var(--mono);font-size:9px;
+              font-weight:600;letter-spacing:.06em;white-space:nowrap;}
+
+  .weight-bar-bg{background:#eee;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}
+  .weight-bar-fill{height:100%;border-radius:4px;transition:width .3s;}
+
+  /* ── SIGNAL CARDS ── */
+  .signal-section{margin-top:28px;}
+  .signal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
+  .signal-card{background:var(--card);border-radius:12px;border:1px solid var(--border);
+                padding:16px 18px;}
+  .sig-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .sig-ac{font-size:12px;font-weight:600;color:var(--text);}
+  .sig-hor{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;}
+  .sig-row{font-family:var(--mono);font-size:10px;color:var(--text);padding:5px 0;
+             border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;gap:8px;}
+  .sig-row:last-child{border-bottom:none;}
+  .sig-pred{color:var(--muted);font-size:9px;}
+  .sig-cpe{color:var(--green);font-weight:600;}
+  .sig-lift{color:var(--gold);}
+
+  /* ── WEIGHT COMPARISON ── */
+  .wt-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .wt-row:last-child{border-bottom:none;}
+  .wt-ac{width:90px;font-size:12px;font-weight:600;}
+  .wt-bars{flex:1;display:flex;flex-direction:column;gap:5px;}
+  .wt-bar-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;}
+  .wt-bar-label{width:60px;color:var(--muted);}
+  .wt-bar-track{flex:1;background:#f0f0f0;border-radius:3px;height:8px;}
+  .wt-bar-fill{height:100%;border-radius:3px;}
+  .wt-pct{width:40px;text-align:right;}
+
+  /* ── DISCLAIMER ── */
+  .disclaimer{background:#f9f7f4;border:1px solid #e5e0d5;border-radius:10px;
+               padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .grid-5{grid-template-columns:repeat(2,1fr);}
+    .grid-3{grid-template-columns:1fr 1fr;}
+    .header{grid-template-columns:1fr;}
+  }
+  @media(max-width:600px){
+    .grid-5,.grid-2,.grid-3{grid-template-columns:1fr;}
+    .page{padding:16px 12px 60px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="h-sub">CPE Multi-Asset Framework · Portfolio Tilt Dashboard</div>
+    <div class="h-title"><em>Regime-Conditional</em> Portfolio Tilt</div>
+    <div class="h-meta">
+      Updated: <span id="hgen"></span> &nbsp;·&nbsp;
+      Data: <span id="hdate"></span> &nbsp;·&nbsp;
+      <span id="hpred"></span> predictors firing
+    </div>
+  </div>
+  <div class="h-badge">
+    <div class="h-badge-num" id="hfire">—</div>
+    <span class="h-badge-label">CPE signals active</span>
+  </div>
+</div>
+
+<!-- REGIME SUMMARY -->
+<div class="section">
+  <div class="card" id="regime-summary" style="background:linear-gradient(135deg,#1a1a2e 0%,#2a2a3e 100%);border:none;padding:24px 32px;">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:10px;">Today's Regime — Plain English Summary</div>
+    <div id="summary-text" style="font-size:16px;line-height:1.7;color:#eee;"></div>
+    <div id="summary-signals" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- PRICE SNAPSHOT -->
+<div class="section">
+  <div class="section-title">Current Price Snapshot</div>
+  <div class="grid-5" id="price-cards"></div>
+</div>
+
+<!-- TILT TABLE -->
+<div class="section">
+  <div class="section-title">CPE Regime Tilt — by Asset Class and Horizon</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="tilt-table" id="tilt-table">
+      <thead>
+        <tr>
+          <th style="width:200px">Asset Class</th>
+          <th>1 Month</th>
+          <th>3 Months</th>
+          <th>6 Months</th>
+          <th>1 Year</th>
+          <th>Overall Tilt</th>
+          <th>Neutral Wt</th>
+          <th>Suggested Wt</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody id="tilt-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- WEIGHT COMPARISON -->
+<div class="section">
+  <div class="section-title">Suggested vs Neutral Portfolio Weights</div>
+  <div class="grid-2">
+    <div class="card">
+      <div id="chart-weights" style="height:320px;"></div>
+    </div>
+    <div class="card" style="padding:24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Weight Comparison</div>
+      <div id="weight-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIRING CPE SIGNALS -->
+<div class="section signal-section">
+  <div class="section-title">Firing CPE Signals — Evidence Behind Each Tilt</div>
+  <div class="signal-grid" id="signal-grid"></div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>Research Disclaimer:</strong> All CPE values are within-sample empirical frequencies computed from historical data (1993–2026).
+  The tilt labels, suggested weights, and regime scores are descriptive summaries of historical tail co-movement patterns — not forecasts or investment advice.
+  Neutral weights are derived from long-run historical Sharpe ratios (rf=0, 10-year lookback) and are not optimal in any mean-variance sense.
+  Past statistical structure does not guarantee future behaviour. This dashboard is for personal research only.
+  Always consult a licensed financial adviser before making investment decisions.
+  &nbsp;·&nbsp; <strong>Dr. Arun Ramanathan</strong>
+  &nbsp;·&nbsp; zenodo.org/records/20606184
+</div>
+
+</div><!-- /page -->
+
+<script>
+const D = {"gen": "2026-06-17 14:44", "data_date": "2026-06-17", "neutral_weights": {"Equities": 32.9, "Gold": 29.9, "Bonds": 4.7, "Crypto": 22.5, "FX": 10.0}, "suggested_weights": {"Equities": 33.1, "Gold": 30.1, "Bonds": 0.2, "Crypto": 22.6, "FX": 14.1}, "tilt_summaries": {"Equities": {"overall_label": "NEUTRAL", "overall_delta": 0.0, "neutral_w": 32.9, "suggested_w": 33.1, "horizon_labels": {"21": "NO SIGNAL", "63": "NO SIGNAL", "126": "NEUTRAL", "252": "NEUTRAL"}}, "Gold": {"overall_label": "NEUTRAL", "overall_delta": 0.0, "neutral_w": 29.9, "suggested_w": 30.1, "horizon_labels": {"21": "NO SIGNAL", "63": "NO SIGNAL", "126": "NEUTRAL", "252": "NEUTRAL"}}, "Bonds": {"overall_label": "TILT DOWN", "overall_delta": -4.5, "neutral_w": 4.7, "suggested_w": 0.2, "horizon_labels": {"21": "NO SIGNAL", "63": "UNDERWEIGHT", "126": "NEUTRAL", "252": "NEUTRAL"}}, "Crypto": {"overall_label": "NEUTRAL", "overall_delta": 0.0, "neutral_w": 22.5, "suggested_w": 22.6, "horizon_labels": {"21": "NO SIGNAL", "63": "NEUTRAL", "126": "NEUTRAL", "252": "NEUTRAL"}}, "FX": {"overall_label": "TILT UP", "overall_delta": 4.0, "neutral_w": 10.0, "suggested_w": 14.1, "horizon_labels": {"21": "TILT UP", "63": "TILT UP", "126": "NEUTRAL", "252": "NEUTRAL"}}}, "results": {"Equities": {"info": {"tickers": ["SPY", "QQQ"], "label": "Equities", "color": "#4A90D9", "icon": "\ud83d\udcc8", "proxy": "SPY", "desc": "US large-cap equities (SPY/QQQ)"}, "horizons": {"21": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "63": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "126": {"bull_score": 0.861, "bear_score": 0.81, "net_score": 0.592, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 16, "bear_n": 4, "bull_top": [{"Y": "SPY", "X": "ICLN", "tau_past": 126, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9852, "lift": 1.9704, "n_condition": 203, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 300, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9735, "lift": 1.947, "n_condition": 151, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 252, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9105, "lift": 1.8211, "n_condition": 190, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 63, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.904, "lift": 1.8081, "n_condition": 198, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 300, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8754, "lift": 1.7508, "n_condition": 297, "direction": "bullish"}], "bear_top": [{"Y": "QQQ", "X": "DOGE-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8228, "lift": 1.6456, "n_condition": 158, "direction": "bearish"}, {"Y": "SPY", "X": "LINK-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8194, "lift": 1.6387, "n_condition": 155, "direction": "bearish"}, {"Y": "SPY", "X": "XRP-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8075, "lift": 1.6149, "n_condition": 161, "direction": "bearish"}, {"Y": "SPY", "X": "LINK-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.8, "lift": 1.6, "n_condition": 305, "direction": "bearish"}]}, "252": {"bull_score": 0.843, "bear_score": 0.831, "net_score": 0.573, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 32, "bear_n": 12, "bull_top": [{"Y": "SPY", "X": "ICLN", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9722, "lift": 1.9444, "n_condition": 144, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 63, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.934, "lift": 1.868, "n_condition": 197, "direction": "bullish"}, {"Y": "SPY", "X": "GOOGL", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8931, "lift": 1.7862, "n_condition": 159, "direction": "bullish"}, {"Y": "SPY", "X": "ICLN", "tau_past": 126, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8927, "lift": 1.7854, "n_condition": 205, "direction": "bullish"}, {"Y": "SPY", "X": "VEA", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8909, "lift": 1.7818, "n_condition": 165, "direction": "bullish"}], "bear_top": [{"Y": "SPY", "X": "XRP-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.8581, "lift": 1.7162, "n_condition": 303, "direction": "bearish"}, {"Y": "SPY", "X": "LINK-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.852, "lift": 1.7041, "n_condition": 392, "direction": "bearish"}, {"Y": "SPY", "X": "XRP-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.8416, "lift": 1.6831, "n_condition": 385, "direction": "bearish"}, {"Y": "SPY", "X": "DOT-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.8397, "lift": 1.6794, "n_condition": 287, "direction": "bearish"}, {"Y": "SPY", "X": "LINK-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.8222, "lift": 1.6444, "n_condition": 478, "direction": "bearish"}]}}, "sharpe": 0.8038201973925717}, "Gold": {"info": {"tickers": ["GC=F", "GLD", "IAU"], "label": "Gold", "color": "#C9882A", "icon": "\ud83e\udd47", "proxy": "GC=F", "desc": "Gold futures and ETFs"}, "horizons": {"21": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "63": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "126": {"bull_score": 0.846, "bear_score": 0.807, "net_score": 0.585, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 32, "bear_n": 3, "bull_top": [{"Y": "GLD", "X": "IBIT", "tau_past": 5, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8898, "lift": 1.7797, "n_condition": 118, "direction": "bullish"}, {"Y": "GLD", "X": "FBTC", "tau_past": 5, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8898, "lift": 1.7797, "n_condition": 118, "direction": "bullish"}, {"Y": "GLD", "X": "IBIT", "tau_past": 5, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8897, "lift": 1.7793, "n_condition": 145, "direction": "bullish"}, {"Y": "GLD", "X": "FBTC", "tau_past": 5, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8897, "lift": 1.7793, "n_condition": 145, "direction": "bullish"}, {"Y": "GLD", "X": "EEM", "tau_past": 300, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8491, "lift": 1.6983, "n_condition": 232, "direction": "bullish"}], "bear_top": [{"Y": "GC=F", "X": "BCH-USD", "tau_past": 63, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8069, "lift": 1.6139, "n_condition": 202, "direction": "bearish"}]}, "252": {"bull_score": 0.924, "bear_score": 0.82, "net_score": 0.626, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 48, "bear_n": 6, "bull_top": [{"Y": "GC=F", "X": "IBIT", "tau_past": 5, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 122, "direction": "bullish"}, {"Y": "GC=F", "X": "FBTC", "tau_past": 5, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 122, "direction": "bullish"}, {"Y": "GC=F", "X": "IBIT", "tau_past": 5, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 102, "direction": "bullish"}, {"Y": "GC=F", "X": "FBTC", "tau_past": 5, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 102, "direction": "bullish"}, {"Y": "IAU", "X": "GOOGL", "tau_past": 252, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9838, "lift": 1.9676, "n_condition": 185, "direction": "bullish"}], "bear_top": [{"Y": "GC=F", "X": "CANE", "tau_past": 300, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.8245, "lift": 1.6489, "n_condition": 752, "direction": "bearish"}, {"Y": "GC=F", "X": "VIXY", "tau_past": 252, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8177, "lift": 1.6354, "n_condition": 1267, "direction": "bearish"}]}}, "sharpe": 0.7309652958869148}, "Bonds": {"info": {"tickers": ["TLT", "AGG"], "tickers_bull": ["TLT", "AGG", "SHY"], "label": "Bonds", "color": "#4B9E6F", "icon": "\ud83d\udcca", "proxy": "TLT", "desc": "US Treasury bonds (TLT/AGG long duration)"}, "horizons": {"21": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "63": {"bull_score": null, "bear_score": 0.819, "net_score": 0.181, "tilt_label": "UNDERWEIGHT", "tilt_delta": -15, "bull_n": 0, "bear_n": 14, "bull_top": [], "bear_top": [{"Y": "TLT", "X": "SOL-USD", "tau_past": 126, "tau_future": 63, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.8396, "lift": 1.6791, "n_condition": 268, "direction": "bearish"}, {"Y": "TLT", "X": "BITB", "tau_past": 300, "tau_future": 63, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8393, "lift": 1.6786, "n_condition": 112, "direction": "bearish"}, {"Y": "TLT", "X": "IBIT", "tau_past": 300, "tau_future": 63, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8393, "lift": 1.6786, "n_condition": 112, "direction": "bearish"}, {"Y": "TLT", "X": "FBTC", "tau_past": 300, "tau_future": 63, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8393, "lift": 1.6786, "n_condition": 112, "direction": "bearish"}, {"Y": "TLT", "X": "ETHE", "tau_past": 126, "tau_future": 63, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.8167, "lift": 1.6334, "n_condition": 371, "direction": "bearish"}]}, "126": {"bull_score": 0.851, "bear_score": 0.854, "net_score": 0.569, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 16, "bear_n": 43, "bull_top": [{"Y": "SHY", "X": "GOOGL", "tau_past": 300, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9261, "lift": 1.8523, "n_condition": 176, "direction": "bullish"}, {"Y": "SHY", "X": "IBIT", "tau_past": 5, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9237, "lift": 1.8475, "n_condition": 118, "direction": "bullish"}, {"Y": "SHY", "X": "FBTC", "tau_past": 5, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9237, "lift": 1.8475, "n_condition": 118, "direction": "bullish"}, {"Y": "SHY", "X": "FBTC", "tau_past": 5, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9034, "lift": 1.8069, "n_condition": 145, "direction": "bullish"}, {"Y": "SHY", "X": "IBIT", "tau_past": 5, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9034, "lift": 1.8069, "n_condition": 145, "direction": "bullish"}], "bear_top": [{"Y": "TLT", "X": "IBIT", "tau_past": 126, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9818, "lift": 1.9636, "n_condition": 110, "direction": "bearish"}, {"Y": "TLT", "X": "BITB", "tau_past": 126, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9818, "lift": 1.9636, "n_condition": 110, "direction": "bearish"}, {"Y": "TLT", "X": "FBTC", "tau_past": 126, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9818, "lift": 1.9636, "n_condition": 110, "direction": "bearish"}, {"Y": "TLT", "X": "FBTC", "tau_past": 126, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9423, "lift": 1.8846, "n_condition": 156, "direction": "bearish"}, {"Y": "TLT", "X": "IBIT", "tau_past": 126, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9419, "lift": 1.8839, "n_condition": 155, "direction": "bearish"}]}, "252": {"bull_score": 0.846, "bear_score": 0.852, "net_score": 0.567, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 66, "bear_n": 207, "bull_top": [{"Y": "SHY", "X": "IBIT", "tau_past": 5, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 102, "direction": "bullish"}, {"Y": "SHY", "X": "FBTC", "tau_past": 5, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 102, "direction": "bullish"}, {"Y": "SHY", "X": "GOOGL", "tau_past": 252, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 185, "direction": "bullish"}, {"Y": "SHY", "X": "GOOGL", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9937, "lift": 1.9874, "n_condition": 159, "direction": "bullish"}, {"Y": "SHY", "X": "FBTC", "tau_past": 5, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9918, "lift": 1.9836, "n_condition": 122, "direction": "bullish"}], "bear_top": [{"Y": "TLT", "X": "DOT-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.9756, "lift": 1.9512, "n_condition": 287, "direction": "bearish"}, {"Y": "TLT", "X": "SOL-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.9731, "lift": 1.9462, "n_condition": 223, "direction": "bearish"}, {"Y": "TLT", "X": "DOT-USD", "tau_past": 252, "tau_future": 252, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.9561, "lift": 1.9123, "n_condition": 114, "direction": "bearish"}, {"Y": "TLT", "X": "SOL-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.9486, "lift": 1.8972, "n_condition": 253, "direction": "bearish"}, {"Y": "TLT", "X": "SOL-USD", "tau_past": 126, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.9394, "lift": 1.8788, "n_condition": 297, "direction": "bearish"}]}}, "sharpe": -0.12149986710710459}, "Crypto": {"info": {"tickers": ["IBIT", "FBTC", "BTC-USD"], "label": "Crypto", "color": "#F5A623", "icon": "\u20bf", "proxy": "IBIT", "desc": "Bitcoin ETFs and BTC-USD"}, "horizons": {"21": {"bull_score": null, "bear_score": null, "net_score": null, "tilt_label": "NO SIGNAL", "tilt_delta": 0, "bull_n": 0, "bear_n": 0, "bull_top": [], "bear_top": []}, "63": {"bull_score": 0.843, "bear_score": 0.826, "net_score": 0.576, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 14, "bear_n": 5, "bull_top": [{"Y": "IBIT", "X": "^OVX", "tau_past": 126, "tau_future": 63, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.8833, "lift": 1.7667, "n_condition": 120, "direction": "bullish"}, {"Y": "FBTC", "X": "^OVX", "tau_past": 126, "tau_future": 63, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.8792, "lift": 1.7584, "n_condition": 149, "direction": "bullish"}, {"Y": "BTC-USD", "X": "ICLN", "tau_past": 126, "tau_future": 63, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8658, "lift": 1.7315, "n_condition": 149, "direction": "bullish"}, {"Y": "IBIT", "X": "^OVX", "tau_past": 126, "tau_future": 63, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.8571, "lift": 1.7143, "n_condition": 175, "direction": "bullish"}, {"Y": "FBTC", "X": "CANE", "tau_past": 126, "tau_future": 63, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8487, "lift": 1.6975, "n_condition": 119, "direction": "bullish"}], "bear_top": [{"Y": "BTC-USD", "X": "DOGE-USD", "tau_past": 252, "tau_future": 63, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8538, "lift": 1.7075, "n_condition": 253, "direction": "bearish"}, {"Y": "FBTC", "X": "JPYUSD=X", "tau_past": 126, "tau_future": 63, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8072, "lift": 1.6145, "n_condition": 249, "direction": "bearish"}, {"Y": "FBTC", "X": "IEI", "tau_past": 126, "tau_future": 63, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8019, "lift": 1.6038, "n_condition": 106, "direction": "bearish"}]}, "126": {"bull_score": 0.83, "bear_score": 0.91, "net_score": 0.534, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 3, "bear_n": 67, "bull_top": [{"Y": "BTC-USD", "X": "ICLN", "tau_past": 126, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8456, "lift": 1.6913, "n_condition": 149, "direction": "bullish"}, {"Y": "FBTC", "X": "^EVZ", "tau_past": 126, "tau_future": 126, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8115, "lift": 1.623, "n_condition": 122, "direction": "bullish"}], "bear_top": [{"Y": "IBIT", "X": "DOGE-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.6, "q_Y": 0.6, "CPE": 1.0, "lift": 2.5, "n_condition": 107, "direction": "bearish"}, {"Y": "FBTC", "X": "DOGE-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9769, "lift": 1.9538, "n_condition": 130, "direction": "bearish"}, {"Y": "BTC-USD", "X": "BITB", "tau_past": 252, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9508, "lift": 1.9016, "n_condition": 122, "direction": "bearish"}, {"Y": "BTC-USD", "X": "IBIT", "tau_past": 252, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9508, "lift": 1.9016, "n_condition": 122, "direction": "bearish"}, {"Y": "BTC-USD", "X": "FBTC", "tau_past": 252, "tau_future": 126, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9508, "lift": 1.9016, "n_condition": 122, "direction": "bearish"}]}, "252": {"bull_score": 0.867, "bear_score": 0.914, "net_score": 0.555, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 162, "bear_n": 122, "bull_top": [{"Y": "FBTC", "X": "AUDJPY=X", "tau_past": 252, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9906, "lift": 1.9811, "n_condition": 106, "direction": "bullish"}, {"Y": "IBIT", "X": "DBB", "tau_past": 252, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 0.9658, "lift": 1.9316, "n_condition": 117, "direction": "bullish"}, {"Y": "FBTC", "X": "XLV", "tau_past": 252, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9583, "lift": 1.9167, "n_condition": 168, "direction": "bullish"}, {"Y": "IBIT", "X": "AUDJPY=X", "tau_past": 252, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.954, "lift": 1.908, "n_condition": 174, "direction": "bullish"}, {"Y": "FBTC", "X": "QUAL", "tau_past": 252, "tau_future": 252, "q_X": 0.75, "q_Y": 0.5, "CPE": 0.9497, "lift": 1.8994, "n_condition": 179, "direction": "bullish"}], "bear_top": [{"Y": "FBTC", "X": "USMV", "tau_past": 252, "tau_future": 252, "q_X": 0.6, "q_Y": 0.6, "CPE": 1.0, "lift": 2.5, "n_condition": 102, "direction": "bearish"}, {"Y": "FBTC", "X": "XLV", "tau_past": 300, "tau_future": 252, "q_X": 0.7, "q_Y": 0.5, "CPE": 1.0, "lift": 2.0, "n_condition": 119, "direction": "bearish"}, {"Y": "IBIT", "X": "SOL-USD", "tau_past": 300, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.9939, "lift": 1.9877, "n_condition": 163, "direction": "bearish"}, {"Y": "FBTC", "X": "ITB", "tau_past": 300, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.993, "lift": 1.986, "n_condition": 143, "direction": "bearish"}, {"Y": "IBIT", "X": "ITB", "tau_past": 300, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.9929, "lift": 1.9858, "n_condition": 141, "direction": "bearish"}]}}, "sharpe": 0.5508186403284209}, "FX": {"info": {"tickers": ["UUP", "SGDUSD=X"], "label": "FX / USD", "color": "#9B59B6", "icon": "\ud83d\udcb1", "proxy": "UUP", "desc": "USD strength (UUP ETF, SGDUSD=X)"}, "horizons": {"21": {"bull_score": 0.824, "bear_score": null, "net_score": 0.824, "tilt_label": "TILT UP", "tilt_delta": 8, "bull_n": 3, "bear_n": 0, "bull_top": [{"Y": "UUP", "X": "SOXX", "tau_past": 300, "tau_future": 21, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8345, "lift": 1.669, "n_condition": 145, "direction": "bullish"}, {"Y": "UUP", "X": "XLK", "tau_past": 300, "tau_future": 21, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8243, "lift": 1.6486, "n_condition": 148, "direction": "bullish"}, {"Y": "UUP", "X": "QQQ", "tau_past": 300, "tau_future": 21, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.812, "lift": 1.6239, "n_condition": 117, "direction": "bullish"}], "bear_top": []}, "63": {"bull_score": 0.823, "bear_score": null, "net_score": 0.823, "tilt_label": "TILT UP", "tilt_delta": 8, "bull_n": 11, "bear_n": 0, "bull_top": [{"Y": "UUP", "X": "PDBC", "tau_past": 252, "tau_future": 63, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8493, "lift": 1.6986, "n_condition": 219, "direction": "bullish"}, {"Y": "UUP", "X": "BNO", "tau_past": 252, "tau_future": 63, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8428, "lift": 1.6855, "n_condition": 318, "direction": "bullish"}, {"Y": "UUP", "X": "NIB", "tau_past": 300, "tau_future": 63, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8409, "lift": 1.6818, "n_condition": 132, "direction": "bullish"}, {"Y": "UUP", "X": "BNO", "tau_past": 252, "tau_future": 63, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8392, "lift": 1.6783, "n_condition": 143, "direction": "bullish"}, {"Y": "UUP", "X": "XLK", "tau_past": 300, "tau_future": 63, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.8344, "lift": 1.6689, "n_condition": 151, "direction": "bullish"}], "bear_top": []}, "126": {"bull_score": 0.852, "bear_score": 0.872, "net_score": 0.563, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 50, "bear_n": 1, "bull_top": [{"Y": "UUP", "X": "NIB", "tau_past": 300, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9516, "lift": 1.9032, "n_condition": 124, "direction": "bullish"}, {"Y": "UUP", "X": "NIB", "tau_past": 252, "tau_future": 126, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9481, "lift": 1.8961, "n_condition": 154, "direction": "bullish"}, {"Y": "UUP", "X": "JO", "tau_past": 126, "tau_future": 126, "q_X": 0.8, "q_Y": 0.5, "CPE": 0.938, "lift": 1.876, "n_condition": 242, "direction": "bullish"}, {"Y": "UUP", "X": "DBC", "tau_past": 300, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.9346, "lift": 1.8692, "n_condition": 367, "direction": "bullish"}, {"Y": "UUP", "X": "USO", "tau_past": 300, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.9322, "lift": 1.8644, "n_condition": 354, "direction": "bullish"}], "bear_top": [{"Y": "UUP", "X": "AVAX-USD", "tau_past": 252, "tau_future": 126, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8718, "lift": 1.7436, "n_condition": 117, "direction": "bearish"}]}, "252": {"bull_score": 0.854, "bear_score": 0.826, "net_score": 0.582, "tilt_label": "NEUTRAL", "tilt_delta": 0, "bull_n": 80, "bear_n": 5, "bull_top": [{"Y": "SGDUSD=X", "X": "GOOGL", "tau_past": 252, "tau_future": 252, "q_X": 0.95, "q_Y": 0.6, "CPE": 1.0, "lift": 2.5, "n_condition": 192, "direction": "bullish"}, {"Y": "UUP", "X": "NIB", "tau_past": 252, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9926, "lift": 1.9853, "n_condition": 136, "direction": "bullish"}, {"Y": "SGDUSD=X", "X": "GOOGL", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9882, "lift": 1.9763, "n_condition": 169, "direction": "bullish"}, {"Y": "UUP", "X": "TQQQ", "tau_past": 300, "tau_future": 252, "q_X": 0.95, "q_Y": 0.5, "CPE": 0.9841, "lift": 1.9683, "n_condition": 126, "direction": "bullish"}, {"Y": "UUP", "X": "PPLT", "tau_past": 300, "tau_future": 252, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.9563, "lift": 1.9126, "n_condition": 183, "direction": "bullish"}], "bear_top": [{"Y": "UUP", "X": "MATIC-USD", "tau_past": 300, "tau_future": 252, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8583, "lift": 1.7167, "n_condition": 120, "direction": "bearish"}, {"Y": "SGDUSD=X", "X": "VXX", "tau_past": 300, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8336, "lift": 1.6672, "n_condition": 655, "direction": "bearish"}, {"Y": "SGDUSD=X", "X": "VXX", "tau_past": 252, "tau_future": 252, "q_X": 0.5, "q_Y": 0.5, "CPE": 0.8293, "lift": 1.6585, "n_condition": 861, "direction": "bearish"}, {"Y": "UUP", "X": "INDA", "tau_past": 126, "tau_future": 252, "q_X": 0.9, "q_Y": 0.5, "CPE": 0.8185, "lift": 1.637, "n_condition": 303, "direction": "bearish"}, {"Y": "SGDUSD=X", "X": "VXX", "tau_past": 252, "tau_future": 252, "q_X": 0.6, "q_Y": 0.5, "CPE": 0.8121, "lift": 1.6243, "n_condition": 692, "direction": "bearish"}]}}, "sharpe": null}}, "snapshot": {"Equities": {"proxy": "SPY", "price": 750.33, "ret_1d": -0.6, "ret_5d": 1.8, "ret_21d": 1.51, "ret_63d": 12.16}, "Gold": {"proxy": "GC=F", "price": 4344.7, "ret_1d": 0.32, "ret_5d": 5.76, "ret_21d": -4.56, "ret_63d": -11.15}, "Bonds": {"proxy": "TLT", "price": 86.19, "ret_1d": 0.55, "ret_5d": 1.26, "ret_21d": 3.43, "ret_63d": -0.29}, "Crypto": {"proxy": "IBIT", "price": 37.17, "ret_1d": -1.51, "ret_5d": 5.78, "ret_21d": -17.07, "ret_63d": -12.07}, "FX": {"proxy": "UUP", "price": 27.93, "ret_1d": -0.14, "ret_5d": -0.29, "ret_21d": 0.58, "ret_63d": 0.9}}, "sharpes": {"Equities": 0.804, "Gold": 0.731, "Bonds": -0.121, "Crypto": 0.551}, "firing_pred_count": 1188, "asset_classes": {"Equities": {"tickers": ["SPY", "QQQ"], "label": "Equities", "color": "#4A90D9", "icon": "\ud83d\udcc8", "proxy": "SPY", "desc": "US large-cap equities (SPY/QQQ)"}, "Gold": {"tickers": ["GC=F", "GLD", "IAU"], "label": "Gold", "color": "#C9882A", "icon": "\ud83e\udd47", "proxy": "GC=F", "desc": "Gold futures and ETFs"}, "Bonds": {"tickers": ["TLT", "AGG"], "tickers_bull": ["TLT", "AGG", "SHY"], "label": "Bonds", "color": "#4B9E6F", "icon": "\ud83d\udcca", "proxy": "TLT", "desc": "US Treasury bonds (TLT/AGG long duration)"}, "Crypto": {"tickers": ["IBIT", "FBTC", "BTC-USD"], "label": "Crypto", "color": "#F5A623", "icon": "\u20bf", "proxy": "IBIT", "desc": "Bitcoin ETFs and BTC-USD"}, "FX": {"tickers": ["UUP", "SGDUSD=X"], "label": "FX / USD", "color": "#9B59B6", "icon": "\ud83d\udcb1", "proxy": "UUP", "desc": "USD strength (UUP ETF, SGDUSD=X)"}}, "horizons": [21, 63, 126, 252], "hor_labels": {"21": "1 month", "63": "3 months", "126": "6 months", "252": "1 year"}};
+
+// ── TILT COLORS ───────────────────────────────────────────────
+const TC = {
+  "OVERWEIGHT":  {color:"#1a6b3a", bg:"#f0faf4", border:"#c8e6d0"},
+  "TILT UP":     {color:"#2A7A4B", bg:"#f5fbf7", border:"#d0ead8"},
+  "NEUTRAL":     {color:"#8B7355", bg:"#f9f7f4", border:"#e5e0d5"},
+  "TILT DOWN":   {color:"#C87000", bg:"#fdf8f0", border:"#f0ddb8"},
+  "UNDERWEIGHT": {color:"#E05555", bg:"#fdf4f4", border:"#f0c8c8"},
+  "NO SIGNAL":   {color:"#aaa",    bg:"#f5f5f5", border:"#e0e0e0"},
+};
+
+const AC_COLORS = {
+  "Equities": "#4A90D9",
+  "Gold":     "#C9882A",
+  "Bonds":    "#4B9E6F",
+  "Crypto":   "#F5A623",
+  "FX":       "#9B59B6",
+};
+
+function tiltPill(label){
+  const t = TC[label] || TC["NO SIGNAL"];
+  return `<span class="tilt-pill" style="color:${t.color};background:${t.bg};border:1px solid ${t.border}">${label}</span>`;
+}
+
+function fmt(v, decimals=2){
+  if(v===null||v===undefined) return '—';
+  const s = v>=0?'+':'';
+  return s + v.toFixed(decimals) + '%';
+}
+
+function retClass(v){
+  if(v===null||v===undefined) return 'nt';
+  return v>0?'up':v<0?'dn':'nt';
+}
+
+// ── HEADER ───────────────────────────────────────────────────
+document.getElementById('hgen').textContent  = D.gen;
+document.getElementById('hdate').textContent = D.data_date;
+document.getElementById('hpred').textContent = D.firing_pred_count;
+
+// Count UNIQUE firing predictor-horizon combinations (deduplicated)
+const seen = new Set();
+let totalSigs = 0;
+for(const ac of Object.keys(D.results)){
+  for(const hor of D.horizons){
+    const h = D.results[ac].horizons[hor];
+    // Count deduplicated bull signals
+    (h.bull_top||[]).forEach(s => {
+      const k = s.X + '_' + s.tau_past + '_' + s.q_X + '_bull';
+      if(!seen.has(k)){ seen.add(k); totalSigs++; }
+    });
+    // Count deduplicated bear signals
+    (h.bear_top||[]).forEach(s => {
+      const k = s.X + '_' + s.tau_past + '_' + s.q_X + '_bear';
+      if(!seen.has(k)){ seen.add(k); totalSigs++; }
+    });
+  }
+}
+document.getElementById('hfire').textContent = totalSigs;
+
+// ── REGIME SUMMARY ───────────────────────────────────────────
+(function(){
+  const overweights  = [];
+  const tiltups      = [];
+  const tiltdowns    = [];
+  const underweights = [];
+  const ACS_order = ["Equities","Gold","Bonds","Crypto","FX"];
+
+  for(const ac of ACS_order){
+    const ts = D.tilt_summaries[ac];
+    if(!ts) continue;
+    const info = D.asset_classes[ac];
+    const label = ts.overall_label;
+    const delta = ts.overall_delta;
+    const sw    = ts.suggested_w;
+    const nw    = ts.neutral_w;
+    if(label==="OVERWEIGHT")  overweights.push({ac, info, sw, nw});
+    else if(label==="TILT UP")     tiltups.push({ac, info, sw, nw});
+    else if(label==="TILT DOWN")   tiltdowns.push({ac, info, sw, nw});
+    else if(label==="UNDERWEIGHT") underweights.push({ac, info, sw, nw});
+  }
+
+  // Build plain-English paragraph
+  const parts = [];
+
+  if(overweights.length || tiltups.length){
+    const favoured = [...overweights,...tiltups].map(x=>x.info.icon+' '+x.ac);
+    parts.push('The current cross-asset regime <strong style="color:#4DB87A">favours '+favoured.join(' and ')+'</strong>'+
+               ' — CPE signals show historically elevated conditional probabilities of large moves at the 1–3 month horizon.');
+  }
+
+  if(underweights.length || tiltdowns.length){
+    const avoid = [...underweights,...tiltdowns].map(x=>x.info.icon+' '+x.ac);
+    parts.push('The regime is <strong style="color:#E8A020">cautious on '+avoid.join(' and ')+'</strong>'+
+               ' — bearish CPE signals dominate at the 3-month horizon, suggesting historical tail conditions that precede weakness.');
+  }
+
+  if(!overweights.length && !tiltups.length && !underweights.length && !tiltdowns.length){
+    parts.push('No strong directional regime signals at 1–3 month horizons. CPE structure is broadly neutral — hold near-benchmark weights across all asset classes.');
+  }
+
+  // Firing predictor highlights
+  const highlights = [];
+  if(D.firing_pred_count > 800)
+    highlights.push({text: D.firing_pred_count+' predictors in tail regimes', color:'#C9882A'});
+
+  // Check specific known signals
+  for(const ac of ACS_order){
+    const h63 = D.results[ac]?.horizons[63];
+    if(h63 && h63.tilt_label !== 'NO SIGNAL' && h63.tilt_label !== 'NEUTRAL'){
+      highlights.push({text: D.asset_classes[ac].icon+' '+ac+': '+h63.tilt_label+' at 3mo', color: TC[h63.tilt_label]?.color||'#888'});
+    }
+  }
+
+  document.getElementById('summary-text').innerHTML = parts.join(' ');
+
+  const sigEl = document.getElementById('summary-signals');
+  highlights.forEach(h => {
+    const span = document.createElement('span');
+    span.style.cssText = `background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+      border-radius:100px;padding:4px 12px;font-family:var(--mono);font-size:10px;color:${h.color}`;
+    span.textContent = h.text;
+    sigEl.appendChild(span);
+  });
+})();
+
+// ── PRICE CARDS ──────────────────────────────────────────────
+const pcEl = document.getElementById('price-cards');
+for(const [ac, snap] of Object.entries(D.snapshot)){
+  const info = D.asset_classes[ac];
+  const el = document.createElement('div');
+  el.className = 'price-card';
+  el.innerHTML = `
+    <div class="pc-ac" style="color:${AC_COLORS[ac] || '#888'}">${info.icon} ${ac}</div>
+    <div class="pc-price">${snap.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+    <div class="pc-ticker">${snap.proxy}</div>
+    <div class="pc-rets">
+      <span class="pc-ret ${retClass(snap.ret_1d)}">1d: ${fmt(snap.ret_1d)}</span>
+      <span class="pc-ret ${retClass(snap.ret_5d)}">5d: ${fmt(snap.ret_5d)}</span>
+      <span class="pc-ret ${retClass(snap.ret_21d)}">21d: ${fmt(snap.ret_21d)}</span>
+      <span class="pc-ret ${retClass(snap.ret_63d)}">63d: ${fmt(snap.ret_63d)}</span>
+    </div>`;
+  pcEl.appendChild(el);
+}
+
+// ── TILT TABLE ───────────────────────────────────────────────
+const tbody = document.getElementById('tilt-tbody');
+const ACS = ["Equities","Gold","Bonds","Crypto","FX"];
+for(const ac of ACS){
+  const ts  = D.tilt_summaries[ac];
+  const info = D.asset_classes[ac];
+  if(!ts) continue;
+  const delta = ts.overall_delta;
+  const deltaStr = delta===0?'—':(delta>0?'+':'')+delta.toFixed(1)+'pp';
+  const deltaColor = delta>0?'#1a6b3a':delta<0?'#E05555':'#888';
+
+  const hl = ts.horizon_labels;
+  const neutralW  = ts.neutral_w;
+  const suggestedW = ts.suggested_w;
+  const barW = Math.min(100, suggestedW / 50 * 100);
+  const color = AC_COLORS[ac] || '#888';
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <div class="ac-cell">
+        <div class="ac-dot" style="background:${color}"></div>
+        <div>
+          <div class="ac-name">${info.icon} ${ac}</div>
+          <div class="ac-desc">${info.desc}</div>
+        </div>
+      </div>
+    </td>
+    <td>${tiltPill(hl[21])}</td>
+    <td>${tiltPill(hl[63])}</td>
+    <td>${tiltPill(hl[126])}</td>
+    <td>${tiltPill(hl[252])}</td>
+    <td>${tiltPill(ts.overall_label)}</td>
+    <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">${neutralW.toFixed(1)}%</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:${color}">${suggestedW.toFixed(1)}%</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width:${barW}%;background:${color}"></div></div>
+      </div>
+    </td>
+    <td style="font-family:var(--mono);font-size:12px;font-weight:600;color:${deltaColor}">${deltaStr}</td>`;
+  tbody.appendChild(tr);
+}
+
+// ── WEIGHT CHART (Donut) ──────────────────────────────────────
+const acNames   = ACS;
+const sugWts    = ACS.map(ac => D.suggested_weights[ac] || 0);
+const neutralWts = ACS.map(ac => D.neutral_weights[ac]  || 0);
+const colors    = ACS.map(ac => AC_COLORS[ac] || '#888');
+
+Plotly.newPlot('chart-weights',[{
+  type:'pie', hole:0.52,
+  values: sugWts,
+  labels: ACS.map((ac,i) => ac + ' ' + sugWts[i].toFixed(1)+'%'),
+  marker:{colors},
+  textinfo:'label',
+  hovertemplate:'%{label}<br>Suggested: %{value:.1f}%<extra></extra>',
+  sort:false,
+}],{
+  title:{text:'Suggested Portfolio Weights',font:{size:13},x:0.5},
+  showlegend:false,
+  margin:{t:40,b:10,l:10,r:10},
+  paper_bgcolor:'rgba(0,0,0,0)',
+  plot_bgcolor:'rgba(0,0,0,0)',
+});
+
+// ── WEIGHT BARS ───────────────────────────────────────────────
+const wbEl = document.getElementById('weight-bars');
+for(const ac of ACS){
+  const nw = D.neutral_weights[ac]  || 0;
+  const sw = D.suggested_weights[ac] || 0;
+  const color = AC_COLORS[ac] || '#888';
+  const maxW = 50;
+  const div = document.createElement('div');
+  div.className = 'wt-row';
+  div.innerHTML = `
+    <div class="wt-ac"><span style="color:${color}">${D.asset_classes[ac].icon}</span> ${ac}</div>
+    <div class="wt-bars">
+      <div class="wt-bar-row">
+        <span class="wt-bar-label" style="color:var(--muted)">Neutral</span>
+        <div class="wt-bar-track"><div class="wt-bar-fill" style="width:${nw/maxW*100}%;background:#ccc"></div></div>
+        <span class="wt-pct" style="color:var(--muted)">${nw.toFixed(1)}%</span>
+      </div>
+      <div class="wt-bar-row">
+        <span class="wt-bar-label" style="color:${color}">Suggested</span>
+        <div class="wt-bar-track"><div class="wt-bar-fill" style="width:${sw/maxW*100}%;background:${color}"></div></div>
+        <span class="wt-pct" style="font-weight:600;color:${color}">${sw.toFixed(1)}%</span>
+      </div>
+    </div>`;
+  wbEl.appendChild(div);
+}
+
+// ── FIRING SIGNAL CARDS ───────────────────────────────────────
+const sgEl = document.getElementById('signal-grid');
+for(const ac of ACS){
+  const info = D.asset_classes[ac];
+  const color = AC_COLORS[ac] || '#888';
+  for(const hor of D.horizons){
+    const h = D.results[ac].horizons[hor];
+    if(!h) continue;
+    const sigs = [...(h.bull_top||[]), ...(h.bear_top||[])];
+    if(sigs.length === 0) continue;
+
+    const card = document.createElement('div');
+    card.className = 'signal-card';
+
+    let rows = sigs.slice(0,5).map(s => `
+      <div class="sig-row">
+        <span>
+          <span style="color:${color};font-weight:600">${s.Y}</span>
+          <span class="sig-pred"> ← ${s.X} (τ=${s.tau_past}d, q=${s.q_X})</span>
+        </span>
+        <span>
+          <span class="sig-cpe">CPE ${s.CPE.toFixed(2)}</span>
+          <span style="color:var(--muted)"> · </span>
+          <span class="sig-lift">${s.lift.toFixed(2)}×</span>
+          <span style="color:var(--muted);font-size:9px"> n=${s.n_condition}</span>
+        </span>
+      </div>`).join('');
+
+    const tilt = h.tilt_label;
+    const t = TC[tilt] || TC["NO SIGNAL"];
+    card.innerHTML = `
+      <div class="sig-header">
+        <span class="sig-ac" style="color:${color}">${info.icon} ${ac}</span>
+        <span class="sig-hor">${D.hor_labels[hor]} (${hor}d)</span>
+        ${tiltPill(tilt)}
+      </div>
+      ${rows}`;
+    sgEl.appendChild(card);
+  }
+}
+</script>
+</body>
+</html>
