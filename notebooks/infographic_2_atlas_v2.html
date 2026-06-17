@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#EDF0F5;font-family:'Inter',sans-serif;width:1080px;min-height:1080px;}
+.poster{width:1080px;min-height:1080px;background:linear-gradient(150deg,#EEF1F8 0%,#E4E8F2 100%);padding:72px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+
+.bg-circle{position:absolute;border-radius:50%;opacity:0.07;}
+.top-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#6B7A9B;margin-bottom:40px;}
+
+/* Header */
+.header{margin-bottom:44px;}
+.big-title{font-family:'DM Serif Display',serif;font-size:54px;line-height:1.08;color:#1a1a2e;margin-bottom:16px;}
+.big-title em{font-style:italic;color:#C9882A;}
+.header-sub{font-size:17px;color:#556;line-height:1.6;max-width:600px;}
+
+/* Main visual — network diagram + channels */
+.main-grid{display:grid;grid-template-columns:1fr 320px;gap:40px;margin-bottom:40px;align-items:start;}
+
+/* Channel cards */
+.channels{display:flex;flex-direction:column;gap:16px;}
+.channel{background:rgba(255,255,255,0.65);border-radius:14px;padding:20px 22px;border-left:4px solid #ccc;position:relative;}
+.channel.crypto{border-color:#F5A623;}
+.channel.silver{border-color:#8B9CB8;}
+.channel.vol{border-color:#9B59B6;}
+.channel.uup{border-color:#2E6CB8;}
+.ch-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#aaa;margin-bottom:6px;}
+.ch-signal{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:4px;}
+.ch-stats{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;}
+.ch-arrow{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:20px;color:#ccc;}
+
+/* Big number row */
+.big-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+.big-card{background:rgba(255,255,255,0.6);border-radius:14px;padding:22px 18px;text-align:center;border:1px solid rgba(0,0,0,0.05);}
+.big-n{font-family:'DM Serif Display',serif;font-size:42px;color:#1a1a2e;line-height:1;}
+.big-u{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B7A9B;display:block;margin-top:3px;letter-spacing:.08em;}
+.big-d{font-size:11px;color:#777;margin-top:6px;line-height:1.4;}
+
+/* Honest statement */
+.honest{background:#1a1a2e;border-radius:16px;padding:28px 36px;margin-bottom:36px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;}
+.honest-icon{font-size:48px;line-height:1;}
+.honest-text{font-size:16px;color:#ccc;line-height:1.7;}
+.honest-text strong{color:#F5D080;}
+
+.footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid rgba(0,0,0,0.1);}
+.footer-name{font-size:15px;font-weight:600;color:#1a1a2e;}
+.footer-links{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#aaa;text-align:right;line-height:1.9;}
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="bg-circle" style="width:700px;height:700px;background:#4B6CB7;top:-300px;right:-200px;"></div>
+  <div class="bg-circle" style="width:250px;height:250px;background:#F5A623;bottom:-60px;left:100px;"></div>
+
+  <div class="top-label">Multi-Asset CPE Atlas · 161 Instruments · 1993 – 2026</div>
+
+  <div class="header">
+    <div class="big-title">When crypto runs,<br><em>gold follows.</em><br>Here is the evidence.</div>
+    <div class="header-sub">A descriptive atlas of tail co-movement across 6 asset classes — mapping which markets move together at the extremes.</div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <!-- SVG Network illustration -->
+      <svg width="100%" height="480" viewBox="0 0 680 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="480" rx="20" fill="white" fill-opacity="0.6"/>
+
+        <!-- GOLD center node -->
+        <circle cx="340" cy="240" r="72" fill="#C9882A" fill-opacity="0.15" stroke="#C9882A" stroke-width="3"/>
+        <text x="340" y="234" text-anchor="middle" font-family="DM Serif Display" font-size="26" fill="#5A3A00" font-weight="bold">GOLD</text>
+        <text x="340" y="256" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#555">GC=F · GLD · IAU</text>
+
+        <!-- IBIT -->
+        <circle cx="90" cy="100" r="46" fill="#F5A623" fill-opacity="0.18" stroke="#F5A623" stroke-width="2"/>
+        <text x="90" y="96" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">IBIT</text>
+        <text x="90" y="114" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">BlackRock BTC</text>
+        <line x1="133" y1="128" x2="273" y2="207" stroke="#F5A623" stroke-width="2.5"/>
+
+        <!-- FBTC -->
+        <circle cx="90" cy="240" r="46" fill="#F5A623" fill-opacity="0.18" stroke="#F5A623" stroke-width="2"/>
+        <text x="90" y="236" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">FBTC</text>
+        <text x="90" y="254" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">Fidelity BTC</text>
+        <line x1="136" y1="240" x2="268" y2="240" stroke="#F5A623" stroke-width="2.5"/>
+
+        <!-- BITB -->
+        <circle cx="90" cy="378" r="46" fill="#F5A623" fill-opacity="0.15" stroke="#F5A623" stroke-width="2"/>
+        <text x="90" y="374" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">BITB</text>
+        <text x="90" y="392" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">Bitwise BTC</text>
+        <line x1="133" y1="354" x2="273" y2="273" stroke="#F5A623" stroke-width="2" stroke-opacity="0.8"/>
+
+        <!-- Crypto CPE label -->
+        <rect x="148" y="148" width="112" height="22" rx="11" fill="#FFF3DC"/>
+        <text x="204" y="163" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#7A4A00" font-weight="600">CPE 0.97 · lift 4.85×</text>
+
+        <!-- SLV -->
+        <circle cx="590" cy="100" r="46" fill="#8B9CB8" fill-opacity="0.22" stroke="#8B9CB8" stroke-width="2"/>
+        <text x="590" y="96" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">SLV</text>
+        <text x="590" y="114" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">Silver ETF</text>
+        <line x1="547" y1="128" x2="407" y2="207" stroke="#8B9CB8" stroke-width="2.5"/>
+
+        <!-- SI=F -->
+        <circle cx="590" cy="240" r="46" fill="#8B9CB8" fill-opacity="0.18" stroke="#8B9CB8" stroke-width="2"/>
+        <text x="590" y="236" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">SI=F</text>
+        <text x="590" y="254" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">Silver Futures</text>
+        <line x1="544" y1="240" x2="412" y2="240" stroke="#8B9CB8" stroke-width="2.5"/>
+
+        <!-- Silver CPE label -->
+        <rect x="422" y="148" width="104" height="22" rx="11" fill="#EEF0F8"/>
+        <text x="474" y="163" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#2A3A6B" font-weight="600">CPE 1.00 · lift 5×</text>
+
+        <!-- UUP bottom -->
+        <circle cx="340" cy="430" r="36" fill="#2E6CB8" fill-opacity="0.18" stroke="#2E6CB8" stroke-width="2"/>
+        <text x="340" y="426" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">UUP</text>
+        <text x="340" y="444" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">USD ETF</text>
+        <line x1="340" y1="394" x2="340" y2="312" stroke="#2E6CB8" stroke-width="2" stroke-dasharray="5 4"/>
+
+        <!-- GVZ top -->
+        <circle cx="340" cy="46" r="36" fill="#9B59B6" fill-opacity="0.15" stroke="#9B59B6" stroke-width="2"/>
+        <text x="340" y="42" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="#1a1a1a" font-weight="600">GVZ</text>
+        <text x="340" y="60" text-anchor="middle" font-family="Inter" font-size="10" fill="#333">Gold Vol.</text>
+        <line x1="340" y1="82" x2="340" y2="168" stroke="#9B59B6" stroke-width="2" stroke-dasharray="5 4"/>
+
+        <!-- Currently firing badge — moved to bottom center away from nodes -->
+        <rect x="216" y="330" width="208" height="26" rx="13" fill="#2A7A4B" fill-opacity="0.12" stroke="#2A7A4B" stroke-width="1.5"/>
+        <text x="320" y="347" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#1A5A35" font-weight="600">SLV + GVZ currently firing ✓</text>
+
+        <!-- Legend — bottom right, colours match nodes exactly -->
+        <rect x="488" y="356" width="178" height="110" rx="10" fill="white" fill-opacity="0.92" stroke="#ddd" stroke-width="1"/>
+        <circle cx="506" cy="376" r="6" fill="#F5A623"/>
+        <text x="520" y="380" font-family="Inter" font-size="11" fill="#1a1a1a">Crypto ETFs (orange)</text>
+        <circle cx="506" cy="398" r="6" fill="#8B9CB8"/>
+        <text x="520" y="402" font-family="Inter" font-size="11" fill="#1a1a1a">Precious metals (grey)</text>
+        <circle cx="506" cy="420" r="6" fill="#2E6CB8"/>
+        <text x="520" y="424" font-family="Inter" font-size="11" fill="#1a1a1a">FX / USD (blue)</text>
+        <circle cx="506" cy="442" r="6" fill="#9B59B6"/>
+        <text x="520" y="446" font-family="Inter" font-size="11" fill="#1a1a1a">Volatility (purple)</text>
+      </svg>
+    </div>
+
+    <div class="channels">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#6B7A9B;margin-bottom:8px;">Strongest signals</div>
+
+      <div class="channel crypto">
+        <div class="ch-tag">Channel 1 · Crypto → Gold</div>
+        <div class="ch-signal">Bitcoin ETFs in upper tail</div>
+        <div class="ch-stats">CPE 0.97 · lift 4.85× · n=100</div>
+      </div>
+
+      <div class="channel silver">
+        <div class="ch-tag">Channel 2 · Silver → Gold</div>
+        <div class="ch-signal">Silver in top 5% over 1 year</div>
+        <div class="ch-stats">CPE 0.84–1.00 · lift 3–5× · currently firing ✓</div>
+      </div>
+
+      <div class="channel vol">
+        <div class="ch-tag">Channel 3 · Vol collapse → Gold</div>
+        <div class="ch-signal">Gold volatility (GVZ) falling</div>
+        <div class="ch-stats">CPE signal · 63d lower tail · currently firing ✓</div>
+      </div>
+
+      <div class="channel uup">
+        <div class="ch-tag">Channel 4 · Weak USD → Gold</div>
+        <div class="ch-signal">USD ETF (UUP) in lower 10%</div>
+        <div class="ch-stats">Watching · currently 3.3% away</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-row">
+    <div class="big-card">
+      <div class="big-n">161</div>
+      <span class="big-u">instruments</span>
+      <div class="big-d">6 asset classes</div>
+    </div>
+    <div class="big-card">
+      <div class="big-n">169k</div>
+      <span class="big-u">signals</span>
+      <div class="big-d">CPE ≥ 0.80, lift ≥ 1.5×</div>
+    </div>
+    <div class="big-card">
+      <div class="big-n">33yr</div>
+      <span class="big-u">of history</span>
+      <div class="big-d">1993 — 2026</div>
+    </div>
+    <div class="big-card">
+      <div class="big-n">0</div>
+      <span class="big-u">assumptions</span>
+      <div class="big-d">non-parametric, descriptive</div>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="honest-icon">📐</div>
+    <div class="honest-text">This atlas <strong>describes history</strong> — it does not predict the future. When Bitcoin ETFs were in their upper tails over 252 days, gold exceeded its 80th percentile in <strong>97 of 100 historical episodes.</strong> What happens next is not guaranteed. But the pattern is real.</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-name">Dr. Arun Ramanathan</div>
+    <div class="footer-links">
+      zenodo.org/records/20606184 · ssrn.com/abstract=6931838<br>
+      github.com/quantarram/quant-regime-research
+    </div>
+  </div>
+</div>
+</body>
+</html>
