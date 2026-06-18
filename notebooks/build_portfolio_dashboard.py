@@ -169,7 +169,9 @@ try:
                     print(f"  WARNING: {_t} last valid {_lv.index[-1].date()} ({_tage}d stale)")
 
 except Exception as e:
-    print(f"  yfinance error: {e} — using cached prices")
+    print(f"  yfinance error: {e}")
+    print("  FATAL: Cannot build dashboard without fresh prices. Exiting.")
+    import sys; sys.exit(1)
 
 # ── FX RATE ──────────────────────────────────────────────────
 usd_per_sgd = 1.0
