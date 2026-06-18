@@ -1,5 +1,5 @@
 date_predicted,gcf_price_usd,price_sgd_per_g,composite_score,verdict,direction,horizon_days,recovery_pct_positive,r21,r63,r126,r252,p63_percentile,outcome_date,gcf_price_at_outcome,actual_return_pct,prediction_correct,status,notes
-2026-06-18,4232.93,174.5,48.2,TOO EARLY / WATCH,BEARISH,21,37.8,-4.7,-11.3,0.7,28.1,2.6,,,,,PENDING,
-2026-06-18,4232.93,174.5,48.2,TOO EARLY / WATCH,BEARISH,63,35.6,-4.7,-11.3,0.7,28.1,2.6,,,,,PENDING,
-2026-06-18,4232.93,174.5,48.2,TOO EARLY / WATCH,BEARISH,126,32.8,-4.7,-11.3,0.7,28.1,2.6,,,,,PENDING,
-2026-06-18,4232.93,174.5,48.2,TOO EARLY / WATCH,BEARISH,252,30.0,-4.7,-11.3,0.7,28.1,2.6,,,,,PENDING,
+2026-06-18,4232.93,174.51,59.4,WAIT & WATCH,NEUTRAL,21,32.6,-7.1,-15.4,-1.6,24.6,0.7,,,,,PENDING,
+2026-06-18,4232.93,174.51,59.4,WAIT & WATCH,NEUTRAL,63,30.6,-7.1,-15.4,-1.6,24.6,0.7,,,,,PENDING,
+2026-06-18,4232.93,174.51,59.4,WAIT & WATCH,NEUTRAL,126,33.6,-7.1,-15.4,-1.6,24.6,0.7,,,,,PENDING,
+2026-06-18,4232.93,174.51,59.4,WAIT & WATCH,NEUTRAL,252,23.1,-7.1,-15.4,-1.6,24.6,0.7,,,,,PENDING,
