@@ -30,6 +30,12 @@ prices = pd.read_parquet("multiasset_prices.parquet")
 joint  = pd.read_parquet("joint_cpe_results.parquet")
 pair   = pd.read_parquet("cpe_results.parquet")
 
+# Capture parquet max date BEFORE yfinance merge — this is the true history cutoff
+# All historical analysis (gcf) will be clipped to this date
+# Prevents yfinance partial-session rows shifting recovery counts between runs
+PARQUET_MAX_DATE = prices.index.max()
+print(f"  Parquet history frozen at: {PARQUET_MAX_DATE.date()}")
+
 GOLD_Y    = ["GLD","IAU","GC=F"]
 FX_TICKER = "SGDUSD=X"
 RATE_TICKERS = {"^VIX","^VXN","^OVX","^EVZ","^VVIX","^SKEW",
@@ -69,6 +75,22 @@ try:
             else:
                 prices[col] = raw[col].reindex(prices.index)
     prices = prices.sort_index().loc[~prices.index.duplicated(keep="last")]
+    # ── Capture GLD settled close BEFORE any override ──
+    # Use the second-to-last row if today's partial row exists
+    _gld_raw = raw["GLD"].dropna() if "GLD" in raw.columns else None
+    if _gld_raw is not None and len(_gld_raw) >= 2:
+        # If latest row is today (partial session), use yesterday's settled close
+        _raw_latest = _gld_raw.index[-1].date()
+        import datetime as _dt
+        if _raw_latest >= _dt.date.today():
+            GLD_SETTLED = float(_gld_raw.iloc[-2])
+            GLD_SETTLED_DATE = _gld_raw.index[-2].date()
+        else:
+            GLD_SETTLED = float(_gld_raw.iloc[-1])
+            GLD_SETTLED_DATE = _raw_latest
+    else:
+        GLD_SETTLED = None
+        GLD_SETTLED_DATE = None
     # ── CRITICAL: Override key price columns with fresh Yahoo data directly ──
     # This ensures GLD, GC=F, SGDUSD=X are never stale regardless of parquet state
     for _key in ["GLD","GC=F","IAU","SGDUSD=X","UUP","^GVZ","SLV","SI=F",
@@ -158,7 +180,9 @@ def fires(predictors, tau_pasts, q_Xs, direction):
 
 # ── GOLD PRICE STATS ──────────────────────────────────────────────────────────
 print("Computing gold price stats...")
+# Clip strictly to parquet history — no yfinance rows allowed in historical analysis
 gcf = prices["GC=F"].dropna()
+gcf = gcf[gcf.index <= PARQUET_MAX_DATE]
 sgd_fx = prices[FX_TICKER].dropna()
 usd_per_sgd = 1.0 / float(sgd_fx.reindex(gcf.index).ffill().iloc[-1])
 
@@ -207,12 +231,16 @@ if "GLD" in prices.columns:
                 pass
             print(f"  GLD/GCF ratio (recomputed, cached): {GLD_OZ_RATIO:.5f} oz/share")
 
-        gold_spot_usd = float(gld_series.iloc[-1]) / GLD_OZ_RATIO
+        # Use pre-captured settled close — immune to Yahoo re-query variation
+        _gld_price = GLD_SETTLED if GLD_SETTLED is not None else float(gld_series.iloc[-1])
+        _gld_date  = GLD_SETTLED_DATE if GLD_SETTLED_DATE is not None else gld_series.index[-1].date()
+        gold_spot_usd = _gld_price / GLD_OZ_RATIO
         gold_usd = gold_spot_usd
-        print(f"  Using GLD ETF: ${float(gld_series.iloc[-1]):.2f}/share -> ${gold_usd:.2f}/oz")
-        # Extend gcf with GLD-derived prices for latest dates where GC=F is stale
-        gld_as_gcf = gld_series / GLD_OZ_RATIO
-        gcf = gcf.combine_first(gld_as_gcf).dropna().sort_index()
+        print(f"  Using GLD ETF: ${_gld_price:.2f}/share ({_gld_date}) -> ${gold_usd:.2f}/oz")
+        # DO NOT extend gcf with live GLD data — this shifts historical recovery counts
+        # between runs as yfinance returns slightly different series each call.
+        # gcf stays as parquet-only historical series for all historical computations.
+        # Current price is fixed to gold_usd (GLD-derived) via _gcf_current below.
     else:
         GLD_OZ_RATIO = 0.0861
         gold_spot_usd = float(gcf.iloc[-1]) - 12.0
@@ -259,20 +287,39 @@ peak_252 = float(gcf.iloc[-252:].max()) if len(gcf) >= 252 else float(gcf.max())
 dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
 peak_spot_sgd_g = round(peak_252 * usd_per_sgd / 31.1035, 2)
 
+# Freeze current price to GLD-derived value computed once above.
+# This prevents yfinance tick noise in GC=F from shifting chg[] between runs.
+_gcf_current = gold_usd  # single source of truth — GLD ETF derived, fixed for this run
+
+# ── FREEZE current_inc GC=F ENTRIES to GLD-derived price ──
+# GC=F futures trade continuously — yfinance returns different intraday prices
+# each run, shifting prox_score and auto_score by 0.3-0.5 points.
+# Override all GC=F entries in current_inc with stable GLD-derived returns.
+_gcf_hist = prices["GC=F"].dropna()
+_gcf_hist = _gcf_hist[_gcf_hist.index <= PARQUET_MAX_DATE]
+for _tau in list(current_inc.keys()):
+    if "GC=F" in current_inc[_tau] and len(_gcf_hist) > _tau:
+        _past_price = float(_gcf_hist.iloc[-1-_tau])
+        if _past_price > 0:
+            current_inc[_tau]["GC=F"] = float(np.log(_gcf_current / _past_price))
+print(f"  GC=F current_inc frozen to GLD-derived price ${_gcf_current:.2f}/oz")
+
 def pct_chg(n):
     if len(gcf) > n:
-        return float((gcf.iloc[-1]/gcf.iloc[-1-n]-1)*100)
+        return float((_gcf_current / float(gcf.iloc[-1-n]) - 1) * 100)
     return 0.0
 
-chg = {t: round(pct_chg(t),2) for t in [1,5,10,21,63,126,252]}
+# Round to 1dp to prevent marginal historical episode inclusion/exclusion
+# from shifting recovery counts between runs due to yfinance tick noise
+chg = {t: round(pct_chg(t),1) for t in [1,5,10,21,63,126,252]}
 
 # Historical distribution of 63d and 126d returns for GC=F
 gcf_63  = np.log(gcf/gcf.shift(63)).dropna().values * 100
 gcf_126 = np.log(gcf/gcf.shift(126)).dropna().values * 100
 gcf_252 = np.log(gcf/gcf.shift(252)).dropna().values * 100
 
-curr_pct_63  = float(np.mean(gcf_63  <= chg[63]))  * 100
-curr_pct_126 = float(np.mean(gcf_126 <= chg[126])) * 100
+curr_pct_63  = round(float(np.mean(gcf_63  <= chg[63]))  * 100, 1)
+curr_pct_126 = round(float(np.mean(gcf_126 <= chg[126])) * 100, 1)
 
 # ── RECOVERY ANALYSIS ─────────────────────────────────────────────────────────
 print("Computing historical recovery analysis...")
@@ -308,7 +355,7 @@ recovery_63 = recovery_dist(63, chg[63], FWD_TAUS)
 # After 126d drawdown >= current
 recovery_126 = recovery_dist(126, chg[126], FWD_TAUS)
 # After any bottom decile drawdown (10th percentile)
-p10_63 = float(np.percentile(gcf_63, 10))
+p10_63 = round(float(np.percentile(gcf_63, 10)), 1)
 recovery_extreme = recovery_dist(63, p10_63, FWD_TAUS)
 
 print(f"  Recovery dates (>=current 63d draw): {sum(r['n'] for r in recovery_63.values() if r)//len(FWD_TAUS) if recovery_63 else 0}")
@@ -323,7 +370,8 @@ for tp in [21, 63, 126, 252]:
     if curr_ret is None: continue
     curr_ret_pct = curr_ret * 100
     q_now = float(np.mean(lb.values <= curr_ret_pct))
-    auto_cpe[tp] = {"current_return_pct": round(curr_ret_pct,2),
+    curr_ret_pct = round(curr_ret_pct, 1)  # round to 1dp to stabilise historical episode counts
+    auto_cpe[tp] = {"current_return_pct": curr_ret_pct,
                     "current_percentile": round(q_now*100,1)}
     for fwd in [21,63,126,252]:
         fwd_ret = np.log(gcf/gcf.shift(-fwd)).dropna() * 100
@@ -452,11 +500,11 @@ for ticker in ["IBIT","FBTC","SLV","SI=F","DX-Y.NYB","UUP","^GVZ"]:
             prox_scores.append(r["proximity_score"])
         elif r["tail_type"]=="upper":
             prox_scores.append(r["proximity_score"])
-prox_score = float(np.mean(prox_scores)) if prox_scores else 50
+prox_score = round(float(np.mean(prox_scores)), 1) if prox_scores else 50
 
 # 4. Joint CPE signal score (normalised to 0-100)
 gcf_252_score = scores.get("GC=F_252",{}).get("score",0)
-cpe_score = max(0, min(100, (gcf_252_score + 1) / 2 * 100))
+cpe_score = round(max(0, min(100, (gcf_252_score + 1) / 2 * 100)), 1)
 
 # Weighted composite
 composite = round(

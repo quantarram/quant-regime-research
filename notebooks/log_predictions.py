@@ -106,14 +106,22 @@ def fetch_gold_state():
     label      = comp["label"]          # e.g. "WATCH — APPROACHING BUY"
 
     # Derive clean verdict and direction from composite score
-    if composite >= 60:
-        verdict   = "BUY"
+    # Thresholds must match build_gold_dashboard.py exactly:
+    # >= 70 STRONG BUY, >= 55 BUY ZONE, >= 40 WATCH, >= 25 NEUTRAL, else NOT YET
+    if composite >= 70:
+        verdict   = "STRONG BUY"
         direction = "BULLISH"
-    elif composite >= 50:
+    elif composite >= 55:
+        verdict   = "BUY ZONE"
+        direction = "BULLISH"
+    elif composite >= 40:
         verdict   = "WAIT & WATCH"
         direction = "NEUTRAL"
+    elif composite >= 25:
+        verdict   = "NEUTRAL"
+        direction = "NEUTRAL"
     else:
-        verdict   = "TOO EARLY / WATCH"
+        verdict   = "TOO EARLY"
         direction = "BEARISH"
 
     # ── Percentile of 63d return ──────────────────────────────
