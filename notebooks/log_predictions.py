@@ -79,6 +79,18 @@ def fetch_gold_state():
     import json
     D = json.loads(match.group(1))
 
+    # ── STALENESS GUARD ───────────────────────────────────────
+    # Refuse to log if dashboard was not built today.
+    # This prevents logging stale values if the script is run
+    # before build_gold_dashboard.py has been executed today.
+    generated_date = D.get("generated", "")[:10]  # "YYYY-MM-DD"
+    today_str = str(TODAY)
+    if generated_date != today_str:
+        raise RuntimeError(
+            f"gold_dashboard.html was generated on {generated_date}, not today ({today_str}).\n"
+            f"Run build_gold_dashboard.py first, then re-run this script."
+        )
+
     # ── Core prices ───────────────────────────────────────────
     gcf_price   = float(D["gold_usd"])
     price_sgd_g = float(D["gold_sgd_g"])
@@ -187,6 +199,15 @@ def fetch_portfolio_state():
     if not match:
         raise ValueError("Could not find 'const D = {...}' in portfolio_dashboard.html")
     D = json.loads(match.group(1))
+
+    # ── STALENESS GUARD ───────────────────────────────────────
+    generated_date = D.get("gen", "")[:10]  # "YYYY-MM-DD"
+    today_str = str(TODAY)
+    if generated_date != today_str:
+        raise RuntimeError(
+            f"portfolio_dashboard.html was generated on {generated_date}, not today ({today_str}).\n"
+            f"Run build_portfolio_dashboard.py first, then re-run this script."
+        )
 
     # ── Tilts from tilt_summaries ─────────────────────────────
     # Keys: Equities, Gold, Bonds, Crypto, FX
