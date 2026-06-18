@@ -29,8 +29,6 @@ import argparse
 from datetime import datetime, timedelta, date
 import numpy as np
 import pandas as pd
-import yfinance as yf
-
 warnings.filterwarnings("ignore")
 
 # ── PATHS ────────────────────────────────────────────────────
@@ -449,6 +447,7 @@ def resolve_gold():
         print("[GOLD] No pending predictions to resolve.")
         return
 
+    import yfinance as yf
     # Fetch current GC=F price
     gcf = yf.download("GC=F", period="5d", auto_adjust=True, progress=False)
     current_price = float(gcf["Close"].squeeze().dropna().iloc[-1])
@@ -510,6 +509,7 @@ def resolve_portfolio():
         print("[PORTFOLIO] No pending predictions to resolve.")
         return
 
+    import yfinance as yf
     # Fetch current prices
     tickers = {"equities": "SPY", "gold": "GC=F",
                "bonds": "TLT", "crypto": "IBIT", "fx": "UUP"}

@@ -108,6 +108,8 @@ try:
                 print(f"  WARNING: {_t} has NO valid data after merge.")
 except Exception as e:
     print(f"  yfinance error: {e}")
+    print("  FATAL: Cannot build dashboard without fresh prices. Exiting.")
+    import sys; sys.exit(1)
 
 latest_date = prices.index.max()
 TAU_LIST = [1,5,10,21,63,126,252,300]
@@ -168,18 +170,42 @@ usd_per_sgd = 1.0 / float(sgd_fx.reindex(gcf.index).ffill().iloc[-1])
 if "GLD" in prices.columns:
     gld_series = prices["GLD"].dropna()
     if len(gld_series) > 30:
-        # Find dates where both GC=F and GLD have data
-        common_idx = gcf.index.intersection(gld_series.index)
-        if len(common_idx) >= 30:
-            # Compute ratio over last 30 overlapping days
+        # ── STABLE RATIO: recalibrate weekly, cache to file ──────
+        # Recomputing daily from GC=F causes score fluctuation due to
+        # futures roll noise. Instead: cache the ratio and only
+        # recompute on Mondays (or if cache is missing/stale).
+        import json as _json
+        _cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".gld_ratio_cache.json")
+        _today = datetime.now().date()
+        _cached_ratio = None
+        if os.path.exists(_cache_path):
+            try:
+                with open(_cache_path) as _cf:
+                    _cache = _json.load(_cf)
+                _cache_date = datetime.strptime(_cache["date"], "%Y-%m-%d").date()
+                # Use cache if computed this week (same Monday)
+                _days_since = (_today - _cache_date).days
+                if _days_since < 7:
+                    _cached_ratio = float(_cache["ratio"])
+            except Exception:
+                pass
+        if _cached_ratio is not None:
+            GLD_OZ_RATIO = _cached_ratio
+            print(f"  GLD/GCF ratio (cached {_cache_date}): {GLD_OZ_RATIO:.5f} oz/share")
+        else:
+            # Recompute from last 60 days median — more stable than 30
+            common_idx = gcf.index.intersection(gld_series.index)
             gcf_common = gcf.reindex(common_idx).dropna()
             gld_common = gld_series.reindex(common_idx).dropna()
             shared = gcf_common.index.intersection(gld_common.index)
-            GLD_OZ_RATIO = float((gld_common.reindex(shared) / gcf_common.reindex(shared)).tail(30).median())
-            print(f"  GLD/GCF calibrated ratio: {GLD_OZ_RATIO:.5f} oz/share (last 30 days)")
-        else:
-            GLD_OZ_RATIO = 0.0861  # fallback from June 2026 calibration
-            print(f"  Using fallback GLD ratio: {GLD_OZ_RATIO:.5f}")
+            GLD_OZ_RATIO = float((gld_common.reindex(shared) / gcf_common.reindex(shared)).tail(60).median())
+            # Save to cache
+            try:
+                with open(_cache_path, "w") as _cf:
+                    _json.dump({"date": str(_today), "ratio": GLD_OZ_RATIO}, _cf)
+            except Exception:
+                pass
+            print(f"  GLD/GCF ratio (recomputed, cached): {GLD_OZ_RATIO:.5f} oz/share")
 
         gold_spot_usd = float(gld_series.iloc[-1]) / GLD_OZ_RATIO
         gold_usd = gold_spot_usd
@@ -408,12 +434,13 @@ print("Computing composite buy score...")
 
 # Components (all 0-100):
 # 1. Drawdown depth score — deeper drawdown = higher mean-reversion potential
-draw_score = min(100, max(0, (-chg[63] / 20) * 100))  # -20% = 100, 0% = 0
+# Round chg[63] to 1dp before computing to prevent floating point drift between runs
+draw_score = min(100, max(0, (-round(chg[63], 1) / 20) * 100))  # -20% = 100, 0% = 0
 
 # 2. Autocorrelation CPE score — % of time gold recovers after similar drawdown
 auto_score = 0
 if 63 in auto_cpe and "fwd_126_pct_positive" in auto_cpe[63]:
-    auto_score = float(auto_cpe[63]["fwd_126_pct_positive"])
+    auto_score = round(float(auto_cpe[63]["fwd_126_pct_positive"]), 1)
 
 # 3. CPE predictor proximity score — how close are bull predictors to firing
 prox_scores = []
