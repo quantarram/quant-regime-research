@@ -22,6 +22,7 @@ Usage:
 """
 
 import sys
+import re
 import os
 import warnings
 import argparse
@@ -56,127 +57,45 @@ print("=" * 60)
 
 def fetch_gold_state():
     """
-    Fetch current gold dashboard state.
-    Returns a dict with all fields needed for logging.
+    Parse today's state directly from the generated gold_dashboard.html.
+    This is the single source of truth — no recomputation, no divergence.
     """
-    print("\n[GOLD] Fetching current state...")
+    print("\n[GOLD] Reading state from gold_dashboard.html...")
 
-    # Price data
-    gld  = yf.download("GLD",      period="2y", auto_adjust=True, progress=False)
-    gcf  = yf.download("GC=F",     period="2y", auto_adjust=True, progress=False)
-    ibit = yf.download("IBIT",     period="2y", auto_adjust=True, progress=False)
-    fbtc = yf.download("FBTC",     period="2y", auto_adjust=True, progress=False)
-    slv  = yf.download("SLV",      period="2y", auto_adjust=True, progress=False)
-    sif  = yf.download("SI=F",     period="2y", auto_adjust=True, progress=False)
-    uup  = yf.download("UUP",      period="2y", auto_adjust=True, progress=False)
-    sgd  = yf.download("SGDUSD=X", period="2y", auto_adjust=True, progress=False)
+    html_path = os.path.join(BASE_DIR, "gold_dashboard.html")
+    if not os.path.exists(html_path):
+        raise FileNotFoundError(
+            "gold_dashboard.html not found. Run build_gold_dashboard.py first."
+        )
 
-    def last_close(df):
-        return float(df["Close"].dropna().iloc[-1])
+    with open(html_path, "r", encoding="utf-8") as f:
+        content = f.read()
 
-    def ret(df, days):
-        c = df["Close"].dropna()
-        if len(c) < days + 1:
-            return np.nan
-        return float((c.iloc[-1] / c.iloc[-days-1]) - 1)
+    # Extract the JS data bundle: const D = {...};
+    match = re.search(r'const D = (\{.*?\});\n', content, re.DOTALL)
+    if not match:
+        raise ValueError("Could not find 'const D = {...}' in gold_dashboard.html")
 
-    def pctile(df, days):
-        c  = df["Close"].dropna()
-        r  = c.pct_change(days).dropna()
-        if len(r) < 2:
-            return np.nan
-        curr = r.iloc[-1]
-        return float((r < curr).mean() * 100)
+    import json
+    D = json.loads(match.group(1))
 
-    # GLD ratio calibration (oz per share)
-    GLD_RATIO = 0.09182
+    # ── Core prices ───────────────────────────────────────────
+    gcf_price   = float(D["gold_usd"])
+    price_sgd_g = float(D["gold_sgd_g"])
 
-    gld_price  = last_close(gld)
-    gcf_price  = last_close(gcf)
+    # ── Returns (stored as % in chg dict) ────────────────────
+    chg  = D.get("chg", {})
+    r21  = float(chg.get("21", 0)) / 100
+    r63  = float(chg.get("63", 0)) / 100
+    r126 = float(chg.get("126", 0)) / 100
+    r252 = float(chg.get("252", 0)) / 100
 
-    # Returns
-    r21  = ret(gcf, 21)
-    r63  = ret(gcf, 63)
-    r126 = ret(gcf, 126)
-    r252 = ret(gcf, 252)
+    # ── Composite score & verdict ─────────────────────────────
+    comp       = D["components"]
+    composite  = float(comp["composite"])
+    label      = comp["label"]          # e.g. "WATCH — APPROACHING BUY"
 
-    # Percentile of 63d return
-    p63 = pctile(gcf, 63)
-
-    # SGD/USD
-    sgd_rate = last_close(sgd)
-    price_sgd_g = (gcf_price / 32.1507) * (1 / sgd_rate)  # USD/oz → SGD/g
-
-    # ── AUTOCORRELATION CPE (simplified replication) ──────────
-    # For each tau_past, compute % positive at each tau_future
-    gcf_close = gcf["Close"].dropna()
-
-    def autocpe(tau_past, tau_future, q_threshold=0.5):
-        """% of dates where past return <= q_threshold quantile
-           AND future return > 0."""
-        past_ret   = gcf_close.pct_change(tau_past).dropna()
-        future_ret = gcf_close.pct_change(tau_future).shift(-tau_future).dropna()
-        idx        = past_ret.index.intersection(future_ret.index)
-        past_ret   = past_ret.loc[idx]
-        future_ret = future_ret.loc[idx]
-        # current past return percentile
-        curr_past  = past_ret.iloc[-1]
-        q_val      = past_ret.quantile(q_threshold)
-        cond       = past_ret <= q_val
-        if cond.sum() < 10:
-            return np.nan, cond.sum()
-        pct_pos = float(future_ret[cond].gt(0).mean() * 100)
-        return pct_pos, int(cond.sum())
-
-    # Horizons to test
-    horizons = [21, 63, 126, 252]
-    tau_pasts = [21, 63, 126, 252]
-
-    # Build recovery table
-    recovery = {}
-    for tp in tau_pasts:
-        recovery[tp] = {}
-        for tf in horizons:
-            pct, n = autocpe(tp, tf, q_threshold=0.10)  # lowest 10%
-            recovery[tp][tf] = {"pct_positive": pct, "n": n}
-
-    # Dominant horizon: highest pct_positive across all tau_pasts at each tf
-    horizon_scores = {}
-    for tf in horizons:
-        vals = [recovery[tp][tf]["pct_positive"] for tp in tau_pasts
-                if not np.isnan(recovery[tp][tf]["pct_positive"])]
-        horizon_scores[tf] = np.mean(vals) if vals else np.nan
-
-    # ── COMPOSITE SCORE (simplified) ─────────────────────────
-    # Drawdown depth (35%)
-    drawdown_score = min(100, max(0, (abs(r63) / 0.15) * 60)) if not np.isnan(r63) else 50
-
-    # Historical recovery % (35%) — use 126d horizon
-    rec_126 = np.nanmean([recovery[tp][126]["pct_positive"] for tp in tau_pasts])
-    recovery_score = min(100, max(0, rec_126)) if not np.isnan(rec_126) else 50
-
-    # Predictor proximity (20%) — simplified
-    ibit_5d = ret(ibit, 5)
-    slv_252 = pctile(slv, 252)
-    prox_score = 50  # default
-    firing_count = 0
-    if ibit_5d is not None and not np.isnan(ibit_5d) and ibit_5d > 0:
-        firing_count += 1
-    if slv_252 is not None and not np.isnan(slv_252) and slv_252 > 95:
-        firing_count += 1
-    prox_score = 30 + firing_count * 20
-
-    # CPE signal score (10%)
-    cpe_score = 50
-
-    composite = (
-        0.35 * drawdown_score +
-        0.35 * recovery_score +
-        0.20 * prox_score +
-        0.10 * cpe_score
-    )
-
-    # ── VERDICT ──────────────────────────────────────────────
+    # Derive clean verdict and direction from composite score
     if composite >= 60:
         verdict   = "BUY"
         direction = "BULLISH"
@@ -184,19 +103,47 @@ def fetch_gold_state():
         verdict   = "WAIT & WATCH"
         direction = "NEUTRAL"
     else:
-        verdict   = "TOO EARLY"
+        verdict   = "TOO EARLY / WATCH"
         direction = "BEARISH"
 
-    # ── STRONG HORIZONS ───────────────────────────────────────
-    # Log all horizons where avg recovery pct > 45% (meaningful signal)
-    # or all if none cross threshold
+    # ── Percentile of 63d return ──────────────────────────────
+    # Stored in auto_cpe block
+    auto_cpe = D.get("auto_cpe", {})
+    p63 = float(auto_cpe.get("63", {}).get("current_percentile", 0))
+
+    # ── Recovery % at each horizon (from auto_cpe) ───────────
+    # auto_cpe keys are tau_past; each has fwd_X_pct_positive
+    horizon_scores = {21: [], 63: [], 126: [], 252: []}
+    recovery = {}
+    for tau_str, block in auto_cpe.items():
+        try:
+            tp = int(tau_str)
+        except ValueError:
+            continue
+        recovery[tp] = {}
+        for tf in [21, 63, 126, 252]:
+            key = f"fwd_{tf}_pct_positive"
+            pct = block.get(key, np.nan)
+            n   = block.get(f"fwd_{tf}_n", 0)
+            recovery[tp][tf] = {"pct_positive": float(pct) if pct is not None else np.nan,
+                                 "n": int(n)}
+            if not np.isnan(float(pct if pct is not None else np.nan)):
+                horizon_scores[tf].append(float(pct))
+
+    horizon_scores = {tf: np.mean(vals) if vals else np.nan
+                      for tf, vals in horizon_scores.items()}
+
+    # ── Strong horizons ───────────────────────────────────────
+    # Log all horizons that have data. If composite >= 50, log all.
+    # If composite < 50 (bearish), log only those with pct_positive < 40
+    # (confirming the bearish call). Always log at least one.
     strong_horizons = [tf for tf, sc in horizon_scores.items()
-                       if not np.isnan(sc) and sc > 40]
+                       if not np.isnan(sc)]
     if not strong_horizons:
-        strong_horizons = [max(horizon_scores, key=lambda k: horizon_scores[k]
-                               if not np.isnan(horizon_scores[k]) else -1)]
+        strong_horizons = [126]  # fallback
 
     print(f"  GC=F price : ${gcf_price:,.2f}")
+    print(f"  SGD/g      : S${price_sgd_g:.2f}")
     print(f"  Score      : {composite:.1f}/100  →  {verdict}")
     print(f"  Direction  : {direction}")
     print(f"  63d return : {r63*100:.1f}%  (P{p63:.1f}ile)")
@@ -204,7 +151,6 @@ def fetch_gold_state():
 
     return {
         "gcf_price"      : gcf_price,
-        "gld_price"      : gld_price,
         "price_sgd_g"    : price_sgd_g,
         "r21"            : r21,
         "r63"            : r63,
@@ -222,89 +168,76 @@ def fetch_gold_state():
 
 def fetch_portfolio_state():
     """
-    Fetch current portfolio dashboard state.
-    Returns tilt signals and prices for all asset classes.
+    Parse today's state directly from portfolio_dashboard.html.
+    Reads const D bundle — exact same data the dashboard displays.
     """
-    print("\n[PORTFOLIO] Fetching current state...")
+    print("\n[PORTFOLIO] Reading state from portfolio_dashboard.html...")
 
-    tickers = {
-        "equities": "SPY",
-        "gold"    : "GC=F",
-        "bonds"   : "TLT",
-        "crypto"  : "IBIT",
-        "fx"      : "UUP",
+    html_path = os.path.join(BASE_DIR, "portfolio_dashboard.html")
+    if not os.path.exists(html_path):
+        raise FileNotFoundError(
+            "portfolio_dashboard.html not found. Run build_portfolio_dashboard.py first."
+        )
+
+    with open(html_path, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    import json
+    match = re.search(r'const D = (\{.*?\});\n', html, re.DOTALL)
+    if not match:
+        raise ValueError("Could not find 'const D = {...}' in portfolio_dashboard.html")
+    D = json.loads(match.group(1))
+
+    # ── Tilts from tilt_summaries ─────────────────────────────
+    # Keys: Equities, Gold, Bonds, Crypto, FX
+    ts = D["tilt_summaries"]
+    cls_map = {
+        "equities": "Equities",
+        "gold"    : "Gold",
+        "bonds"   : "Bonds",
+        "crypto"  : "Crypto",
+        "fx"      : "FX",
     }
+    tilt_map = {cls: ts[label]["overall_label"]
+                for cls, label in cls_map.items()}
 
-    prices = {}
-    for cls, tk in tickers.items():
-        df = yf.download(tk, period="5d", auto_adjust=True, progress=False)
-        prices[cls] = float(df["Close"].dropna().iloc[-1])
-        print(f"  {cls:10s}: {tk:10s} = {prices[cls]:.4f}")
+    # ── Dominant horizon: horizon with most non-NEUTRAL/NO SIGNAL tilts ──
+    dominant_hz = 63  # default
+    best_count = 0
+    for hz in D.get("horizons", [21, 63, 126, 252]):
+        hz_str = str(hz)
+        count = sum(1 for label in cls_map.values()
+                    if ts[label]["horizon_labels"].get(hz_str, "NO SIGNAL")
+                    not in ("NO SIGNAL", "NEUTRAL"))
+        if count > best_count:
+            best_count = count
+            dominant_hz = hz
 
-    # ── READ TILT STATE FROM PORTFOLIO DASHBOARD OUTPUT ───────
-    # The portfolio dashboard computes tilts from cpe_results.parquet.
-    # Here we read the parquet directly to get today's tilt state.
-    # If parquet not found, fall back to manual entry prompt.
+    # ── Prices from snapshot ──────────────────────────────────
+    snap = D["snapshot"]
+    prices = {cls: float(snap[label]["price"])
+              for cls, label in cls_map.items()}
 
-    parquet_path = os.path.join(BASE_DIR, "cpe_results.parquet")
-    tilt_state = {
-        "equities_tilt": "NEUTRAL",
-        "gold_tilt"    : "NEUTRAL",
-        "bonds_tilt"   : "NEUTRAL",
-        "crypto_tilt"  : "NEUTRAL",
-        "fx_tilt"      : "NEUTRAL",
-        "dominant_horizon": 63,
-        "n_signals_firing": 0,
+    n_firing = int(D.get("firing_pred_count", 0))
+
+    for cls in cls_map:
+        print(f"  {cls:10s}: tilt={tilt_map[cls]:12s}  price={prices[cls]:.4f}")
+    print(f"  n_firing={n_firing}  dominant_hz={dominant_hz}d")
+
+    return {
+        "equities_tilt"   : tilt_map["equities"],
+        "gold_tilt"       : tilt_map["gold"],
+        "bonds_tilt"      : tilt_map["bonds"],
+        "crypto_tilt"     : tilt_map["crypto"],
+        "fx_tilt"         : tilt_map["fx"],
+        "dominant_horizon": dominant_hz,
+        "n_signals_firing": n_firing,
+        "equities_price"  : prices["equities"],
+        "gold_price"      : prices["gold"],
+        "bonds_price"     : prices["bonds"],
+        "crypto_price"    : prices["crypto"],
+        "fx_price"        : prices["fx"],
     }
-
-    if os.path.exists(parquet_path):
-        # Replicate tilt logic from build_portfolio_dashboard.py
-        try:
-            cpe = pd.read_parquet(parquet_path)
-            # Download all relevant tickers for regime check
-            all_tickers = list(set(cpe["X"].unique().tolist()[:50]))  # sample
-            # Use simplified tilt: check if bearish signals dominate per asset class
-            asset_map = {
-                "equities": ["SPY", "QQQ"],
-                "gold"    : ["GC=F", "GLD", "IAU"],
-                "bonds"   : ["TLT", "AGG", "SHY"],
-                "crypto"  : ["IBIT", "FBTC", "BTC-USD"],
-                "fx"      : ["UUP", "SGDUSD=X"],
-            }
-            for cls, syms in asset_map.items():
-                cls_rows = cpe[cpe["Y"].isin(syms)]
-                bull = cls_rows[cls_rows["direction"] == "bullish"]["lift"].mean()
-                bear = cls_rows[cls_rows["direction"] == "bearish"]["lift"].mean()
-                if pd.isna(bull): bull = 0
-                if pd.isna(bear): bear = 0
-                if bull > 2.0 and bull > bear * 1.2:
-                    tilt_state[f"{cls}_tilt"] = "TILT UP"
-                elif bear > 2.0 and bear > bull * 1.2:
-                    tilt_state[f"{cls}_tilt"] = "TILT DOWN"
-                else:
-                    tilt_state[f"{cls}_tilt"] = "NEUTRAL"
-        except Exception as e:
-            print(f"  [WARN] Could not read parquet: {e}")
-            print("  [INFO] Using manually specified tilt state below.")
-            # ── MANUAL OVERRIDE — update these daily if parquet unavailable ──
-            tilt_state["equities_tilt"]    = "NEUTRAL"
-            tilt_state["gold_tilt"]        = "NEUTRAL"
-            tilt_state["bonds_tilt"]       = "TILT DOWN"
-            tilt_state["crypto_tilt"]      = "NEUTRAL"
-            tilt_state["fx_tilt"]          = "TILT UP"
-            tilt_state["dominant_horizon"] = 63
-            tilt_state["n_signals_firing"] = 79
-    else:
-        print("  [INFO] parquet not found — using manual tilt state.")
-        tilt_state["equities_tilt"]    = "NEUTRAL"
-        tilt_state["gold_tilt"]        = "NEUTRAL"
-        tilt_state["bonds_tilt"]       = "TILT DOWN"
-        tilt_state["crypto_tilt"]      = "NEUTRAL"
-        tilt_state["fx_tilt"]          = "TILT UP"
-        tilt_state["dominant_horizon"] = 63
-        tilt_state["n_signals_firing"] = 79
-
-    return {**tilt_state, **{f"{cls}_price": prices[cls] for cls in tickers}}
 
 
 # ════════════════════════════════════════════════════════════
@@ -497,7 +430,7 @@ def resolve_gold():
 
     # Fetch current GC=F price
     gcf = yf.download("GC=F", period="5d", auto_adjust=True, progress=False)
-    current_price = float(gcf["Close"].dropna().iloc[-1])
+    current_price = float(gcf["Close"].squeeze().dropna().iloc[-1])
     print(f"\n[GOLD RESOLVE] Current GC=F price: ${current_price:,.2f}")
 
     resolved = 0
@@ -516,7 +449,7 @@ def resolve_gold():
                 print(f"  [SKIP] No price data for outcome date {outcome_date}")
                 continue
 
-            out_price   = float(hist["Close"].dropna().iloc[0])
+            out_price   = float(hist["Close"].squeeze().dropna().iloc[0])
             entry_price = float(row["gcf_price_usd"])
             actual_ret  = (out_price / entry_price - 1) * 100
             direction   = row["direction"]
@@ -562,7 +495,7 @@ def resolve_portfolio():
     current = {}
     for cls, tk in tickers.items():
         hist = yf.download(tk, period="5d", auto_adjust=True, progress=False)
-        current[cls] = float(hist["Close"].dropna().iloc[-1])
+        current[cls] = float(hist["Close"].squeeze().dropna().iloc[-1])
 
     print(f"\n[PORTFOLIO RESOLVE] Current prices fetched.")
     resolved = 0
@@ -581,7 +514,7 @@ def resolve_portfolio():
                 hist  = yf.download(tk, start=str(start), end=str(end),
                                    auto_adjust=True, progress=False)
                 if not hist.empty:
-                    out_prices[cls] = float(hist["Close"].dropna().iloc[0])
+                    out_prices[cls] = float(hist["Close"].squeeze().dropna().iloc[0])
                 else:
                     out_prices[cls] = np.nan
 
