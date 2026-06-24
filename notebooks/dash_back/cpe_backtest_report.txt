@@ -1,0 +1,38 @@
+====================================================================
+  CPE PROPER BACKTEST REPORT
+  Generated: 2026-06-24 16:36
+====================================================================
+
+── PAIRWISE CPE CALIBRATION ─────────────────────────────────────
+  Core question: do the stated CPE values hold out-of-sample?
+  Metric: realised hit rate vs stated CPE vs unconditional baseline
+  A well-calibrated signal should have: hit_rate ≈ CPE > uncond_prob
+
+── JOINT CPE CALIBRATION ────────────────────────────────────────
+
+── GOLD DASHBOARD CPE SIGNAL REPLAY ────────────────────────────
+  Does following the CPE bull/bear signal balance predict gold direction?
+  Signal: net_score > 0.1 = BULLISH, < -0.1 = BEARISH, else NEUTRAL
+
+── PORTFOLIO DASHBOARD REPLAY ───────────────────────────────────
+  Does the CPE tilt signal beat a neutral equal-weight portfolio?
+
+  Horizon 21d  (n=73):
+    Tilt beat neutral : 49.3%  (36/73)
+    Avg tilt PnL      : +0.814%
+    Avg neutral PnL   : +0.717%
+    Avg edge          : +0.097%  (t=0.84)
+
+  Horizon 63d  (n=67):
+    Tilt beat neutral : 52.2%  (35/67)
+    Avg tilt PnL      : +2.649%
+    Avg neutral PnL   : +1.794%
+    Avg edge          : +0.855%  (t=4.07)
+
+  Horizon 126d  (n=58):
+    Tilt beat neutral : 63.8%  (37/58)
+    Avg tilt PnL      : +5.596%
+    Avg neutral PnL   : +4.389%
+    Avg edge          : +1.207%  (t=5.51)
+
+====================================================================

@@ -1,0 +1,44 @@
+====================================================================
+  CPE DASHBOARD BACKTEST SUMMARY
+  Generated: 2026-06-24 16:09
+====================================================================
+
+── GOLD BUY SIGNAL ACCURACY ────────────────────────────────
+  Total rows    : 2112
+  Resolved      : 1614
+  Pending       : 498
+
+     Horizon      N   Correct   Accuracy   Mean Ret%    Med Ret%
+  ----------  -----  --------  ---------  ----------  ----------
+         21d    498       157      31.5%       +2.45%       +2.61%
+         63d    456       105      23.0%       +7.67%       +9.31%
+        126d    393        22       5.6%      +17.12%      +18.14%
+        252d    267         0       0.0%      +40.29%      +39.42%
+
+     Direction      N   Accuracy   Mean Ret%
+       NEUTRAL    260      27.7%      +15.80%
+       BEARISH   1354      15.7%      +13.36%
+
+  Score bucket     N   Accuracy  Mean Ret%
+  40-55 (Watch)         3     100.0%      -1.05%
+  <40 (Bearish)      1611      17.4%     +13.78%
+
+── PORTFOLIO TILT ACCURACY ─────────────────────────────────
+  Total rows    : 528
+  Resolved      : 477
+  Pending       : 51
+
+  Tilt beat neutral : 182 / 477 = 38.2%
+  Avg tilt PnL      : +3.23%
+  Avg neutral PnL   : +2.70%
+  Avg edge (tilt-neutral): +0.529%  [std=4.714%  t=2.45]
+
+  Per-asset tilt performance:
+  Asset         TILT UP avg%               TILT DOWN avg%             NEUTRAL avg%
+  equities      Up:n/a                      Dn:+2.67% (n=463)           Neu:+14.62% (n=14)
+  gold          Up:n/a                      Dn:+7.60% (n=466)           Neu:+10.44% (n=11)
+  bonds         Up:n/a                      Dn:+0.39% (n=477)           Neu:n/a
+  crypto        Up:n/a                      Dn:-11.96% (n=218)          Neu:+5.79% (n=259)
+  fx            Up:n/a                      Dn:-0.34% (n=477)           Neu:n/a
+
+====================================================================
