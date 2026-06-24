@@ -1,0 +1,3 @@
+strategy,label,gross_ret_pct,benchmark_ret_pct,excess_ret_pct,n_legs_low,n_legs_high,breakeven_bps_conservative,breakeven_bps_generous,active_days,hold_events,note
+hth_5sleeve,"CPE 5-sleeve hold-to-horizon (corrected weights, base sleeves)",18.77,16.55,2.22,22,22,10.1,10.1,15,11,Section 16.1 / 15.1. Randomisation test: pct_exceeding 1.8%.
+structure_b,CPE cross-sectional top-quartile (Structure B),24.58,14.45,10.13,18,54,18.8,56.3,30,30,Section 17.2. Randomisation test: pct_exceeding 2.2%. Turnover per firing day is estimated (30-60% of ~15 active positions).
