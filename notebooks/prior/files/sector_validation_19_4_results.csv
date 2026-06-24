@@ -1,0 +1,6 @@
+year,train_cutoff,eval_days,jnk_train_obs,hug_train_obs,sector_configs_in_screen,ew_bh_ret_pct,ew_bh_sharpe,spy_ret_pct,spy_sharpe,hth_ret_pct,hth_sharpe,hth_ann_vol_pct,hth_holds_total,hth_holds_by_sleeve,pct_exceeding,rand_null_mean,rand_null_std,rand_note,signal_vs_ew_ret,signal_vs_ew_sharpe
+2020,2019-12-31,253,3040,3205,19,16.06,0.71,17.24,0.644,15.65,0.696,25.64,16,"{'ConsDisc': 4, 'Industrials': 2, 'ConsStaples': 5, 'Credit': 5}",99.2,0.7432070000000001,0.046668577769201414,,-0.40999999999999837,-0.014000000000000012
+2021,2020-12-31,252,3293,3458,19,17.51,1.768,30.51,2.133,17.51,1.768,9.42,0,"{'ConsDisc': 0, 'Industrials': 0, 'ConsStaples': 0, 'Credit': 0}",n/a,,,Skipped: 0 hold event(s),0.0,0.0
+2022,2021-12-31,251,3545,3710,19,-15.73,-0.848,-18.65,-0.735,-14.21,-0.752,18.32,15,"{'ConsDisc': 4, 'Industrials': 1, 'ConsStaples': 5, 'Credit': 5}",0.7,-0.8420039999999999,0.03695302401698675,,1.5199999999999996,0.09599999999999997
+2023,2022-12-31,250,3796,3961,19,16.23,1.472,26.71,1.896,12.75,1.232,10.29,4,"{'ConsDisc': 1, 'Industrials': 0, 'ConsStaples': 3, 'Credit': 0}",95.6,1.352465,0.0761539806904406,,-3.4800000000000004,-0.24
+2024,2023-12-31,252,4046,4211,19,14.74,1.518,25.59,1.882,17.63,1.575,10.72,2,"{'ConsDisc': 1, 'Industrials': 0, 'ConsStaples': 1, 'Credit': 0}",n/a,,,Skipped: 2 hold event(s),2.889999999999999,0.05699999999999994

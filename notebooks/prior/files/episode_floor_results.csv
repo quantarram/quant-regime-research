@@ -1,0 +1,4 @@
+test,description,floor,joint_file,train_cutoff,eval_start,eval_end,configs_before_floor,configs_after_floor,total_holds,hth_ret_pct,hth_sharpe,hth_vol_pct,bench_ret_pct,bench_sharpe,spy_ret_pct,spy_sharpe,pct_exceeding,rand_null_mean,rand_null_std,rand_n_holds
+A,"2024-trained screen, episode floor = 5",5,joint_cpe_results.parquet,2024-12-31,2025-01-01,2025-12-31,655,146,1,18.55,1.468,12.24,16.6,1.369,18.01,0.955,<3 holds (1),,,0
+B,"2024-trained screen, episode floor = 6",6,joint_cpe_results.parquet,2024-12-31,2025-01-01,2025-12-31,655,128,1,18.55,1.468,12.24,16.6,1.369,18.01,0.955,<3 holds (1),,,0
+C,"2014-trained screen, episode floor = 5",5,joint_cpe_results_train2014_final.parquet,2014-12-31,2015-01-01,2025-12-31,251,44,277,190.5,1.05,9.71,193.29,1.095,299.74,0.799,skipped,,,0

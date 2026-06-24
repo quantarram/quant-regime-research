@@ -274,8 +274,6 @@ def _episode_conviction_for_row(row: pd.Series, increments: dict) -> float:
     if tau_f not in increments or any(tp not in increments for tp in tau_pasts):
         return 0.0
 
-    # Same date set as joint_cpe_engine.py compute_episode_stats:
-    # intersect forward-return non-null dates with predictor tau windows.
     train_dates = increments[tau_pasts[0]].index[increments[tau_pasts[0]].index <= TRAIN_CUTOFF]
 
     joint_mask = pd.Series(True, index=train_dates)
@@ -382,9 +380,28 @@ def compute_quality_weights(joint_df: pd.DataFrame, prices: pd.DataFrame,
         ) | set(int(t) for t in joint_df["tau_future"]))
         precomputed_increments = build_increments_for_episodes(prices, needed_taus)
 
-    conviction = joint_df.apply(
-        lambda row: _episode_conviction_for_row(row, precomputed_increments), axis=1
-    )
+    # Use stored episode_conviction from the parquet if available.
+    # This is the value computed by joint_cpe_engine.py using common_idx
+    # (the exact date set used for CPE estimation). Recomputing at runtime
+    # uses a different date set and produces 107 discrepant rows (Phase 1
+    # finding). Reading the stored value is both faster and consistent.
+    if "episode_conviction" in joint_df.columns:
+        stored = joint_df["episode_conviction"].fillna(0.0)
+        # Fallback: recompute only for rows where stored value is missing
+        missing = joint_df["episode_conviction"].isna()
+        if missing.any():
+            recomputed = joint_df[missing].apply(
+                lambda row: _episode_conviction_for_row(row, precomputed_increments), axis=1
+            )
+            conviction = stored.copy()
+            conviction[missing] = recomputed
+        else:
+            conviction = stored
+    else:
+        # No stored column (old parquet format) — fall back to recomputation
+        conviction = joint_df.apply(
+            lambda row: _episode_conviction_for_row(row, precomputed_increments), axis=1
+        )
     return joint_df["joint_CPE"] * joint_df["lift"] * conviction * h_vals
 
 

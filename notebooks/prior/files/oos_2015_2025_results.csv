@@ -1,0 +1,2 @@
+train_cutoff,eval_start,eval_end,eval_days,joint_configs,vv_spy_configs,total_holds,hth_ret_pct,hth_sharpe,hth_vol_pct,bench_ret_pct,bench_sharpe,spy_ret_pct,spy_sharpe,pct_exceeding,rand_null_mean,rand_null_std,rand_n_holds,rand_n_reps
+2014-12-31,2015-01-01,2025-12-31,2766,251,1,785,171.57,0.904,10.71,193.29,1.095,299.74,0.799,skipped,,,0,0
