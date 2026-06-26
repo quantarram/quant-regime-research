@@ -83,4 +83,38 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 
 ---
 
+## Research Papers
+- Paper 4: Signal-Level Calibration and Dashboard Utility of the Conditional Probability Exceedance Framework: Pairwise Validation, Gold Dashboard Evaluation, and Extended Portfolio Tilt Evidence Across 528 Trading Days (https://zenodo.org/records/20830462) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
+- Paper 3: From Descriptive Atlas to Tradeable Signal: An Out-of-Sample Test of the Multi-Asset Conditional Exceedance Framework as a Portfolio Tilt Strategy (https://zenodo.org/records/20815386) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
+- Paper 2: A CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS (https://zenodo.org/records/20769150) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
+- Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe (https://zenodo.org/records/20606184) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6931838)
 
+## Substack Articles
+- (https://arunramanathans.substack.com/p/paper-4-the-conditional-probabilities?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/from-descriptive-atlas-to-tradeable?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/a-research-update-when-a-strong-statistical?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/the-gold-dashboard-just-said-buy?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/from-one-asset-to-five-scaling-the?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/what-if-you-could-be-useful-without?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/i-built-a-dashboard-to-tell-me-when?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/mapping-the-hidden-wiring-of-global?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/a-simple-conditional-exceedance-framework?r=6v2jrz)
+- (https://arunramanathans.substack.com/p/conditional-exceedance-probabilities?r=6v2jrz)
+
+## LinkedIn posts
+- https://www.linkedin.com/posts/arun-rs_github-quantarramquant-regime-research-activity-7475550682129813505-ypnr?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_github-quantarramquant-regime-research-activity-7475170857099677698-UIGd?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_a-pattern-worth-naming-in-quant-content-activity-7474077312653684736-21ZN?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_why-cpe-framework-looks-at-every-horizon-activity-7474052142320865282-WU-M?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_github-quantarramquant-regime-research-activity-7473976810528112640-eCQQ?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_the-signal-just-flipped-more-about-it-activity-7473313589815070720-QMWm?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_portfolio-tilt-dashboard-activity-7472951553549594624-ztSU?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_conditional-probability-of-exceedance-cpe-activity-7472626950503636992-oT3A?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_the-cpe-atlas-preprint-is-now-live-on-ssrn-activity-7471532889587728384-Eunm?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_quantfinance-research-empiricalfinance-activity-7471527162312011776-3uT0?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_i-built-a-dashboard-to-tell-me-when-to-buy-activity-7470784431092506624-Sjjr?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_mapping-the-hidden-wiring-of-global-financial-activity-7470054976476835840-hDj_?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_github-quantarramquant-regime-research-activity-7425120844235821056-vkoK?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_a-simple-conditional-exceedance-framework-activity-7421784315249889281-4T8C?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_over-the-past-few-months-i-worked-on-a-personal-activity-7417732007989940225-sS7h?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+- https://www.linkedin.com/posts/arun-rs_quantresearch-systematictrading-finance-activity-7417562878351953922-4suQ?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
