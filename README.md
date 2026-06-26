@@ -113,6 +113,12 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 
 ---
 
+## LinkedIn
+- [Author Profile](https://www.linkedin.com/in/arun-rs)
+- [LinkedIn Posts on CPE Research](https://www.linkedin.com/in/arun-rs/recent-activity/all/)
+
+---
+
 ## Repository Structure
 
 ```text
