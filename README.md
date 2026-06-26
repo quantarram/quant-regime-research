@@ -2,7 +2,7 @@
 
 This repository contains the full code, notebooks, and experiments for the **Conditional Probability of Exceedance (CPE)** framework — a live, production-deployed quantitative signal system covering 161 instruments across equities, fixed income, gold, cryptocurrencies, commodities, volatility, and FX.
 
-**Author:** Arun Ramanathan, PhD (Independent Researcher | Research Scientist, NEA Singapore)
+**Author:** Arun Ramanathan, PhD (Independent Researcher | Singapore)
 
 ---
 
