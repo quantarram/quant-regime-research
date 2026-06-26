@@ -72,10 +72,10 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 ---
 
 ## Research Papers
-- Paper 4: Signal-Level Calibration and Dashboard Utility of the Conditional Probability Exceedance Framework: Pairwise Validation, Gold Dashboard Evaluation, and Extended Portfolio Tilt Evidence Across 528 Trading Days (https://zenodo.org/records/20830462) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
-- Paper 3: From Descriptive Atlas to Tradeable Signal: An Out-of-Sample Test of the Multi-Asset Conditional Exceedance Framework as a Portfolio Tilt Strategy (https://zenodo.org/records/20815386) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
-- Paper 2: A CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS (https://zenodo.org/records/20769150) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
-- Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe (https://zenodo.org/records/20606184) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6931838)
+- [Paper 4: Signal-Level Calibration and Dashboard Utility of the Conditional Probability Exceedance Framework: Pairwise Validation, Gold Dashboard Evaluation, and Extended Portfolio Tilt Evidence Across 528 Trading Days](https://zenodo.org/records/20830462) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
+- [Paper 3: From Descriptive Atlas to Tradeable Signal: An Out-of-Sample Test of the Multi-Asset Conditional Exceedance Framework as a Portfolio Tilt Strategy](https://zenodo.org/records/20815386) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
+- [Paper 2: A CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS](https://zenodo.org/records/20769150) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
+- [Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe](https://zenodo.org/records/20606184) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6931838)
 
 ---
 
