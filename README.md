@@ -71,23 +71,13 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 
 ---
 
-## Repository Structure
-
-```text
-.
-├── data/                  # Raw and processed price data
-├── notebooks/             # Exploratory and analysis notebooks
-├── src/                    # Core probability estimation and trading logic
-├── requirements.txt
-└── README.md
-
----
-
 ## Research Papers
 - Paper 4: Signal-Level Calibration and Dashboard Utility of the Conditional Probability Exceedance Framework: Pairwise Validation, Gold Dashboard Evaluation, and Extended Portfolio Tilt Evidence Across 528 Trading Days (https://zenodo.org/records/20830462) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
 - Paper 3: From Descriptive Atlas to Tradeable Signal: An Out-of-Sample Test of the Multi-Asset Conditional Exceedance Framework as a Portfolio Tilt Strategy (https://zenodo.org/records/20815386) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
 - Paper 2: A CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS (https://zenodo.org/records/20769150) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
 - Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe (https://zenodo.org/records/20606184) (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6931838)
+
+---
 
 ## Substack Articles
 - (https://arunramanathans.substack.com/p/paper-4-the-conditional-probabilities?r=6v2jrz)
@@ -100,6 +90,8 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 - (https://arunramanathans.substack.com/p/mapping-the-hidden-wiring-of-global?r=6v2jrz)
 - (https://arunramanathans.substack.com/p/a-simple-conditional-exceedance-framework?r=6v2jrz)
 - (https://arunramanathans.substack.com/p/conditional-exceedance-probabilities?r=6v2jrz)
+
+---
 
 ## LinkedIn posts
 - https://www.linkedin.com/posts/arun-rs_github-quantarramquant-regime-research-activity-7475550682129813505-ypnr?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
@@ -118,3 +110,17 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 - https://www.linkedin.com/posts/arun-rs_a-simple-conditional-exceedance-framework-activity-7421784315249889281-4T8C?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
 - https://www.linkedin.com/posts/arun-rs_over-the-past-few-months-i-worked-on-a-personal-activity-7417732007989940225-sS7h?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
 - https://www.linkedin.com/posts/arun-rs_quantresearch-systematictrading-finance-activity-7417562878351953922-4suQ?utm_source=share&utm_medium=member_desktop&rcm=ACoAACd2YkMB6RBzKCyadbbmOsyEfq_SKhAIJXs
+
+---
+
+## Repository Structure
+
+```text
+.
+├── data/                  # Raw and processed price data
+├── notebooks/             # Exploratory and analysis notebooks
+├── src/                    # Core probability estimation and trading logic
+├── requirements.txt
+└── README.md
+
+---
