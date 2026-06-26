@@ -80,16 +80,16 @@ RAMANATHAN S, A. (2026). A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRET
 ---
 
 ## Substack Articles
-- [Paper 4: The Conditional Probabilities Actually Hold] (https://arunramanathans.substack.com/p/paper-4-the-conditional-probabilities?r=6v2jrz)
-- [Got One Statistically Significant Result. Then Spent Hours Trying to Break It.] (https://arunramanathans.substack.com/p/from-descriptive-atlas-to-tradeable?r=6v2jrz)
-- [A Research Update: When a Strong Statistical Pattern Doesn't Become a Trading Edge] (https://arunramanathans.substack.com/p/a-research-update-when-a-strong-statistical?r=6v2jrz)
-- [The Gold Dashboard Just Said BUY GRADUALLY. Here Is Exactly Why.] (https://arunramanathans.substack.com/p/the-gold-dashboard-just-said-buy?r=6v2jrz)
-- [From One Asset to Five: Scaling the CPE Framework Into a Portfolio Tilt Dashboard] (https://arunramanathans.substack.com/p/from-one-asset-to-five-scaling-the?r=6v2jrz)
-- [What If You Could Be Useful Without Predicting Anything?] (https://arunramanathans.substack.com/p/what-if-you-could-be-useful-without?r=6v2jrz)
-- [I Built a Dashboard to Tell Me When to Buy Gold — Here's What It's Saying Right Now] (https://arunramanathans.substack.com/p/i-built-a-dashboard-to-tell-me-when?r=6v2jrz)
-- [Mapping the Hidden Wiring of Global Financial Markets] (https://arunramanathans.substack.com/p/mapping-the-hidden-wiring-of-global?r=6v2jrz)
-- [A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS] (https://arunramanathans.substack.com/p/a-simple-conditional-exceedance-framework?r=6v2jrz)
-- [Conditional Exceedance Probabilities as a Basis for Systematic Trading] (https://arunramanathans.substack.com/p/conditional-exceedance-probabilities?r=6v2jrz)
+- [Paper 4: The Conditional Probabilities Actually Hold](https://arunramanathans.substack.com/p/paper-4-the-conditional-probabilities?r=6v2jrz)
+- [Got One Statistically Significant Result. Then Spent Hours Trying to Break It.](https://arunramanathans.substack.com/p/from-descriptive-atlas-to-tradeable?r=6v2jrz)
+- [A Research Update: When a Strong Statistical Pattern Doesn't Become a Trading Edge](https://arunramanathans.substack.com/p/a-research-update-when-a-strong-statistical?r=6v2jrz)
+- [The Gold Dashboard Just Said BUY GRADUALLY. Here Is Exactly Why.](https://arunramanathans.substack.com/p/the-gold-dashboard-just-said-buy?r=6v2jrz)
+- [From One Asset to Five: Scaling the CPE Framework Into a Portfolio Tilt Dashboard](https://arunramanathans.substack.com/p/from-one-asset-to-five-scaling-the?r=6v2jrz)
+- [What If You Could Be Useful Without Predicting Anything?](https://arunramanathans.substack.com/p/what-if-you-could-be-useful-without?r=6v2jrz)
+- [I Built a Dashboard to Tell Me When to Buy Gold — Here's What It's Saying Right Now](https://arunramanathans.substack.com/p/i-built-a-dashboard-to-tell-me-when?r=6v2jrz)
+- [Mapping the Hidden Wiring of Global Financial Markets](https://arunramanathans.substack.com/p/mapping-the-hidden-wiring-of-global?r=6v2jrz)
+- [A SIMPLE CONDITIONAL EXCEEDANCE FRAMEWORK FOR INTERPRETABLE TRADING DECISIONS](https://arunramanathans.substack.com/p/a-simple-conditional-exceedance-framework?r=6v2jrz)
+- [Conditional Exceedance Probabilities as a Basis for Systematic Trading](https://arunramanathans.substack.com/p/conditional-exceedance-probabilities?r=6v2jrz)
 
 ---
 
