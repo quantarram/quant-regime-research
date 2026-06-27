@@ -1,0 +1,2 @@
+threshold,uncond_prob,cpe_train,lift_train,n_cond_train,n_cond_oos,hit_rate_oos,calibration_err,direction,temp_predictor,ticker,instrument,horizon,q_target
+0.054126859473093626,0.25,0.5053191489361702,2.021276595744681,188,46,0.0,-0.5053191489361702,D2_tail_to_tail,Asia_tmax_q95_exceed,CANE,Sugar ETF,63,0.75
