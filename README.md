@@ -89,6 +89,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 5: Corrected Inference for the CPE Portfolio Tilt Strategy: Newey-West HAC Standard Errors and Robustness Checks](https://zenodo.org/records/20908417) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7000559)
 - [Paper 4: Signal-Level Calibration and Dashboard Utility of the CPE Framework](https://zenodo.org/records/20830462) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
 - [Paper 3: From Descriptive Atlas to Tradeable Signal](https://zenodo.org/records/20815386) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
 - [Paper 2: A Conditional Exceedance Framework for Interpretable Trading Decisions](https://zenodo.org/records/20769150) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
@@ -98,6 +99,8 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [Building a Live Quant Signal System: What Worked, What Failed, and What the Data Says](https://arunramanathans.substack.com/p/building-a-live-quant-signal-system)
+- [Paper 5: The Results Survive — HAC Correction, Block Bootstrap, and Four Robustness Checks](https://arunramanathans.substack.com/p/paper-5-the-results-survive-hac-correction)
 - [Paper 4: The Conditional Probabilities Actually Hold](https://arunramanathans.substack.com/p/paper-4-the-conditional-probabilities)
 - [Got One Statistically Significant Result. Then Spent Hours Trying to Break It.](https://arunramanathans.substack.com/p/from-descriptive-atlas-to-tradeable)
 - [A Research Update: When a Strong Statistical Pattern Doesn't Become a Trading Edge](https://arunramanathans.substack.com/p/a-research-update-when-a-strong-statistical)
@@ -144,6 +147,13 @@ the Conditional Probability Exceedance Framework: Pairwise Validation, Gold
 Dashboard Evaluation, and Extended Portfolio Tilt Evidence Across 528 Trading
 Days. Zenodo.
 https://doi.org/10.5281/zenodo.20830462
+```
+
+**Paper 5 — Corrected Inference**
+```
+RAMANATHAN S, A. (2026). Corrected Inference for the CPE Portfolio Tilt
+Strategy: Newey-West HAC Standard Errors and Robustness Checks. Zenodo.
+https://doi.org/10.5281/zenodo.20908417
 ```
 ---
 
