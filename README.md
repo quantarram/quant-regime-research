@@ -159,6 +159,21 @@ RAMANATHAN S, A. (2026). Corrected Inference for the CPE Portfolio Tilt
 Strategy: Newey-West HAC Standard Errors and Robustness Checks. Zenodo.
 https://doi.org/10.5281/zenodo.20908417
 ```
+
+**Paper 6 — Beyond Tail Co-Movement**
+```
+RAMANATHAN S, A. (2026). Beyond Tail Co-Movement: How Temperature Extremes
+Shift Financial Return Distributions. Zenodo.
+https://doi.org/10.5281/zenodo.20964819
+```
+
+**Paper 7 — Agricultural Crop-Zone Temperatures in the CPE Framework**
+```
+RAMANATHAN S, A. (2026). Agricultural Crop-Zone Temperatures in the CPE
+Framework: Heat Stress Thresholds, Growing Degree Days, and
+the Reversal of the Paper 6 Sugar Signal. Zenodo.
+https://doi.org/10.5281/zenodo.20993837
+```
 ---
 
 ## LinkedIn
