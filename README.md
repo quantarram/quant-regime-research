@@ -179,8 +179,9 @@ https://doi.org/10.5281/zenodo.20993837
 
 **Paper 8 — When Heat Meets Drought — The Strongest Signals in the CPE Series**
 ```
-RAMANATHAN S, A. (2026). Vapour Pressure Deficit and Moisture Stress in the CPE
-Framework: Joint Heat-Drought Conditions as the Strongest Climate-Finance Predictors. Zenodo. https://doi.org/10.5281/zenodo.21021264
+RAMANATHAN S, A. (2026). Vapour Pressure Deficit and Moisture Stress in the CPE Framework:
+Joint Heat-Drought Conditions as the Strongest Climate-Finance Predictors. Zenodo.
+https://doi.org/10.5281/zenodo.21021264
 ```
 ---
 
