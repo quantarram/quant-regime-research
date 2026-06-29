@@ -89,6 +89,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 7: Agricultural Crop-Zone Temperatures in the CPE Framework: Heat Stress Thresholds, Growing Degree Days, and the Reversal of the Paper 6 Sugar Signal](https://zenodo.org/records/20993837) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7012738)
 - [Paper 6: Beyond Tail Co-Movement: How Temperature Extremes Shift Financial Return Distributions](https://zenodo.org/records/20964819) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7008418)
 - [Paper 5: Corrected Inference for the CPE Portfolio Tilt Strategy: Newey-West HAC Standard Errors and Robustness Checks](https://zenodo.org/records/20908417) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7000559)
 - [Paper 4: Signal-Level Calibration and Dashboard Utility of the CPE Framework](https://zenodo.org/records/20830462) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
@@ -100,6 +101,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [Paper 7: From the City to the Field: Solving the Geographic Mismatch in Climate-Finance](https://arunramanathans.substack.com/p/from-the-city-to-the-field-solving)
 - [Paper 6: Temperature Extremes Don't Co-Move With Financial Tails — They Shift the Whole Distribution](https://arunramanathans.substack.com/p/paper-6-temperature-extremes-dont)
 - [Building a Live Quant Signal System: What Worked, What Failed, and What the Data Says](https://arunramanathans.substack.com/p/building-a-live-quant-signal-system)
 - [Paper 5: The Results Survive — HAC Correction, Block Bootstrap, and Four Robustness Checks](https://arunramanathans.substack.com/p/paper-5-the-results-survive-hac-correction)
@@ -156,6 +158,21 @@ https://doi.org/10.5281/zenodo.20830462
 RAMANATHAN S, A. (2026). Corrected Inference for the CPE Portfolio Tilt
 Strategy: Newey-West HAC Standard Errors and Robustness Checks. Zenodo.
 https://doi.org/10.5281/zenodo.20908417
+```
+
+**Paper 6 — Beyond Tail Co-Movement**
+```
+RAMANATHAN S, A. (2026). Beyond Tail Co-Movement: How Temperature Extremes
+Shift Financial Return Distributions. Zenodo.
+https://doi.org/10.5281/zenodo.20964819
+```
+
+**Paper 7 — Agricultural Crop-Zone Temperatures in the CPE Framework**
+```
+RAMANATHAN S, A. (2026). Agricultural Crop-Zone Temperatures in the CPE
+Framework: Heat Stress Thresholds, Growing Degree Days, and
+the Reversal of the Paper 6 Sugar Signal. Zenodo.
+https://doi.org/10.5281/zenodo.20993837
 ```
 ---
 
