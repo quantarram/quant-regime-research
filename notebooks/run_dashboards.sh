@@ -18,16 +18,20 @@ echo "[2/5] Building portfolio dashboard..."
 python build_portfolio_dashboard.py || { echo "ERROR: build_portfolio_dashboard.py failed."; exit 1; }
 
 echo ""
-echo "[3/5] Logging predictions and resolving expired..."
+echo "[3/6] Logging predictions and resolving expired..."
 python log_predictions.py --both || { echo "ERROR: log_predictions.py failed."; exit 1; }
 
 echo ""
-echo "[4/5] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv gold_dashboard.html portfolio_dashboard.html
+echo "[4/6] Updating IBKR paper ledger (simulated, bullish-only)..."
+python ibkr_paper_ledger.py || { echo "ERROR: ibkr_paper_ledger.py failed."; exit 1; }
+
+echo ""
+echo "[5/6] Committing to git..."
+git add gold_predictions.csv portfolio_predictions.csv gold_dashboard.html portfolio_dashboard.html ibkr_paper_ledger.csv
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""
-echo "[5/5] Pushing to GitHub..."
+echo "[6/6] Pushing to GitHub..."
 git push
 
 echo ""
