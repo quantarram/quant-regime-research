@@ -333,7 +333,7 @@ def recovery_dist(lookback_tau, threshold_pct, forward_taus):
     trigger_dates = lb_returns[lb_returns <= threshold_pct].index
     results = {}
     for fwd_tau in forward_taus:
-        fwd_ret = np.log(gcf/gcf.shift(-fwd_tau)).dropna() * 100
+        fwd_ret = np.log(gcf.shift(-fwd_tau)/gcf).dropna() * 100
         vals = fwd_ret.reindex(trigger_dates).dropna().values
         if len(vals) >= 5:
             results[fwd_tau] = {
@@ -374,7 +374,7 @@ for tp in [21, 63, 126, 252]:
     auto_cpe[tp] = {"current_return_pct": curr_ret_pct,
                     "current_percentile": round(q_now*100,1)}
     for fwd in [21,63,126,252]:
-        fwd_ret = np.log(gcf/gcf.shift(-fwd)).dropna() * 100
+        fwd_ret = np.log(gcf.shift(-fwd)/gcf).dropna() * 100
         # CPE: P(forward > 0 | past <= current percentile)
         past_below = lb[lb <= curr_ret_pct].index
         fwd_at_past = fwd_ret.reindex(past_below).dropna()
