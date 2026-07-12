@@ -399,6 +399,37 @@ for tp in [21, 63, 126, 252]:
             auto_cpe[tp][f"fwd_{fwd}_pct_up5pct"] = round(cpe_large_up*100,1)
             auto_cpe[tp][f"fwd_{fwd}_n"] = int(len(fwd_at_past))
             auto_cpe[tp][f"fwd_{fwd}_median"] = round(float(fwd_at_past.median()),2)
+# NOTE: auto_cpe above is kept only for the descriptive "Autocorrelation CPE"
+# tab (shows its own small-n episode counts openly). It is intentionally NOT
+# used for the composite score anymore -- see self-referential score below.
+
+# ── SELF-REFERENTIAL CPE SCORE (replaces the old auto_cpe-based auto_score) ──
+# auto_cpe's "% positive" stat conditions on a narrow current<=threshold test,
+# which for an extreme move like today's collapses into just 2-3 real
+# historical episodes (2008, 2013) dressed up as a 20-30-day sample --
+# verified empirically. cpe_results.parquet is already pre-filtered at
+# generation time to CPE>=0.80, lift>=1.5+, n_condition>=100, matching the
+# same discipline as every other CPE signal used on this dashboard, so query
+# gold's own self-referential rows (X==Y=="GC=F") and check firing status
+# with the same fires() logic used for cross-asset predictors, instead of
+# computing an ungated ad-hoc statistic. If nothing properly-filtered is
+# currently firing, the honest answer is neutral (50) -- insufficient
+# evidence, not a guess -- not a fabricated confidence number.
+print("Computing self-referential CPE score...")
+self_ref = pair[(pair["X"]=="GC=F") & (pair["Y"]=="GC=F") & (pair["tau_future"]==126)]
+self_bull, self_bear = [], []
+for _, row in self_ref.iterrows():
+    if fires([row["X"]], [row["tau_past"]], [row["q_X"]], row["direction"]):
+        (self_bull if row["direction"]=="bullish" else self_bear).append(row["CPE"])
+if self_bull:
+    auto_score = round(float(np.mean(self_bull)) * 100, 1)
+elif self_bear:
+    auto_score = round((1 - float(np.mean(self_bear))) * 100, 1)
+else:
+    auto_score = 50.0
+print(f"  Self-referential CPE auto_score: {auto_score} "
+      f"({len(self_bull)} bull / {len(self_bear)} bear signals firing, "
+      f"{len(self_ref)} properly-filtered candidates total)")
 
 # ── JOINT CPE SIGNALS FOR GOLD ───────────────────────────────────────────────
 print("Computing joint CPE signals for gold...")
@@ -499,10 +530,8 @@ print("Computing composite buy score...")
 # Round chg[63] to 1dp before computing to prevent floating point drift between runs
 draw_score = min(100, max(0, (-round(chg[63], 1) / 20) * 100))  # -20% = 100, 0% = 0
 
-# 2. Autocorrelation CPE score — % of time gold recovers after similar drawdown
-auto_score = 0
-if 63 in auto_cpe and "fwd_126_pct_positive" in auto_cpe[63]:
-    auto_score = round(float(auto_cpe[63]["fwd_126_pct_positive"]), 1)
+# 2. Self-referential CPE score — computed earlier from cpe_results.parquet's
+#    already-filtered (CPE>=0.80, lift>=1.5, n>=100) GC=F-predicting-GC=F rows.
 
 # 3. CPE predictor proximity score — how close are bull predictors to firing
 prox_scores = []
@@ -528,30 +557,28 @@ composite = round(
     0.10 * cpe_score, 1)
 
 # ── UNIFIED VERDICT (single source of truth for the whole page) ──────────────
-# Previously the composite-score ring and the decision-panel banner computed
-# two INDEPENDENT verdicts (one in Python from composite alone, one in JS that
-# also gated on the 126d historical recovery rate) — they could disagree, e.g.
-# the ring saying "BUY ZONE" while the banner said "WAIT & WATCH" for the same
-# run. Compute the one combined verdict here so every element on the page
-# reads the exact same value; JS no longer re-derives it.
-_pct126 = float(recovery_63.get(126, {}).get("pct_positive", 50.0))
-_med252 = float(recovery_63.get(252, {}).get("p50", 0.0))
-
-if composite >= 70 and _pct126 >= 55:
+# One verdict, computed once, driven by composite alone -- both the ring and
+# the decision-panel banner read this same value so they can never disagree.
+# (This used to also gate on a separate 126d historical recovery-rate stat,
+# but that stat came from an ungated, narrow-threshold calculation that
+# collapses into 2-3 real historical episodes for severe drawdowns -- see
+# the self-referential CPE score above for the properly-disciplined
+# replacement, which already contributes to `composite` via auto_score.)
+if composite >= 70:
     buy_label, verdict_tier = "BUY NOW", "bull"
     verdict_sub = "Multiple signals aligned — historical evidence supports entry"
-elif composite >= 55 and _pct126 >= 50:
+elif composite >= 55:
     buy_label, verdict_tier = "BUY GRADUALLY", "bull_light"
     verdict_sub = "Consider staged entry — not all signals aligned but conditions improving"
-elif composite >= 40 and _pct126 >= 43:
+elif composite >= 40:
     buy_label, verdict_tier = "WAIT & WATCH", "warn"
     verdict_sub = "Approaching buy zone — monitor triggers below before committing"
-elif _pct126 < 40 and _med252 < 0:
-    buy_label, verdict_tier = "TOO EARLY", "bear"
-    verdict_sub = "Historical data shows continued weakness likely — preserve capital for now"
-else:
+elif composite >= 25:
     buy_label, verdict_tier = "WAIT & WATCH", "warn"
     verdict_sub = "Mixed signals — no clear entry point yet"
+else:
+    buy_label, verdict_tier = "TOO EARLY", "bear"
+    verdict_sub = "Historical data shows continued weakness likely — preserve capital for now"
 
 components = {
     "draw_score":   round(draw_score,1),
@@ -562,7 +589,6 @@ components = {
     "label":        buy_label,
     "verdict_tier": verdict_tier,
     "verdict_sub":  verdict_sub,
-    "pct126":       round(_pct126, 1),
 }
 
 print(f"  Composite buy score: {composite} — {buy_label}")
@@ -1567,7 +1593,6 @@ function renderPairTable(){
 
 function renderDecision() {
   const c   = D.components;
-  const r63 = D.recovery_63;
   const pp  = D.pred_proximity;
   const score    = c.composite;
   const chg63    = D.chg['63'];
@@ -1576,10 +1601,6 @@ function renderDecision() {
   const slv_on   = (pp['SLV']  ||[]).some(r=>r.in_tail && r.q>=0.9);
   const sif_on   = (pp['SI=F'] ||[]).some(r=>r.in_tail && r.q>=0.9);
   const gcf_low  = (pp['GC=F'] ||[]).some(r=>r.in_tail);
-  const pct126   = r63['126'] ? r63['126'].pct_positive : 50;
-  const med126   = r63['126'] ? r63['126'].p50 : 0;
-  const med252   = r63['252'] ? r63['252'].p50 : 0;
-  const n_hist   = r63['126'] ? r63['126'].n   : 0;
 
   // Verdict — read from the single Python-computed value (D.components),
   // the same field the score ring uses, so the two can never disagree.
@@ -1596,7 +1617,7 @@ function renderDecision() {
       '<div style="font-family:var(--mono);font-size:11px;margin-top:8px;color:var(--text2)">'+
         'Composite Score: <span style="color:'+vcolor+';font-weight:600">'+score+'/100</span> &nbsp;&middot;&nbsp; '+
         '63d return: <span style="color:var(--bear)">'+chg63.toFixed(1)+'%</span> (P'+pct63+'ile) &nbsp;&middot;&nbsp; '+
-        'Recovery rate (126d): <span style="color:'+(pct126>=50?'var(--bull)':'var(--bear)')+'">'+pct126+'% positive</span> from '+n_hist+' historical episodes'+
+        'Self-ref CPE score: <span style="color:'+(c.auto_score>=50?'var(--bull)':c.auto_score===50?'var(--text2)':'var(--bear)')+'">'+c.auto_score+'/100</span>'+
       '</div>'+
     '</div>';
 
@@ -1620,26 +1641,22 @@ function renderDecision() {
   }
 
   if (gcf_low) {
-    const fwd252 = D.auto_cpe['63'] && D.auto_cpe['63']['fwd_252_pct_positive'];
     FOR.push({col:'var(--warn)',
-      txt:'Gold itself is in its lower 10th percentile regime (63d & 126d). Autocorrelation CPE: '+(fwd252||'—')+'% of similar episodes saw recovery at 252 days.'});
+      txt:'Gold itself is in its lower 10th percentile regime (63d & 126d) — a real drawdown, not noise.'});
   }
 
-  if (pct126>=50) {
+  // Self-referential CPE score (properly filtered: CPE>=0.80, lift>=1.5,
+  // n_condition>=100 -- see build_gold_dashboard.py for why the old
+  // narrow-threshold "recovery rate" stat was replaced with this).
+  if (c.auto_score > 50) {
     FOR.push({col:'var(--bull)',
-      txt:'In '+n_hist+' historical episodes with this level of drawdown, gold was positive at 126 days '+pct126+'% of the time — above the 50% threshold.'});
+      txt:'Properly-filtered self-referential CPE signals for gold (n≥100 each) are currently bullish-leaning: self-ref CPE score '+c.auto_score+'/100.'});
+  } else if (c.auto_score < 50) {
+    AGN.push({col:'var(--bear)',
+      txt:'Properly-filtered self-referential CPE signals for gold (n≥100 each) are currently bearish-leaning: self-ref CPE score '+c.auto_score+'/100.'});
   } else {
-    AGN.push({col:'var(--bear)',
-      txt:'In '+n_hist+' historical episodes with a 63d fall this large, gold was POSITIVE at 126 days only '+pct126+'% of the time. Continued weakness is the modal historical outcome.'});
-  }
-
-  if (med126<0) {
-    AGN.push({col:'var(--bear)',
-      txt:'Median 126-day return after similar drawdowns: '+med126+'% (negative). The most likely single outcome based on history is further weakness.'});
-  }
-  if (med252<0) {
-    AGN.push({col:'var(--bear)',
-      txt:'Even at 252 days (1 year), the median outcome after similar drawdowns is '+med252+'% — gold has historically taken a long time to recover from falls of this magnitude.'});
+    AGN.push({col:'var(--neut)',
+      txt:'No properly-filtered self-referential CPE signal (CPE≥0.80, lift≥1.5, n≥100) is currently firing for gold at this drawdown depth — insufficient historical evidence either way, not a bullish or bearish signal.'});
   }
 
   const ibit252=(pp['IBIT']||[]).find(r=>r.tau===252);
@@ -1664,10 +1681,10 @@ function renderDecision() {
   const ibit5  = (pp['IBIT']||[]).find(r=>r.tau===5);
   const sgd    = (pp['SGDUSD=X']||[])[0];
   const trigs = [
-    { name:'Historical recovery rate &gt; 50%',
-      desc:'When % of similar episodes that were positive at 126d crosses 50%, odds favour buying',
-      cur:'Currently '+pct126+'% (need &gt;50%)',
-      prog:pct126, col:pct126>=50?'var(--bull)':'var(--warn)', fired:pct126>=50 },
+    { name:'Self-referential CPE score &gt; 50',
+      desc:'Properly-filtered (n≥100) gold-predicting-gold CPE signals turn net bullish',
+      cur:'Currently '+c.auto_score+'/100 (need &gt;50)',
+      prog:c.auto_score, col:c.auto_score>50?'var(--bull)':'var(--warn)', fired:c.auto_score>50 },
     { name:'Gold 21-day return turns positive',
       desc:'When short-term momentum stabilises, the acute selling phase is likely over',
       cur:'Currently '+D.chg['21'].toFixed(1)+'% over 21 days',

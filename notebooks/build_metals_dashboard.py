@@ -282,6 +282,36 @@ def get_firing_cpe_signals(target_tickers, horizon, direction_filter):
     return subset[keep]
 
 
+def compute_self_ref_score(hist_ticker, horizon):
+    """Properly-disciplined self-referential (autocorrelation) CPE score.
+    cpe_results.parquet is already pre-filtered at generation time to
+    CPE>=0.80, lift>=1.5+, n_condition>=100, matching the same discipline as
+    every cross-asset CPE signal used elsewhere on this dashboard. Query the
+    metal's own X==Y self-referential rows and check firing status via the
+    same firing_set used for cross-asset predictors, instead of computing an
+    ad-hoc narrow-threshold "percent positive" stat -- which, verified
+    empirically for gold, degenerates into 2-3 real historical episodes
+    dressed up as a much larger sample. If nothing properly-filtered is
+    currently firing, the honest answer is neutral (50), not a guess."""
+    self_ref = cpe[(cpe["X"] == hist_ticker) & (cpe["Y"] == hist_ticker) & (cpe["tau_future"] == horizon)]
+    if len(self_ref) == 0:
+        return 50.0, 0, 0
+    keys = list(zip(self_ref["X"].values, self_ref["tau_past"].astype(int).values,
+                     self_ref["q_X"].astype(float).values, self_ref["direction"].values))
+    firing = self_ref[[k in firing_set for k in keys]]
+    bull = firing[firing["direction"] == "bullish"]
+    bear = firing[firing["direction"] == "bearish"]
+    if len(bull) == 0 and len(bear) == 0:
+        return 50.0, 0, 0
+    if len(bull) and len(bear):
+        score = float(bull["CPE"].mean()) * 60 + (1 - float(bear["CPE"].mean())) * 40
+    elif len(bull):
+        score = float(bull["CPE"].mean()) * 100
+    else:
+        score = (1 - float(bear["CPE"].mean())) * 100
+    return round(score, 1), len(bull), len(bear)
+
+
 def compute_regime_score(firing_signals):
     if len(firing_signals) == 0:
         return None, []
@@ -366,7 +396,13 @@ for name, info in METALS.items():
                 "pct_positive": round(float(np.mean(vals>0))*100,1),
                 "mean": round(float(np.mean(vals)),2),
             }
-    auto_score = recovery.get(126, {}).get("pct_positive", 50.0)
+    # auto_score: properly-disciplined self-referential CPE score (see
+    # compute_self_ref_score) rather than recovery['pct_positive'] above,
+    # which is kept only for the descriptive recovery_63 display data --
+    # its narrow "<=" threshold conditioning collapses into a handful of
+    # clustered historical episodes for severe drawdowns (verified for gold)
+    # and shouldn't drive the composite score.
+    auto_score, _auto_bull_n, _auto_bear_n = compute_self_ref_score(info["hist"], 126)
 
     # ── firing CPE regime score, per horizon ──
     horizons = {}
