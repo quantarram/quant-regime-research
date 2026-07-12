@@ -115,6 +115,16 @@ try:
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
+    # ── STRIP ANY PARTIAL/LIVE "TODAY" SESSION ROW, FOR EVERY TICKER ──
+    # yfinance's most recent daily bar can be an intraday snapshot that keeps
+    # changing as the trading day progresses, which was letting tilt scores
+    # drift between multiple runs on the same calendar day. Drop any row dated
+    # today-or-later before it reaches `prices`, so every run on a given day
+    # sees identical, fully-settled data (see build_gold_dashboard.py for the
+    # symptom this was first diagnosed from).
+    import datetime as _dt_check
+    if len(raw.index) and raw.index.max().date() >= _dt_check.date.today():
+        raw = raw[raw.index.date < _dt_check.date.today()]
 
     for col in raw.columns:
         if col in prices.columns:

@@ -110,6 +110,16 @@ try:
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
+    # ── STRIP ANY PARTIAL/LIVE "TODAY" SESSION ROW, FOR EVERY TICKER ──
+    # yfinance's most recent daily bar can be an intraday snapshot that keeps
+    # changing as the trading day progresses, which was letting composite buy
+    # scores drift between multiple runs on the same calendar day. Drop any
+    # row dated today-or-later before it reaches `prices`, so every run on a
+    # given day sees identical, fully-settled data (see build_gold_dashboard.py
+    # for the symptom this was first diagnosed from).
+    import datetime as _dt_check
+    if len(raw.index) and raw.index.max().date() >= _dt_check.date.today():
+        raw = raw[raw.index.date < _dt_check.date.today()]
 
     for col in raw.columns:
         if col in prices.columns:
@@ -154,7 +164,9 @@ usd_per_sgd = 1.0
 if FX_TICKER in prices.columns:
     fx = prices[FX_TICKER].dropna()
     if len(fx):
-        usd_per_sgd = float(fx.iloc[-1])
+        # SGDUSD=X quotes USD per 1 SGD (e.g. ~0.78) — invert to get SGD per USD
+        # (matches build_gold_dashboard.py's usd_per_sgd convention).
+        usd_per_sgd = 1.0 / float(fx.iloc[-1])
 
 # ── HELPERS ──────────────────────────────────────────────────
 
@@ -670,6 +682,12 @@ html = f"""<!DOCTYPE html>
 <div class="section">
   <div class="section-title">1-Year Price Performance (Indexed to 100)</div>
   <div class="card">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">
+      Each line shows % return since 1 year ago, not dollar price — gold (~$4,000/oz), silver (~$60/oz)
+      and platinum (~$1,600/oz) trade on very different scales, so this puts them on one comparable axis.
+      A line at 150 means that metal is up 50% over the year; it does not mean it costs more per ounce.
+      Hover a point to see both the native-unit price and the % change.
+    </div>
     <div id="chart-prices" style="height:340px;"></div>
   </div>
 </div>
@@ -815,22 +833,28 @@ for(const name of METAL_ORDER){{
   bcEl.appendChild(card);
 }}
 
-// ── PRICE CHART (indexed to 100) ────────────────────────────
+// ── PRICE CHART (indexed to 100 -- % return since 1yr ago, NOT dollar price;
+//    gold/silver/platinum trade on very different dollar scales so raw prices
+//    can't share one axis) ────────────────────────────────────────────────
 const chartTraces = METAL_ORDER.map(name => {{
   const m = D.metals[name];
   const base = m.chart_prices[0];
   return {{
     x: m.chart_dates,
     y: m.chart_prices.map(p => p/base*100),
+    customdata: m.chart_prices.map(p => [p, p/base*100 - 100]),
     type: 'scatter', mode: 'lines', name: name,
     line: {{color: m.color, width: 2}},
+    hovertemplate: '<b>'+name+'</b> · %{{x}}<br>'+
+                   '$%{{customdata[0]:,.2f}} (native units)<br>'+
+                   '%{{customdata[1]:+.1f}}% since 1yr ago<extra></extra>',
   }};
 }});
 Plotly.newPlot('chart-prices', chartTraces, {{
   margin:{{t:10,b:40,l:50,r:20}},
   paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
   legend:{{orientation:'h', y:-0.15}},
-  yaxis:{{title:'Indexed (start=100)', gridcolor:'#eee'}},
+  yaxis:{{title:'Cumulative return since 1yr ago (start = 100, i.e. 150 = +50%)', gridcolor:'#eee'}},
   xaxis:{{gridcolor:'#eee'}},
 }});
 

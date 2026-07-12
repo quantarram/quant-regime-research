@@ -55,6 +55,20 @@ try:
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
+    # ── STRIP ANY PARTIAL/LIVE "TODAY" SESSION ROW, FOR EVERY TICKER ──
+    # yfinance's most recent daily bar can be an intraday snapshot that keeps
+    # changing as the trading day progresses. Previously only GC=F's return to
+    # gold was frozen against this (see GLD_SETTLED below), but every other
+    # ticker (IBIT, FBTC, SLV, SI=F, DX-Y.NYB, UUP, ^GVZ, and every joint-CPE
+    # predictor ticker) was still picking up live intraday prices, so
+    # prox_score/cpe_score — and hence the composite buy score and its label —
+    # could drift between multiple runs on the same calendar day. Dropping any
+    # row dated today-or-later here, before it ever reaches `prices`, means
+    # every run on a given day sees identical, fully-settled data; it only
+    # advances once the day rolls over.
+    import datetime as _dt_check
+    if len(raw.index) and raw.index.max().date() >= _dt_check.date.today():
+        raw = raw[raw.index.date < _dt_check.date.today()]
     for col in raw.columns:
         if col in prices.columns:
             # For existing columns: append new rows after parquet max date
