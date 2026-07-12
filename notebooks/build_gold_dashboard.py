@@ -527,19 +527,42 @@ composite = round(
     0.20 * prox_score +
     0.10 * cpe_score, 1)
 
-buy_label = ("STRONG BUY ZONE" if composite >= 70 else
-             "BUY ZONE" if composite >= 55 else
-             "WATCH — APPROACHING BUY" if composite >= 40 else
-             "NEUTRAL — WAIT" if composite >= 25 else
-             "NOT YET")
+# ── UNIFIED VERDICT (single source of truth for the whole page) ──────────────
+# Previously the composite-score ring and the decision-panel banner computed
+# two INDEPENDENT verdicts (one in Python from composite alone, one in JS that
+# also gated on the 126d historical recovery rate) — they could disagree, e.g.
+# the ring saying "BUY ZONE" while the banner said "WAIT & WATCH" for the same
+# run. Compute the one combined verdict here so every element on the page
+# reads the exact same value; JS no longer re-derives it.
+_pct126 = float(recovery_63.get(126, {}).get("pct_positive", 50.0))
+_med252 = float(recovery_63.get(252, {}).get("p50", 0.0))
+
+if composite >= 70 and _pct126 >= 55:
+    buy_label, verdict_tier = "BUY NOW", "bull"
+    verdict_sub = "Multiple signals aligned — historical evidence supports entry"
+elif composite >= 55 and _pct126 >= 50:
+    buy_label, verdict_tier = "BUY GRADUALLY", "bull_light"
+    verdict_sub = "Consider staged entry — not all signals aligned but conditions improving"
+elif composite >= 40 and _pct126 >= 43:
+    buy_label, verdict_tier = "WAIT & WATCH", "warn"
+    verdict_sub = "Approaching buy zone — monitor triggers below before committing"
+elif _pct126 < 40 and _med252 < 0:
+    buy_label, verdict_tier = "TOO EARLY", "bear"
+    verdict_sub = "Historical data shows continued weakness likely — preserve capital for now"
+else:
+    buy_label, verdict_tier = "WAIT & WATCH", "warn"
+    verdict_sub = "Mixed signals — no clear entry point yet"
 
 components = {
-    "draw_score":  round(draw_score,1),
-    "auto_score":  round(auto_score,1),
-    "prox_score":  round(prox_score,1),
-    "cpe_score":   round(cpe_score,1),
-    "composite":   composite,
-    "label":       buy_label,
+    "draw_score":   round(draw_score,1),
+    "auto_score":   round(auto_score,1),
+    "prox_score":   round(prox_score,1),
+    "cpe_score":    round(cpe_score,1),
+    "composite":    composite,
+    "label":        buy_label,
+    "verdict_tier": verdict_tier,
+    "verdict_sub":  verdict_sub,
+    "pct126":       round(_pct126, 1),
 }
 
 print(f"  Composite buy score: {composite} — {buy_label}")
@@ -1115,6 +1138,11 @@ main{padding:var(--pad);max-width:1540px;margin:0 auto;}
 
 <script>
 const D = """ + data_json + """;
+// Single verdict color/icon mapping, shared by the score ring and the
+// decision-panel banner — both read D.components.verdict_tier so they can
+// never disagree with each other.
+const TIER_COLOR = {bull:'var(--bull)', bull_light:'#8FD4A0', warn:'var(--warn)', bear:'var(--bear)'};
+const TIER_ICON  = {bull:'&#10003;', bull_light:'&#8599;', warn:'&#11044;', bear:'&#10007;'};
 const PL = {
   paper_bgcolor:'transparent',plot_bgcolor:'#141614',
   font:{family:'IBM Plex Mono,monospace',color:'#7A8F7A',size:10},
@@ -1178,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', init);
 function renderBuyScore(){
   const c = D.components;
   const score = c.composite;
-  const col = score>=70?'var(--bull)':score>=40?'var(--warn)':'var(--bear)';
+  const col = TIER_COLOR[c.verdict_tier] || 'var(--warn)';
 
   // Animate arc
   const circ = 327;
@@ -1553,24 +1581,12 @@ function renderDecision() {
   const med252   = r63['252'] ? r63['252'].p50 : 0;
   const n_hist   = r63['126'] ? r63['126'].n   : 0;
 
-  // Verdict
-  let verdict, vcolor, vicon, vsub;
-  if (score>=70 && pct126>=55) {
-    verdict='BUY NOW'; vcolor='var(--bull)'; vicon='&#10003;';
-    vsub='Multiple signals aligned — historical evidence supports entry';
-  } else if (score>=55 && pct126>=50) {
-    verdict='BUY GRADUALLY'; vcolor='#8FD4A0'; vicon='&#8599;';
-    vsub='Consider staged entry — not all signals aligned but conditions improving';
-  } else if (score>=40 && pct126>=43) {
-    verdict='WAIT &amp; WATCH'; vcolor='var(--warn)'; vicon='&#11044;';
-    vsub='Approaching buy zone — monitor triggers below before committing';
-  } else if (pct126<40 && med252<0) {
-    verdict='TOO EARLY'; vcolor='var(--bear)'; vicon='&#10007;';
-    vsub='Historical data shows continued weakness likely — preserve capital for now';
-  } else {
-    verdict='WAIT &amp; WATCH'; vcolor='var(--warn)'; vicon='&#11044;';
-    vsub='Mixed signals — no clear entry point yet';
-  }
+  // Verdict — read from the single Python-computed value (D.components),
+  // the same field the score ring uses, so the two can never disagree.
+  const verdict = c.label;
+  const vcolor  = TIER_COLOR[c.verdict_tier] || 'var(--warn)';
+  const vicon   = TIER_ICON[c.verdict_tier] || '&#11044;';
+  const vsub    = c.verdict_sub;
 
   document.getElementById('verdict-row').innerHTML =
     '<div class="verdict-icon" style="background:'+vcolor+'22;border:2px solid '+vcolor+'66">'+vicon+'</div>'+

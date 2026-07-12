@@ -22,7 +22,7 @@ Outputs:
 ============================================================
 """
 
-import json, os, warnings
+import json, os, re, warnings
 from datetime import datetime, date, timedelta
 import numpy as np
 import pandas as pd
@@ -402,6 +402,13 @@ for name, info in METALS.items():
                  "WATCH - APPROACHING BUY" if composite >= 40 else
                  "NEUTRAL - WAIT" if composite >= 25 else
                  "NOT YET")
+    # verdict_tier drives the buy-card's ring/text color in the browser — kept
+    # on the same 4-value scale (bull/bull_light/warn/bear) build_gold_dashboard.py
+    # uses, so Gold's imported verdict (below) colors identically to Silver/Platinum.
+    verdict_tier = ("bull" if composite >= 70 else
+                     "bull_light" if composite >= 55 else
+                     "warn" if composite >= 25 else
+                     "bear")
 
     print(f"  {name:9s}: spot ${spot_usd_oz:,.2f}/oz | draw={draw_score:5.1f} "
           f"auto={auto_score:5.1f} cpe={cpe_score:5.1f} -> composite={composite:5.1f} ({buy_label})")
@@ -422,12 +429,63 @@ for name, info in METALS.items():
         "cpe_score": cpe_score,
         "composite": composite,
         "buy_label": buy_label,
+        "verdict_tier": verdict_tier,
         "curr_pct_63": round(curr_pct_63*100, 1),
         "recovery_63": {str(k): v for k, v in recovery.items()},
         "horizons": horizons,
         "chart_dates":  [str(d.date()) for d in chart.index],
         "chart_prices": [round(float(p), 2) for p in chart.values],
     }
+
+# ── IMPORT GOLD'S AUTHORITATIVE NUMBERS FROM gold_dashboard.html ────
+# Gold's own dashboard uses a more elaborate composite formula (adds a 4th
+# "predictor proximity" component hand-tuned just for gold, plus GLD-ETF
+# settled-close price calibration) than the simplified 3-component formula
+# above. Rather than reimplement that formula a second time here — which is
+# exactly how the two dashboards drifted out of sync and showed conflicting
+# verdicts for gold on the same day — read gold_dashboard.html's already-
+# computed values directly (same technique log_predictions.py already uses)
+# so gold's number/verdict/spot-price can never disagree between the two
+# dashboards. Falls back to this script's own gold computation above if
+# gold_dashboard.html is missing or stale (e.g. running this script standalone
+# before build_gold_dashboard.py has ever run).
+if "Gold" in metal_data:
+    _gold_html = os.path.join(BASE_DIR, "gold_dashboard.html")
+    try:
+        if os.path.exists(_gold_html):
+            with open(_gold_html, encoding="utf-8") as _f:
+                _gold_content = _f.read()
+            _m = re.search(r'const D = (\{.*?\});\n', _gold_content, re.DOTALL)
+            if _m:
+                _GD = json.loads(_m.group(1))
+                _gd_date = datetime.strptime(_GD["generated"][:10], "%Y-%m-%d").date()
+                if (datetime.now().date() - _gd_date).days <= 1:
+                    _gc = _GD["components"]
+                    g = metal_data["Gold"]
+                    g["spot_usd_oz"]   = round(_GD["gold_usd"], 2)
+                    g["spot_sgd_oz"]   = round(_GD["gold_sgd_oz"], 2)
+                    g["spot_sgd_g"]    = round(_GD["gold_sgd_g"], 4)
+                    g["spot_src"]      = "GLD ETF (from gold_dashboard.html)"
+                    g["spot_date"]     = _GD["latest_date"]
+                    # _GD["chg"] came through json.loads so its keys are strings ("1","63",...)
+                    # while g["chg"]'s keys are still native ints at this point in the script.
+                    g["chg"]           = {k: _GD["chg"].get(str(k), g["chg"].get(k, 0)) for k in g["chg"]}
+                    g["dd_from_peak"]  = _GD["dd_from_peak"]
+                    g["peak_252"]      = _GD["peak_252"]
+                    g["draw_score"]    = _gc["draw_score"]
+                    g["auto_score"]    = _gc["auto_score"]
+                    g["cpe_score"]     = _gc["cpe_score"]
+                    g["composite"]     = _gc["composite"]
+                    g["buy_label"]     = _gc["label"]
+                    g["verdict_tier"]  = _gc["verdict_tier"]
+                    g["curr_pct_63"]   = _GD["curr_pct_63"]
+                    print(f"  Gold     : overridden with gold_dashboard.html's authoritative "
+                          f"composite={_gc['composite']} ({_gc['label']})")
+                else:
+                    print(f"  Gold     : gold_dashboard.html is {(datetime.now().date()-_gd_date).days}d "
+                          f"stale, keeping this script's own gold computation")
+    except Exception as _e:
+        print(f"  Gold     : could not import gold_dashboard.html ({_e}), keeping own computation")
 
 # ── SHARPE-BASED NEUTRAL WEIGHTS WITHIN THE METALS SLEEVE ────
 print("\nComputing Sharpe-based neutral weights within precious-metals sleeve...")
@@ -513,7 +571,8 @@ bundle = {
         "spot_sgd_g": d["spot_sgd_g"], "spot_src": d["spot_src"], "spot_date": d["spot_date"],
         "chg": d["chg"], "dd_from_peak": d["dd_from_peak"], "peak_252": d["peak_252"],
         "draw_score": d["draw_score"], "auto_score": d["auto_score"], "cpe_score": d["cpe_score"],
-        "composite": d["composite"], "buy_label": d["buy_label"], "curr_pct_63": d["curr_pct_63"],
+        "composite": d["composite"], "buy_label": d["buy_label"], "verdict_tier": d["verdict_tier"],
+        "curr_pct_63": d["curr_pct_63"],
         "recovery_63": d["recovery_63"],
         "chart_dates": d["chart_dates"], "chart_prices": d["chart_prices"],
         "color": d["info"]["color"], "icon": d["info"]["icon"], "desc": d["info"]["desc"],
@@ -749,12 +808,15 @@ const TC = {{
   "UNDERWEIGHT": {{color:"#E05555", bg:"#fdf4f4", border:"#f0c8c8"}},
   "NO SIGNAL":   {{color:"#aaa",    bg:"#f5f5f5", border:"#e0e0e0"}},
 }};
+// Keyed by verdict_tier (not the label text) since Gold's label/tier come
+// straight from gold_dashboard.html's own 4-value scheme (bull/bull_light/
+// warn/bear) while Silver/Platinum use this script's 5-label scheme mapped
+// onto the same 4 tiers — one color table works for all three cards.
 const BUY_COLORS = {{
-  "STRONG BUY ZONE":         "#1a6b3a",
-  "BUY ZONE":                "#4DB87A",
-  "WATCH - APPROACHING BUY": "#C87000",
-  "NEUTRAL - WAIT":          "#8B7355",
-  "NOT YET":                 "#E05555",
+  "bull":       "#1a6b3a",
+  "bull_light": "#4DB87A",
+  "warn":       "#C87000",
+  "bear":       "#E05555",
 }};
 
 function tiltPill(label){{
@@ -777,7 +839,7 @@ const bcEl = document.getElementById('buy-cards');
 for(const name of METAL_ORDER){{
   const m = D.metals[name];
   const color = m.color;
-  const buyColor = BUY_COLORS[m.buy_label] || '#888';
+  const buyColor = BUY_COLORS[m.verdict_tier] || '#888';
   const circumference = 2*Math.PI*40;
   const offset = circumference * (1 - m.composite/100);
   const card = document.createElement('div');
