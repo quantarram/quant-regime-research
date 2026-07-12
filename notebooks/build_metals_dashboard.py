@@ -43,7 +43,7 @@ METALS = {
         "hist":       "GC=F",   # full-history series used for drawdown/recovery stats
         "etf":        "GLD",    # ETF used for stable spot-price display
         "futures":    "GC=F",
-        "color":      "#C9882A",
+        "color":      "#C9A84C",
         "icon":       "\U0001F947",
         "desc":       "Gold futures and ETFs (GC=F/GLD/IAU)",
     },
@@ -52,7 +52,7 @@ METALS = {
         "hist":       "SI=F",
         "etf":        "SLV",
         "futures":    "SI=F",
-        "color":      "#9AA5AD",
+        "color":      "#B9C4CC",
         "icon":       "\U0001F948",
         "desc":       "Silver futures and ETF (SI=F/SLV)",
     },
@@ -61,7 +61,7 @@ METALS = {
         "hist":       "PPLT",   # PL=F has no deep parquet history — use ETF for stats
         "etf":        "PPLT",
         "futures":    "PL=F",   # only used for fresh-price cross-check, not history
-        "color":      "#7C8CA6",
+        "color":      "#9BAFC9",
         "icon":       "⬡",
         "desc":       "Platinum ETF (PPLT), futures cross-checked (PL=F)",
     },
@@ -638,26 +638,26 @@ html = f"""<!DOCTYPE html>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
   :root{{
-    --bg:#F5F0E8; --card:#fff; --border:#e5e5e5;
-    --text:#1a1a1a; --muted:#666; --faint:#f5f5f5;
-    --gold:#C9882A; --silver:#9AA5AD; --platinum:#7C8CA6;
-    --green:#1a6b3a; --red:#E05555; --amber:#C87000;
+    --bg:#0C0E0D; --card:#141614; --card2:#1B1E1B; --border:#2C302C; --border2:#3A3F3A;
+    --text:#DDE8DD; --muted:#7A8F7A; --faint:#1B1E1B;
+    --gold:#C9A84C; --green:#4DB87A; --red:#E05555; --amber:#E8A020;
     --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
   }}
   *{{box-sizing:border-box;margin:0;padding:0;}}
   body{{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}}
   .page{{max-width:1400px;margin:0 auto;padding:32px 24px 80px;}}
 
-  .header{{background:#1a1a1a;border-radius:16px;padding:32px 40px;margin-bottom:28px;
+  .header{{background:linear-gradient(160deg,#141614,#1B1E1B);border:1px solid var(--border2);
+           border-radius:16px;padding:32px 40px;margin-bottom:28px;
            display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}}
-  .h-title{{font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:6px;}}
+  .h-title{{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}}
   .h-title em{{font-style:italic;color:var(--gold);}}
-  .h-sub{{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:4px;}}
-  .h-meta{{font-size:12px;color:#aaa;}}
-  .h-badge{{background:rgba(201,136,42,0.15);border:1px solid rgba(201,136,42,0.3);
+  .h-sub{{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}}
+  .h-meta{{font-size:12px;color:var(--muted);}}
+  .h-badge{{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
             border-radius:12px;padding:12px 20px;text-align:center;}}
   .h-badge-num{{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}}
-  .h-badge-label{{font-size:10px;color:#888;display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}}
+  .h-badge-label{{font-size:10px;color:var(--muted);display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}}
 
   .section{{margin-bottom:28px;}}
   .section-title{{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
@@ -672,9 +672,9 @@ html = f"""<!DOCTYPE html>
   .buy-card::before{{content:'';position:absolute;top:0;left:0;right:0;height:4px;
                       background:var(--accent);}}
   .buy-head{{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}}
-  .buy-name{{font-family:var(--serif);font-size:22px;display:flex;align-items:center;gap:8px;}}
+  .buy-name{{font-family:var(--serif);font-size:22px;display:flex;align-items:center;gap:8px;color:var(--text);}}
   .buy-price{{text-align:right;}}
-  .buy-price-v{{font-family:var(--mono);font-size:16px;font-weight:600;}}
+  .buy-price-v{{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--text);}}
   .buy-price-s{{font-size:10px;color:var(--muted);margin-top:2px;}}
   .buy-ring-wrap{{display:flex;align-items:center;gap:16px;margin:14px 0;}}
   .buy-ring{{position:relative;width:100px;height:100px;flex-shrink:0;}}
@@ -688,10 +688,10 @@ html = f"""<!DOCTYPE html>
   .comp-item{{background:var(--faint);border-radius:6px;padding:6px 10px;}}
   .comp-label{{font-family:var(--mono);font-size:8px;color:var(--muted);
     text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;display:flex;justify-content:space-between;}}
-  .comp-bar-wrap{{height:4px;background:#e5e5e5;border-radius:2px;overflow:hidden;}}
+  .comp-bar-wrap{{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}}
   .comp-bar{{height:100%;border-radius:2px;}}
   .buy-stats{{display:flex;gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
-              font-family:var(--mono);font-size:11px;}}
+              font-family:var(--mono);font-size:11px;color:var(--text);}}
   .buy-stat-l{{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}}
 
   /* ── TILT TABLE ── */
@@ -701,24 +701,24 @@ html = f"""<!DOCTYPE html>
                   border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}}
   .tilt-table td{{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}}
   .tilt-table tr:last-child td{{border-bottom:none;}}
-  .tilt-table tr:hover td{{background:#fafafa;}}
+  .tilt-table tr:hover td{{background:var(--card2);}}
   .ac-cell{{display:flex;align-items:center;gap:10px;}}
   .ac-dot{{width:10px;height:10px;border-radius:50%;flex-shrink:0;}}
-  .ac-name{{font-weight:600;font-size:13px;}}
+  .ac-name{{font-weight:600;font-size:13px;color:var(--text);}}
   .ac-desc{{font-size:10px;color:var(--muted);margin-top:2px;}}
   .tilt-pill{{display:inline-flex;align-items:center;padding:4px 10px;
               border-radius:100px;font-family:var(--mono);font-size:9px;
               font-weight:600;letter-spacing:.06em;white-space:nowrap;}}
-  .weight-bar-bg{{background:#eee;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}}
+  .weight-bar-bg{{background:var(--border);border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}}
   .weight-bar-fill{{height:100%;border-radius:4px;}}
 
   .wt-row{{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);}}
   .wt-row:last-child{{border-bottom:none;}}
-  .wt-ac{{width:100px;font-size:12px;font-weight:600;}}
+  .wt-ac{{width:100px;font-size:12px;font-weight:600;color:var(--text);}}
   .wt-bars{{flex:1;display:flex;flex-direction:column;gap:5px;}}
   .wt-bar-row{{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;}}
   .wt-bar-label{{width:60px;color:var(--muted);}}
-  .wt-bar-track{{flex:1;background:#f0f0f0;border-radius:3px;height:8px;}}
+  .wt-bar-track{{flex:1;background:var(--border);border-radius:3px;height:8px;}}
   .wt-bar-fill{{height:100%;border-radius:3px;}}
   .wt-pct{{width:40px;text-align:right;}}
 
@@ -727,15 +727,19 @@ html = f"""<!DOCTYPE html>
   .sig-header{{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}}
   .sig-ac{{font-size:12px;font-weight:600;}}
   .sig-hor{{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;}}
-  .sig-row{{font-family:var(--mono);font-size:10px;padding:5px 0;
-             border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;gap:8px;}}
+  .sig-row{{font-family:var(--mono);font-size:10px;padding:5px 0;color:var(--text);
+             border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;}}
   .sig-row:last-child{{border-bottom:none;}}
   .sig-pred{{color:var(--muted);font-size:9px;}}
   .sig-cpe{{color:var(--green);font-weight:600;}}
   .sig-lift{{color:var(--gold);}}
 
-  .disclaimer{{background:#f9f7f4;border:1px solid #e5e0d5;border-radius:10px;
+  .disclaimer{{background:var(--card);border:1px solid var(--border);border-radius:10px;
                padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}}
+
+  ::-webkit-scrollbar{{width:4px;height:4px;}}
+  ::-webkit-scrollbar-track{{background:var(--bg);}}
+  ::-webkit-scrollbar-thumb{{background:var(--border2);border-radius:2px;}}
 
   @media(max-width:1000px){{
     .grid-3{{grid-template-columns:1fr;}}
@@ -837,12 +841,12 @@ html = f"""<!DOCTYPE html>
 const D = {bundle_json};
 const METAL_ORDER = {list(metal_data.keys())!r};
 const TC = {{
-  "OVERWEIGHT":  {{color:"#1a6b3a", bg:"#f0faf4", border:"#c8e6d0"}},
-  "TILT UP":     {{color:"#2A7A4B", bg:"#f5fbf7", border:"#d0ead8"}},
-  "NEUTRAL":     {{color:"#8B7355", bg:"#f9f7f4", border:"#e5e0d5"}},
-  "TILT DOWN":   {{color:"#C87000", bg:"#fdf8f0", border:"#f0ddb8"}},
-  "UNDERWEIGHT": {{color:"#E05555", bg:"#fdf4f4", border:"#f0c8c8"}},
-  "NO SIGNAL":   {{color:"#aaa",    bg:"#f5f5f5", border:"#e0e0e0"}},
+  "OVERWEIGHT":  {{color:"#4DB87A", bg:"rgba(77,184,122,0.12)",  border:"rgba(77,184,122,0.35)"}},
+  "TILT UP":     {{color:"#8FD4A0", bg:"rgba(143,212,160,0.10)", border:"rgba(143,212,160,0.30)"}},
+  "NEUTRAL":     {{color:"#B0A387", bg:"rgba(176,163,135,0.10)", border:"rgba(176,163,135,0.28)"}},
+  "TILT DOWN":   {{color:"#E8A020", bg:"rgba(232,160,32,0.10)",  border:"rgba(232,160,32,0.30)"}},
+  "UNDERWEIGHT": {{color:"#E05555", bg:"rgba(224,85,85,0.12)",   border:"rgba(224,85,85,0.35)"}},
+  "NO SIGNAL":   {{color:"#7A8F7A", bg:"rgba(122,143,122,0.10)", border:"rgba(122,143,122,0.28)"}},
 }};
 // Keyed by verdict_tier (not the label text) since Gold's label/tier come
 // straight from gold_dashboard.html's own 4-value scheme (bull/bull_light/
@@ -892,7 +896,7 @@ for(const name of METAL_ORDER){{
     <div class="buy-ring-wrap">
       <div class="buy-ring">
         <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#eee" stroke-width="8"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#2C302C" stroke-width="8"/>
           <circle cx="50" cy="50" r="40" fill="none" stroke="${{buyColor}}" stroke-width="8"
                   stroke-linecap="round" stroke-dasharray="${{circumference}}" stroke-dashoffset="${{offset}}"
                   style="transform:rotate(-90deg);transform-origin:50px 50px;"/>
@@ -951,9 +955,11 @@ const chartTraces = METAL_ORDER.map(name => {{
 Plotly.newPlot('chart-prices', chartTraces, {{
   margin:{{t:10,b:40,l:50,r:20}},
   paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-  legend:{{orientation:'h', y:-0.15}},
-  yaxis:{{title:'Cumulative return since 1yr ago (start = 100, i.e. 150 = +50%)', gridcolor:'#eee'}},
-  xaxis:{{gridcolor:'#eee'}},
+  font:{{family:'IBM Plex Mono,monospace', color:'#7A8F7A', size:10}},
+  legend:{{orientation:'h', y:-0.15, font:{{color:'#7A8F7A'}}}},
+  yaxis:{{title:'Cumulative return since 1yr ago (start = 100, i.e. 150 = +50%)',
+          gridcolor:'#2C302C', linecolor:'#2C302C', zerolinecolor:'#2C302C'}},
+  xaxis:{{gridcolor:'#2C302C', linecolor:'#2C302C', zerolinecolor:'#2C302C'}},
 }});
 
 // ── TILT TABLE ───────────────────────────────────────────────
@@ -963,7 +969,7 @@ for(const name of METAL_ORDER){{
   const m = D.metals[name];
   const delta = ts.overall_delta;
   const deltaStr = delta===0?'-':(delta>0?'+':'')+delta.toFixed(1)+'pp';
-  const deltaColor = delta>0?'#1a6b3a':delta<0?'#E05555':'#888';
+  const deltaColor = delta>0?'#4DB87A':delta<0?'#E05555':'#7A8F7A';
   const hl = ts.horizon_labels;
   const barW = Math.min(100, ts.suggested_w/70*100);
   const tr = document.createElement('tr');
@@ -998,12 +1004,14 @@ Plotly.newPlot('chart-weights',[{{
   type:'pie', hole:0.52,
   values: METAL_ORDER.map(n => D.suggested_weights[n] || 0),
   labels: METAL_ORDER.map(n => n + ' ' + (D.suggested_weights[n]||0).toFixed(1)+'%'),
-  marker:{{colors: METAL_ORDER.map(n => D.metals[n].color)}},
+  marker:{{colors: METAL_ORDER.map(n => D.metals[n].color), line:{{color:'#0C0E0D', width:2}}}},
   textinfo:'label',
+  textfont:{{color:'#0C0E0D'}},
+  outsidetextfont:{{color:'#DDE8DD'}},
   hovertemplate:'%{{label}}<br>Suggested: %{{value:.1f}}%<extra></extra>',
   sort:false,
 }}],{{
-  title:{{text:'Suggested Sleeve Weights',font:{{size:13}},x:0.5}},
+  title:{{text:'Suggested Sleeve Weights',font:{{size:13,color:'#DDE8DD'}},x:0.5}},
   showlegend:false, margin:{{t:40,b:10,l:10,r:10}},
   paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
 }});

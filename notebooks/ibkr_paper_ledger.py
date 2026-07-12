@@ -51,6 +51,16 @@ TICKERS = {"equities": "SPY", "gold": "GC=F", "bonds": "TLT",
 CLS_MAP = {"equities": "Equities", "gold": "Gold", "bonds": "Bonds",
            "crypto": "Crypto", "fx": "FX"}
 
+# Estimated ROUND-TRIP transaction cost per instrument, in bps of traded
+# notional. These are NOT measured fills (no live broker connection exists
+# here, see module docstring) -- they are conservative, published-spread-
+# based estimates, used only to make the README's own flagged "transaction
+# costs not modelled" limitation visible in this ledger as a cost drag,
+# rather than silently assuming zero cost like the rest of the CPE backtest.
+# SPY/TLT are amongst the most liquid ETFs traded (sub-bp typical spread);
+# IBIT and UUP are thinner and carry wider estimated spreads.
+COST_BPS = {"equities": 2.0, "gold": 3.0, "bonds": 4.0, "crypto": 6.0, "fx": 8.0}
+
 TODAY = date.today()
 
 LEDGER_COLS = [
@@ -65,6 +75,7 @@ LEDGER_COLS = [
     "nav_tilt_sgd", "nav_neutral_sgd",
     "daily_return_tilt", "daily_return_neutral",
     "cum_return_tilt", "cum_return_neutral",
+    "turnover_pct", "est_cost_drag_sgd", "cum_cost_drag_sgd",
     "notes",
 ]
 
@@ -160,30 +171,72 @@ def main():
     if df.empty:
         capital_usd = STARTING_CAPITAL_SGD / usdsgd
         nav_tilt_usd = nav_neutral_usd = capital_usd
-        nav_tilt_sgd = nav_neutral_sgd = STARTING_CAPITAL_SGD
-        daily_return_tilt = daily_return_neutral = 0.0
-        cum_return_tilt = cum_return_neutral = 0.0
+        nav_neutral_sgd = STARTING_CAPITAL_SGD
+        shares_tilt_prev = {cls: 0.0 for cls in TICKERS}
+        cum_cost_drag_sgd_prev = 0.0
+        daily_return_neutral = 0.0
+        cum_return_neutral = 0.0
         notes = "Ledger opened."
     else:
         prev = df.iloc[-1]
         shares_tilt_prev    = {cls: float(prev[f"{cls}_shares"]) for cls in TICKERS}
         shares_neutral_prev = {cls: float(prev[f"{cls}_shares_neutral"]) for cls in TICKERS}
-        nav_tilt_sgd_prev    = float(prev["nav_tilt_sgd"])
         nav_neutral_sgd_prev = float(prev["nav_neutral_sgd"])
+        # Backward-compatible: the ledger's opening row predates the cost
+        # columns, so fall back to 0 cumulative drag if not present yet.
+        cum_cost_drag_sgd_prev = (
+            float(prev["cum_cost_drag_sgd"]) if "cum_cost_drag_sgd" in df.columns else 0.0
+        )
 
         nav_tilt_usd    = sum(shares_tilt_prev[cls] * prices[cls] for cls in TICKERS)
         nav_neutral_usd = sum(shares_neutral_prev[cls] * prices[cls] for cls in TICKERS)
-        nav_tilt_sgd    = nav_tilt_usd * usdsgd
         nav_neutral_sgd = nav_neutral_usd * usdsgd
 
-        daily_return_tilt    = nav_tilt_sgd / nav_tilt_sgd_prev - 1
         daily_return_neutral = nav_neutral_sgd / nav_neutral_sgd_prev - 1
-        cum_return_tilt    = nav_tilt_sgd / STARTING_CAPITAL_SGD - 1
         cum_return_neutral = nav_neutral_sgd / STARTING_CAPITAL_SGD - 1
         notes = ""
 
-    shares_tilt    = {cls: target_tilt[cls] * nav_tilt_usd / prices[cls] for cls in TICKERS}
+    # Estimated transaction cost of today's rebalance (bullish-tilt track
+    # only -- see COST_BPS docstring above). Sized off PRE-cost NAV to
+    # avoid a circular dependency (cost depends on the trade, the trade
+    # depends on NAV), then the actual position is scaled down by the
+    # resulting net-of-cost capital so the cost is a real drag on the
+    # tracked account, not just a reported side figure.
+    #
+    # The ledger's very first row is the initial funding trade, not a
+    # rebalance -- there is no prior position to have paid a "round trip"
+    # against, so it is deliberately cost-free (matches a real account:
+    # the cost model only accrues from the second rebalance onward).
+    shares_target_gross = {cls: target_tilt[cls] * nav_tilt_usd / prices[cls] for cls in TICKERS}
+    if df.empty:
+        turnover_usd = est_cost_usd = 0.0
+        nav_tilt_usd_net = nav_tilt_usd
+        shares_tilt = dict(shares_target_gross)
+    else:
+        turnover_usd = sum(
+            abs(shares_target_gross[cls] - shares_tilt_prev[cls]) * prices[cls] for cls in TICKERS
+        )
+        est_cost_usd = sum(
+            abs(shares_target_gross[cls] - shares_tilt_prev[cls]) * prices[cls] * COST_BPS[cls] / 10_000
+            for cls in TICKERS
+        )
+        nav_tilt_usd_net = nav_tilt_usd - est_cost_usd
+        scale = nav_tilt_usd_net / nav_tilt_usd if nav_tilt_usd > 0 else 1.0
+        shares_tilt = {cls: shares_target_gross[cls] * scale for cls in TICKERS}
     shares_neutral = {cls: target_neutral[cls] * nav_neutral_usd / prices[cls] for cls in TICKERS}
+
+    nav_tilt_sgd = nav_tilt_usd_net * usdsgd
+    turnover_pct = (turnover_usd / nav_tilt_usd * 100) if nav_tilt_usd > 0 else 0.0
+    est_cost_drag_sgd = est_cost_usd * usdsgd
+    cum_cost_drag_sgd = cum_cost_drag_sgd_prev + est_cost_drag_sgd
+
+    if df.empty:
+        daily_return_tilt = 0.0
+        cum_return_tilt = nav_tilt_sgd / STARTING_CAPITAL_SGD - 1  # == 0.0
+    else:
+        nav_tilt_sgd_prev = float(df.iloc[-1]["nav_tilt_sgd"])
+        daily_return_tilt = nav_tilt_sgd / nav_tilt_sgd_prev - 1
+        cum_return_tilt    = nav_tilt_sgd / STARTING_CAPITAL_SGD - 1
 
     row = {"date": str(TODAY), "usdsgd_rate": round(usdsgd, 5)}
     for cls in TICKERS:
@@ -198,6 +251,9 @@ def main():
     row["daily_return_neutral"]  = round(daily_return_neutral * 100, 4)
     row["cum_return_tilt"]       = round(cum_return_tilt * 100, 4)
     row["cum_return_neutral"]    = round(cum_return_neutral * 100, 4)
+    row["turnover_pct"]          = round(turnover_pct, 4)
+    row["est_cost_drag_sgd"]     = round(est_cost_drag_sgd, 4)
+    row["cum_cost_drag_sgd"]     = round(cum_cost_drag_sgd, 4)
     row["notes"]                 = notes
 
     df = pd.concat([df, pd.DataFrame([row], columns=LEDGER_COLS)], ignore_index=True)
@@ -210,6 +266,9 @@ def main():
           f"{daily_return_neutral*100:+.2f}% today)")
     print(f"  Weights (bullish-only): " +
           "  ".join(f"{cls}={target_tilt[cls]*100:.1f}%" for cls in TICKERS))
+    print(f"  Turnover today: {turnover_pct:.2f}% of NAV  |  "
+          f"est. cost: SGD {est_cost_drag_sgd:,.2f} today, "
+          f"SGD {cum_cost_drag_sgd:,.2f} cumulative (estimated, not measured fills)")
     print(f"  Row appended → {LEDGER_CSV}")
     print("\nDone.\n")
 

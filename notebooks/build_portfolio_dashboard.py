@@ -585,11 +585,11 @@ html = f"""<!DOCTYPE html>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
 
   :root{{
-    --bg:#F5F0E8; --card:#fff; --border:#e5e5e5;
-    --text:#1a1a1a; --muted:#666; --faint:#f5f5f5;
-    --gold:#C9882A; --green:#1a6b3a; --red:#E05555;
+    --bg:#0C0E0D; --card:#141614; --card2:#1B1E1B; --border:#2C302C; --border2:#3A3F3A;
+    --text:#DDE8DD; --muted:#7A8F7A; --faint:#1B1E1B;
+    --gold:#C9A84C; --green:#4DB87A; --red:#E05555; --warn:#E8A020;
     --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
-    --blue:#4A90D9; --orange:#F5A623; --purple:#9B59B6;
+    --blue:#5B9BD5; --orange:#F5A623; --purple:#B07CC6;
   }}
   *{{box-sizing:border-box;margin:0;padding:0;}}
   body{{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}}
@@ -599,16 +599,17 @@ html = f"""<!DOCTYPE html>
   .page{{max-width:1400px;margin:0 auto;padding:32px 24px 80px;}}
 
   /* ── HEADER ── */
-  .header{{background:#1a1a1a;border-radius:16px;padding:32px 40px;margin-bottom:28px;
+  .header{{background:linear-gradient(160deg,#141614,#1B1E1B);border:1px solid var(--border2);
+           border-radius:16px;padding:32px 40px;margin-bottom:28px;
            display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}}
-  .h-title{{font-family:var(--serif);font-size:28px;color:#fff;margin-bottom:6px;}}
+  .h-title{{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}}
   .h-title em{{font-style:italic;color:var(--gold);}}
-  .h-sub{{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:4px;}}
-  .h-meta{{font-size:12px;color:#aaa;}}
-  .h-badge{{background:rgba(201,136,42,0.15);border:1px solid rgba(201,136,42,0.3);
+  .h-sub{{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}}
+  .h-meta{{font-size:12px;color:var(--muted);}}
+  .h-badge{{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
             border-radius:12px;padding:12px 20px;text-align:center;}}
   .h-badge-num{{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}}
-  .h-badge-label{{font-size:10px;color:#888;display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}}
+  .h-badge-label{{font-size:10px;color:var(--muted);display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}}
 
   /* ── SECTION ── */
   .section{{margin-bottom:28px;}}
@@ -639,18 +640,18 @@ html = f"""<!DOCTYPE html>
                   border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}}
   .tilt-table td{{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}}
   .tilt-table tr:last-child td{{border-bottom:none;}}
-  .tilt-table tr:hover td{{background:#fafafa;}}
+  .tilt-table tr:hover td{{background:var(--card2);}}
 
   .ac-cell{{display:flex;align-items:center;gap:10px;}}
   .ac-dot{{width:10px;height:10px;border-radius:50%;flex-shrink:0;}}
-  .ac-name{{font-weight:600;font-size:13px;}}
+  .ac-name{{font-weight:600;font-size:13px;color:var(--text);}}
   .ac-desc{{font-size:10px;color:var(--muted);margin-top:2px;}}
 
   .tilt-pill{{display:inline-flex;align-items:center;padding:4px 10px;
               border-radius:100px;font-family:var(--mono);font-size:9px;
               font-weight:600;letter-spacing:.06em;white-space:nowrap;}}
 
-  .weight-bar-bg{{background:#eee;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}}
+  .weight-bar-bg{{background:var(--border);border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}}
   .weight-bar-fill{{height:100%;border-radius:4px;transition:width .3s;}}
 
   /* ── SIGNAL CARDS ── */
@@ -662,7 +663,7 @@ html = f"""<!DOCTYPE html>
   .sig-ac{{font-size:12px;font-weight:600;color:var(--text);}}
   .sig-hor{{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;}}
   .sig-row{{font-family:var(--mono);font-size:10px;color:var(--text);padding:5px 0;
-             border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;gap:8px;}}
+             border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;}}
   .sig-row:last-child{{border-bottom:none;}}
   .sig-pred{{color:var(--muted);font-size:9px;}}
   .sig-cpe{{color:var(--green);font-weight:600;}}
@@ -671,17 +672,22 @@ html = f"""<!DOCTYPE html>
   /* ── WEIGHT COMPARISON ── */
   .wt-row{{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);}}
   .wt-row:last-child{{border-bottom:none;}}
-  .wt-ac{{width:90px;font-size:12px;font-weight:600;}}
+  .wt-ac{{width:90px;font-size:12px;font-weight:600;color:var(--text);}}
   .wt-bars{{flex:1;display:flex;flex-direction:column;gap:5px;}}
   .wt-bar-row{{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;}}
   .wt-bar-label{{width:60px;color:var(--muted);}}
-  .wt-bar-track{{flex:1;background:#f0f0f0;border-radius:3px;height:8px;}}
+  .wt-bar-track{{flex:1;background:var(--border);border-radius:3px;height:8px;}}
   .wt-bar-fill{{height:100%;border-radius:3px;}}
   .wt-pct{{width:40px;text-align:right;}}
 
   /* ── DISCLAIMER ── */
-  .disclaimer{{background:#f9f7f4;border:1px solid #e5e0d5;border-radius:10px;
+  .disclaimer{{background:var(--card);border:1px solid var(--border);border-radius:10px;
                padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}}
+
+  /* ── MISC ── */
+  ::-webkit-scrollbar{{width:4px;height:4px;}}
+  ::-webkit-scrollbar-track{{background:var(--bg);}}
+  ::-webkit-scrollbar-thumb{{background:var(--border2);border-radius:2px;}}
 
   /* ── RESPONSIVE ── */
   @media(max-width:900px){{
@@ -717,8 +723,8 @@ html = f"""<!DOCTYPE html>
 
 <!-- REGIME SUMMARY -->
 <div class="section">
-  <div class="card" id="regime-summary" style="background:linear-gradient(135deg,#1a1a2e 0%,#2a2a3e 100%);border:none;padding:24px 32px;">
-    <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:10px;">Today's Regime — Plain English Summary</div>
+  <div class="card" id="regime-summary" style="background:linear-gradient(135deg,#1B1E1B 0%,#222522 100%);border:1px solid var(--border2);padding:24px 32px;">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#9AAE9A;margin-bottom:10px;">Today's Regime — Plain English Summary</div>
     <div id="summary-text" style="font-size:16px;line-height:1.7;color:#eee;"></div>
     <div id="summary-signals" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
   </div>
@@ -791,20 +797,20 @@ const D = {bundle_json};
 
 // ── TILT COLORS ───────────────────────────────────────────────
 const TC = {{
-  "OVERWEIGHT":  {{color:"#1a6b3a", bg:"#f0faf4", border:"#c8e6d0"}},
-  "TILT UP":     {{color:"#2A7A4B", bg:"#f5fbf7", border:"#d0ead8"}},
-  "NEUTRAL":     {{color:"#8B7355", bg:"#f9f7f4", border:"#e5e0d5"}},
-  "TILT DOWN":   {{color:"#C87000", bg:"#fdf8f0", border:"#f0ddb8"}},
-  "UNDERWEIGHT": {{color:"#E05555", bg:"#fdf4f4", border:"#f0c8c8"}},
-  "NO SIGNAL":   {{color:"#aaa",    bg:"#f5f5f5", border:"#e0e0e0"}},
+  "OVERWEIGHT":  {{color:"#4DB87A", bg:"rgba(77,184,122,0.12)",  border:"rgba(77,184,122,0.35)"}},
+  "TILT UP":     {{color:"#8FD4A0", bg:"rgba(143,212,160,0.10)", border:"rgba(143,212,160,0.30)"}},
+  "NEUTRAL":     {{color:"#B0A387", bg:"rgba(176,163,135,0.10)", border:"rgba(176,163,135,0.28)"}},
+  "TILT DOWN":   {{color:"#E8A020", bg:"rgba(232,160,32,0.10)",  border:"rgba(232,160,32,0.30)"}},
+  "UNDERWEIGHT": {{color:"#E05555", bg:"rgba(224,85,85,0.12)",   border:"rgba(224,85,85,0.35)"}},
+  "NO SIGNAL":   {{color:"#7A8F7A", bg:"rgba(122,143,122,0.10)", border:"rgba(122,143,122,0.28)"}},
 }};
 
 const AC_COLORS = {{
-  "Equities": "#4A90D9",
-  "Gold":     "#C9882A",
-  "Bonds":    "#4B9E6F",
+  "Equities": "#5B9BD5",
+  "Gold":     "#C9A84C",
+  "Bonds":    "#4DB87A",
   "Crypto":   "#F5A623",
-  "FX":       "#9B59B6",
+  "FX":       "#B07CC6",
 }};
 
 function tiltPill(label){{
@@ -942,7 +948,7 @@ for(const ac of ACS){{
   if(!ts) continue;
   const delta = ts.overall_delta;
   const deltaStr = delta===0?'—':(delta>0?'+':'')+delta.toFixed(1)+'pp';
-  const deltaColor = delta>0?'#1a6b3a':delta<0?'#E05555':'#888';
+  const deltaColor = delta>0?'#4DB87A':delta<0?'#E05555':'#7A8F7A';
 
   const hl = ts.horizon_labels;
   const neutralW  = ts.neutral_w;
@@ -987,12 +993,14 @@ Plotly.newPlot('chart-weights',[{{
   type:'pie', hole:0.52,
   values: sugWts,
   labels: ACS.map((ac,i) => ac + ' ' + sugWts[i].toFixed(1)+'%'),
-  marker:{{colors}},
+  marker:{{colors, line:{{color:'#0C0E0D', width:2}}}},
   textinfo:'label',
+  textfont:{{color:'#DDE8DD'}},
+  outsidetextfont:{{color:'#DDE8DD'}},
   hovertemplate:'%{{label}}<br>Suggested: %{{value:.1f}}%<extra></extra>',
   sort:false,
 }}],{{
-  title:{{text:'Suggested Portfolio Weights',font:{{size:13}},x:0.5}},
+  title:{{text:'Suggested Portfolio Weights',font:{{size:13,color:'#DDE8DD'}},x:0.5}},
   showlegend:false,
   margin:{{t:40,b:10,l:10,r:10}},
   paper_bgcolor:'rgba(0,0,0,0)',
