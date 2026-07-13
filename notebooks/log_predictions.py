@@ -4,12 +4,15 @@
   CPE PREDICTION LOGGER
   Dr. Arun Ramanathan
 ============================================================
-Run this AFTER build_gold_dashboard.py and build_portfolio_dashboard.py
-each morning. It reads current dashboard state and appends
-timestamped prediction rows to two CSVs:
+Run this AFTER build_gold_dashboard.py, build_portfolio_dashboard.py,
+and build_metals_dashboard.py each morning. It reads current dashboard
+state and appends timestamped prediction rows to three CSVs:
 
   gold_predictions.csv       — one row per signal horizon
   portfolio_predictions.csv  — one row per day (all tilts)
+  metals_predictions.csv     — one row per (Silver/Platinum) x horizon
+                                 (Gold itself is already covered by
+                                 gold_predictions.csv above)
 
 After each horizon expires, run with --resolve to fill
 outcome columns for all PENDING rows that are now due.
@@ -34,8 +37,13 @@ warnings.filterwarnings("ignore")
 # ── PATHS ────────────────────────────────────────────────────
 # Adjust BASE_DIR to your notebooks folder
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-GOLD_CSV = os.path.join(BASE_DIR, "gold_predictions.csv")
-PORT_CSV = os.path.join(BASE_DIR, "portfolio_predictions.csv")
+GOLD_CSV   = os.path.join(BASE_DIR, "gold_predictions.csv")
+PORT_CSV   = os.path.join(BASE_DIR, "portfolio_predictions.csv")
+METALS_CSV = os.path.join(BASE_DIR, "metals_predictions.csv")
+
+# Metal name -> ticker used for both history stats and outcome-price resolution.
+# Must match build_metals_dashboard.py's METALS[name]["hist"].
+METALS_TICKERS = {"Silver": "SI=F", "Platinum": "PPLT"}
 
 TODAY = date.today()
 NOW   = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -52,6 +60,24 @@ print("=" * 60)
 #  so we can extract today's signal state without re-running
 #  the full dashboard.
 # ════════════════════════════════════════════════════════════
+
+def composite_to_verdict(composite):
+    """
+    Derive (verdict, direction) from a composite buy score. Thresholds must
+    match build_gold_dashboard.py's / build_metals_dashboard.py's composite
+    scale exactly (both use the same >=70/55/40/25 ladder).
+    """
+    if composite >= 70:
+        return "STRONG BUY", "BULLISH"
+    elif composite >= 55:
+        return "BUY ZONE", "BULLISH"
+    elif composite >= 40:
+        return "WAIT & WATCH", "NEUTRAL"
+    elif composite >= 25:
+        return "NEUTRAL", "NEUTRAL"
+    else:
+        return "TOO EARLY", "BEARISH"
+
 
 def fetch_gold_state():
     """
@@ -105,24 +131,7 @@ def fetch_gold_state():
     composite  = float(comp["composite"])
     label      = comp["label"]          # e.g. "WATCH — APPROACHING BUY"
 
-    # Derive clean verdict and direction from composite score
-    # Thresholds must match build_gold_dashboard.py exactly:
-    # >= 70 STRONG BUY, >= 55 BUY ZONE, >= 40 WATCH, >= 25 NEUTRAL, else NOT YET
-    if composite >= 70:
-        verdict   = "STRONG BUY"
-        direction = "BULLISH"
-    elif composite >= 55:
-        verdict   = "BUY ZONE"
-        direction = "BULLISH"
-    elif composite >= 40:
-        verdict   = "WAIT & WATCH"
-        direction = "NEUTRAL"
-    elif composite >= 25:
-        verdict   = "NEUTRAL"
-        direction = "NEUTRAL"
-    else:
-        verdict   = "TOO EARLY"
-        direction = "BEARISH"
+    verdict, direction = composite_to_verdict(composite)
 
     # ── Percentile of 63d return ──────────────────────────────
     # Stored in auto_cpe block
@@ -267,6 +276,64 @@ def fetch_portfolio_state():
     }
 
 
+def fetch_metals_state():
+    """
+    Parse today's state directly from precious_metals_dashboard.html for
+    Silver and Platinum (Gold is already tracked via fetch_gold_state()).
+    """
+    print("\n[METALS] Reading state from precious_metals_dashboard.html...")
+
+    html_path = os.path.join(BASE_DIR, "precious_metals_dashboard.html")
+    if not os.path.exists(html_path):
+        raise FileNotFoundError(
+            "precious_metals_dashboard.html not found. Run build_metals_dashboard.py first."
+        )
+
+    with open(html_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    import json
+    match = re.search(r'const D = (\{.*?\});\n', content, re.DOTALL)
+    if not match:
+        raise ValueError("Could not find 'const D = {...}' in precious_metals_dashboard.html")
+    D = json.loads(match.group(1))
+
+    # ── STALENESS GUARD ───────────────────────────────────────
+    generated_date = D.get("gen", "")[:10]  # "YYYY-MM-DD"
+    today_str = str(TODAY)
+    if generated_date != today_str:
+        raise RuntimeError(
+            f"precious_metals_dashboard.html was generated on {generated_date}, not today ({today_str}).\n"
+            f"Run build_metals_dashboard.py first, then re-run this script."
+        )
+
+    states = {}
+    for name in METALS_TICKERS:
+        d = D["metals"][name]
+        composite = float(d["composite"])
+        verdict, direction = composite_to_verdict(composite)
+
+        recovery = {int(tf): block for tf, block in d["recovery_63"].items()}
+        strong_horizons = sorted(recovery.keys())
+        if not strong_horizons:
+            strong_horizons = [126]
+
+        states[name] = {
+            "spot_usd_oz"    : float(d["spot_usd_oz"]),
+            "composite"      : composite,
+            "verdict"        : verdict,
+            "direction"      : direction,
+            "chg"            : {int(k): float(v) for k, v in d["chg"].items()},
+            "curr_pct_63"    : float(d["curr_pct_63"]),
+            "strong_horizons": strong_horizons,
+            "recovery"       : recovery,
+        }
+        print(f"  {name:9s}: spot=${float(d['spot_usd_oz']):,.2f}/oz  score={composite:.1f}/100  "
+              f"-> {verdict} ({direction})  strong_horizons={strong_horizons}")
+
+    return states
+
+
 # ════════════════════════════════════════════════════════════
 #  SECTION 2 — CSV INITIALISATION
 # ════════════════════════════════════════════════════════════
@@ -308,6 +375,28 @@ PORT_COLS = [
     "neutral_pnl",       # return of equal-weight portfolio
     "tilt_beat_neutral", # 1=yes, 0=no, blank=pending
     "status",
+    "notes",
+]
+
+
+METALS_COLS = [
+    # Prediction side
+    "date_predicted",
+    "metal",                  # Silver / Platinum
+    "spot_price_usd_oz",
+    "composite_score",
+    "verdict",
+    "direction",
+    "horizon_days",
+    "recovery_pct_positive",  # % of historical episodes that were positive at this horizon
+    "chg_21", "chg_63", "chg_126", "chg_252",
+    "curr_pct_63",            # current 63d-return percentile within own history
+    # Outcome side (filled on resolution)
+    "outcome_date",
+    "price_at_outcome",
+    "actual_return_pct",
+    "prediction_correct",     # 1=correct, 0=wrong, blank=pending
+    "status",                 # PENDING / RESOLVED
     "notes",
 ]
 
@@ -421,6 +510,53 @@ def log_portfolio(port_state):
           f"BD={ps['bonds_tilt']}  CR={ps['crypto_tilt']}  FX={ps['fx_tilt']}")
 
 
+def log_metals(metals_state):
+    init_csv(METALS_CSV, METALS_COLS)
+    df = pd.read_csv(METALS_CSV)
+
+    already = df[(df["date_predicted"].astype(str) == str(TODAY))]
+    rows = []
+    for name, ms in metals_state.items():
+        if not already[already["metal"] == name].empty:
+            print(f"  [METALS] {name} already logged for {TODAY} — skipping.")
+            continue
+
+        for tf in ms["strong_horizons"]:
+            rec = ms["recovery"].get(tf, {})
+            row = {
+                "date_predicted"       : str(TODAY),
+                "metal"                : name,
+                "spot_price_usd_oz"    : round(ms["spot_usd_oz"], 2),
+                "composite_score"      : round(ms["composite"], 1),
+                "verdict"              : ms["verdict"],
+                "direction"            : ms["direction"],
+                "horizon_days"         : tf,
+                "recovery_pct_positive": rec.get("pct_positive", ""),
+                "chg_21"               : ms["chg"].get(21, ""),
+                "chg_63"               : ms["chg"].get(63, ""),
+                "chg_126"              : ms["chg"].get(126, ""),
+                "chg_252"              : ms["chg"].get(252, ""),
+                "curr_pct_63"          : round(ms["curr_pct_63"], 1),
+                # Outcome — blank until resolved
+                "outcome_date"         : "",
+                "price_at_outcome"     : "",
+                "actual_return_pct"    : "",
+                "prediction_correct"   : "",
+                "status"               : "PENDING",
+                "notes"                : "",
+            }
+            rows.append(row)
+            print(f"  [METALS] Logged {name} horizon {tf}d  |  direction={ms['direction']}  |  score={ms['composite']:.1f}")
+
+    if not rows:
+        return
+
+    new_rows = pd.DataFrame(rows, columns=METALS_COLS)
+    df = pd.concat([df, new_rows], ignore_index=True)
+    df.to_csv(METALS_CSV, index=False)
+    print(f"  [METALS] {len(rows)} row(s) appended → {METALS_CSV}")
+
+
 # ════════════════════════════════════════════════════════════
 #  SECTION 4 — RESOLVE EXPIRED PREDICTIONS
 # ════════════════════════════════════════════════════════════
@@ -504,6 +640,70 @@ def resolve_gold():
 
     df.to_csv(GOLD_CSV, index=False)
     print(f"  [GOLD] {resolved} prediction(s) resolved.")
+
+
+def resolve_metals():
+    if not os.path.exists(METALS_CSV):
+        print("[METALS] No CSV found to resolve.")
+        return
+
+    df = pd.read_csv(METALS_CSV)
+    pending = df[df["status"] == "PENDING"].copy()
+    if pending.empty:
+        print("[METALS] No pending predictions to resolve.")
+        return
+
+    import yfinance as yf
+    resolved = 0
+    for name, ticker in METALS_TICKERS.items():
+        rows = pending[pending["metal"] == name]
+        if rows.empty:
+            continue
+
+        hist_cache = {}
+        for idx, row in rows.iterrows():
+            pred_date    = pd.to_datetime(row["date_predicted"]).date()
+            horizon_days = int(row["horizon_days"])
+            outcome_date = pred_date + timedelta(days=horizon_days)
+
+            if TODAY >= outcome_date:
+                if outcome_date not in hist_cache:
+                    start = outcome_date - timedelta(days=5)
+                    end   = outcome_date + timedelta(days=5)
+                    hist_cache[outcome_date] = yf.download(
+                        ticker, start=str(start), end=str(end),
+                        auto_adjust=True, progress=False)
+                hist = hist_cache[outcome_date]
+                if hist.empty:
+                    print(f"  [SKIP] No price data for {name} outcome date {outcome_date}")
+                    continue
+
+                out_price   = float(hist["Close"].squeeze().dropna().iloc[0])
+                entry_price = float(row["spot_price_usd_oz"])
+                actual_ret  = (out_price / entry_price - 1) * 100
+                direction   = row["direction"]
+
+                if direction == "BULLISH":
+                    correct = 1 if actual_ret > 0 else 0
+                elif direction == "BEARISH":
+                    correct = 1 if actual_ret < 0 else 0
+                else:  # NEUTRAL — correct if within ±3%
+                    correct = 1 if abs(actual_ret) < 3 else 0
+
+                df.at[idx, "outcome_date"]      = str(outcome_date)
+                df.at[idx, "price_at_outcome"]  = round(out_price, 2)
+                df.at[idx, "actual_return_pct"] = round(actual_ret, 2)
+                df.at[idx, "prediction_correct"]= correct
+                df.at[idx, "status"]            = "RESOLVED"
+
+                result_str = "✓ CORRECT" if correct else "✗ WRONG"
+                print(f"  [{name} {pred_date} → {outcome_date}] {direction} {horizon_days}d | "
+                      f"entry=${entry_price:.0f} → out=${out_price:.0f} | "
+                      f"ret={actual_ret:+.1f}% | {result_str}")
+                resolved += 1
+
+    df.to_csv(METALS_CSV, index=False)
+    print(f"  [METALS] {resolved} prediction(s) resolved.")
 
 
 def resolve_portfolio():
@@ -602,7 +802,7 @@ def print_summary():
     print("  PREDICTION LOG SUMMARY")
     print("=" * 60)
 
-    for label, path in [("GOLD", GOLD_CSV), ("PORTFOLIO", PORT_CSV)]:
+    for label, path in [("GOLD", GOLD_CSV), ("METALS", METALS_CSV), ("PORTFOLIO", PORT_CSV)]:
         if not os.path.exists(path):
             print(f"  {label}: no CSV yet")
             continue
@@ -616,6 +816,16 @@ def print_summary():
             acc = res["prediction_correct"].astype(float).mean() * 100
             print(f"  GOLD  : {n_total} rows | {n_pending} pending | "
                   f"{n_resolved} resolved | accuracy={acc:.0f}%")
+        elif label == "METALS" and n_resolved > 0:
+            res = df[df["status"] == "RESOLVED"]
+            acc = res["prediction_correct"].astype(float).mean() * 100
+            print(f"  METALS: {n_total} rows | {n_pending} pending | "
+                  f"{n_resolved} resolved | accuracy={acc:.0f}%")
+            for name in METALS_TICKERS:
+                mres = res[res["metal"] == name]
+                if len(mres) > 0:
+                    macc = mres["prediction_correct"].astype(float).mean() * 100
+                    print(f"    {name:9s}: {len(mres)} resolved | accuracy={macc:.0f}%")
         elif label == "PORTFOLIO" and n_resolved > 0:
             res = df[df["status"] == "RESOLVED"]
             win = res["tilt_beat_neutral"].astype(float).mean() * 100
@@ -646,15 +856,18 @@ def main():
 
     if do_log:
         print("\n── LOGGING TODAY'S PREDICTIONS ─────────────────────────")
-        gold_state = fetch_gold_state()
-        port_state = fetch_portfolio_state()
+        gold_state   = fetch_gold_state()
+        port_state   = fetch_portfolio_state()
+        metals_state = fetch_metals_state()
         log_gold(gold_state)
         log_portfolio(port_state)
+        log_metals(metals_state)
 
     if do_resolve:
         print("\n── RESOLVING EXPIRED PREDICTIONS ───────────────────────")
         resolve_gold()
         resolve_portfolio()
+        resolve_metals()
 
     print_summary()
     print("\nDone.\n")

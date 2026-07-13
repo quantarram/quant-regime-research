@@ -31,7 +31,7 @@ python ibkr_paper_ledger.py || { echo "ERROR: ibkr_paper_ledger.py failed."; exi
 
 echo ""
 echo "[6/7] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html ibkr_paper_ledger.csv
+git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html ibkr_paper_ledger.csv
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""
