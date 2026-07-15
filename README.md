@@ -127,6 +127,12 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ---
 
+## Visual Overview
+
+- [Framework Infographic (PDF)](notebooks/infographic_combined.pdf) — a 3-panel explainer covering what conditional exceedance is, a worked gold example, and the multi-asset atlas. **Note:** this is a point-in-time snapshot (16 June 2026) — the embedded prices, CPE values, and signal counts are illustrative of the methodology, not current; see the Live Dashboards above for today's numbers.
+
+---
+
 ## Research Papers
 
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7121799)
