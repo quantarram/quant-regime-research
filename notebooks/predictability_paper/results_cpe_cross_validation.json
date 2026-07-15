@@ -1,0 +1,9 @@
+{
+  "spy_signal_count_by_horizon": {
+    "63": 62,
+    "126": 219,
+    "252": 317,
+    "300": 292
+  },
+  "note": "317 validated signals at tau_future=252 vs 62 at tau_future=63, confirming 252d as SPY's most signal-dense CPE horizon -- independent corroboration of the structure-function pocket at tau~241."
+}
