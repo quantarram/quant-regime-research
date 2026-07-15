@@ -39,7 +39,7 @@ where ΔR is a space-time separation vector, H is the conservation/fluctuation e
 ⟨(Δf(ΔR))^q⟩ = decorrelated + correlated,
 correlated = Σ_{n=1}^{q−1} (−1)^{n+1} C(q,n) ⟨f(R+ΔR)^{q−n} f(R)^n⟩.  (Eq. 2)
 
-At ΔR = 0 the field is fully correlated (correlated = total, decorrelated = 0); as the lag grows, the decorrelated component grows and the correlated component shrinks, terminating — in the atmospheric picture — at total decorrelation. **Figure 1** illustrates this schematically for the classical monotonic case: correlated energy Eₒ decays smoothly from 1 toward 0 as decorrelated energy E_D rises from 0 toward 1, crossing at the point that defines the predictability limit.
+At ΔR = 0 the field is fully correlated (correlated = total, decorrelated = 0); as the lag grows, the decorrelated component grows and the correlated component shrinks, terminating — in the atmospheric picture — at total decorrelation. **Figure 1** illustrates this schematically for the classical monotonic case: correlated energy E_c decays smoothly from 1 toward 0 as decorrelated energy E_D rises from 0 toward 1, crossing at the point that defines the predictability limit.
 
 **[Figure 1 here: `figures/fig1_schematic_atmospheric_crossing.png`]**
 *Figure 1. Schematic of the atmospheric correlated/decorrelated energy decomposition. Correlated energy (green) decays monotonically from full correlation at zero lag toward zero as decorrelated energy (red) rises to consume the total (dashed). The predictability limit Δt_p is defined as the lag at which the correlated fraction crosses a critical ratio μ (here μ = 0.5). This one-way, monotonic cascade is the picture the atmospheric formalism assumes throughout — Section 5.2 shows financial markets do not follow it.*
@@ -163,19 +163,16 @@ Representative correlated-fraction ranges (q=2 / q=4) across the fifteen-instrum
 | Ticker | q=2 range | q=4 range |
 |---|---|---|
 | SPY | [0.44, 0.62] | [0.18, 0.70] |
-| QQQ | [0.46, 0.62] | [0.19, 0.73] |
-| IWM | [0.549, 0.644] | [0.471, 0.735] |
-| XLK | [0.486, 0.628] | [0.315, 0.736] |
-| XLF | [0.475, 0.627] | [0.307, 0.704] |
-| AAPL | [0.465, 0.598] | [0.292, 0.718] |
-| MSFT | [0.476, 0.580] | [0.271, 0.719] |
-| JPM | [0.443, 0.602] | [0.265, 0.644] |
-| XOM | [0.518, 0.630] | [0.459, 0.717] |
+| QQQ | [0.48, 0.62] | [0.27, 0.73] |
+| IWM | [0.55, 0.64] | [0.47, 0.74] |
+| XLK | [0.49, 0.63] | [0.32, 0.74] |
+| XLF | [0.48, 0.63] | [0.31, 0.70] |
+| AAPL | [0.47, 0.60] | [0.29, 0.72] |
+| MSFT | [0.48, 0.58] | [0.27, 0.72] |
+| JPM | [0.44, 0.60] | [0.27, 0.64] |
+| XOM | [0.52, 0.63] | [0.46, 0.72] |
 
-**Figure 9** summarizes this bounded-range property across the full fifteen-instrument sample at q=2, alongside which instruments retain a tradeable pocket under the τ≥21-day filter introduced in Section 5.4.
-
-**[Figure 9 here: `figures/fig9_cross_instrument_summary.png`]**
-*Figure 9. Correlated-fraction range (q=2, min–max across the 300-day lag window) for all fifteen instruments, grouped by asset class, with the μ=0.5 reference line. Blue bars denote instruments retaining a tradeable predictability pocket at τ≥21 days (q=4, gap magnitude exceeding 10% of the mean decorrelated moment — see Section 5.4); gray bars (EUR/USD, VIX) retain none.*
+This bounded-range property holds across the full fifteen-instrument sample, not just the nine shown above (Section 5.6, Figure 9, summarizes it across the complete sample).
 
 This is a genuine departure from the physical turbulence picture, where E_c/E_T is a monotonic function of lag by construction, running the full range from 1 at zero lag toward 0 as decorrelation completes. Here, the market appears to maintain a permanent floor of both persistence and stochasticity: it never fully "forgets" its own recent state (correlated fraction never reaches 0), and never becomes perfectly self-predictable either (never reaches 1). This is consistent with — and arguably a structure-function-level restatement of — the well-documented finite, long-memory autocorrelation structure of financial volatility (Ghashghaie et al., 1996; Bacry, Muzy & Delour, 2001), but to our knowledge has not previously been framed as a bounded-range counterpart to the atmospheric correlated/decorrelated energy decomposition specifically.
 
@@ -202,18 +199,23 @@ The shortest lags (τ=1–2) frequently dominate the raw gap ranking (visible in
 | EURUSD=X | 43 (only one negligible positive-gap point in the entire scan) | 43 (same) |
 | ^VIX | none | none |
 
-Two results stand out, both visible in Figure 9's blue/gray split. First, the ~21–24-day pocket survives this filter for almost every equity, confirming it is not solely an artifact of trivial short-lag continuity bleeding into nearby lags. Second, ^VIX loses *every* tradeable pocket once τ<21 is excluded — all of its apparent predictability lived in the first ten days (Figure 6, rightmost column), consistent with a sharp initial persistence (today's implied-volatility level is highly informative about tomorrow's) that decays before any economically actionable horizon is reached. EUR/USD shows a qualitatively different failure mode: the correlated and decorrelated components are effectively equal at every lag tested (gap magnitude below 10% of the mean decorrelated moment throughout — only a single, numerically negligible positive-gap point in the entire 300-day scan), indicating no exploitable structure by this measure at any horizon, not merely at short ones.
+Two results stand out (Figure 9, Section 5.6, shows both as a blue/gray split across the full sample). First, the ~21–24-day pocket survives this filter for almost every equity, confirming it is not solely an artifact of trivial short-lag continuity bleeding into nearby lags. Second, ^VIX loses *every* tradeable pocket once τ<21 is excluded — all of its apparent predictability lived in the first ten days (Figure 6, rightmost column), consistent with a sharp initial persistence (today's implied-volatility level is highly informative about tomorrow's) that decays before any economically actionable horizon is reached. EUR/USD shows a qualitatively different failure mode: the correlated and decorrelated components are effectively equal at every lag tested (gap magnitude below 10% of the mean decorrelated moment throughout — only a single, numerically negligible positive-gap point in the entire 300-day scan), indicating no exploitable structure by this measure at any horizon, not merely at short ones.
 
 ### 5.5 Cross-validation against the CPE framework
 
-SPY's q=4 tradeable ranking includes τ=241 — within a few trading days of 252, the conventional one-calendar-year trading-day count. Querying the author's pre-existing CPE results table (built via an entirely independent, nonparametric conditional-exceedance search across the same 161-instrument universe, sharing no methodological assumptions with the structure-function approach used in this paper) for SPY as the target instrument confirms that 252 trading days is SPY's single most signal-dense horizon in the CPE framework (**Figure 8**): 317 validated conditional-exceedance signals at exactly τ_future = 252, versus only 62 at τ_future = 63, many reaching CPE = 1.0 (perfect historical conditional hit rate) with lift up to 4.0×.
+SPY's q=4 tradeable ranking includes τ=241 — within a few trading days of 252, the conventional one-calendar-year trading-day count. Querying the author's pre-existing CPE results table (built via an entirely independent, nonparametric conditional-exceedance search across the same 161-instrument universe, sharing no methodological assumptions with the structure-function approach used in this paper) for SPY as the target instrument confirms that 252 trading days is SPY's single most signal-dense horizon in the CPE framework (**Figure 8**): 317 validated conditional-exceedance signals at exactly τ_future = 252, versus only 62 at τ_future = 63, many reaching CPE = 1.0 (perfect historical conditional hit rate) with lift up to 4.7×.
 
 **[Figure 8 here: `figures/fig8_cpe_cross_validation.png`]**
-*Figure 8. Count of validated CPE conditional-exceedance signals for SPY as the target instrument, by forward horizon. The 252-day horizon (red) is the clear maximum, more than 5× the count at 63 days, corroborating the structure-function pocket found independently at τ≈241 in Figure 7 and Table (Section 5.4).*
+*Figure 8. Count of validated CPE conditional-exceedance signals for SPY as the target instrument, by forward horizon. The 252-day horizon (red) is the clear maximum, more than 5× the count at 63 days, corroborating the structure-function pocket independently identified at τ=241 (Section 5.4's tradeable ranking table) — a real but modest local peak, smaller in the raw scan than the ~21-day pocket and not the single most visually prominent feature of Figure 7, but the one that lands closest to CPE's own 252-day maximum.*
 
 Because the two methods share no free parameters, no common search procedure, and were developed independently for different purposes (CPE for direct trading-signal generation; the structure-function decomposition presented here as a theoretically motivated predictability diagnostic), this convergence is a meaningful piece of corroborating evidence that the ~annual predictability pocket in SPY is a genuine feature of the instrument rather than an artifact specific to either method.
 
 ### 5.6 Asset-class heterogeneity
+
+**Figure 9** summarizes the bounded-range property (Section 5.2) and tradeable-pocket status (Section 5.4) together across the complete fifteen-instrument sample, grouped by asset class.
+
+**[Figure 9 here: `figures/fig9_cross_instrument_summary.png`]**
+*Figure 9. Correlated-fraction range (q=2, min–max across the 300-day lag window) for all fifteen instruments, grouped by asset class, with the μ=0.5 reference line. Blue bars denote instruments retaining a tradeable predictability pocket at τ≥21 days (q=4, gap magnitude exceeding 10% of the mean decorrelated moment — Section 5.4); gray bars (EUR/USD, VIX) retain none.*
 
 The strength and clarity of the pocket structure varies systematically by asset class, as summarized in Figure 9's grouping: equities (both broad-market and single-name) show it most cleanly and consistently; gold shows a weaker but still-present version; Treasury bonds (TLT) show it moderately; Bitcoin shows related but shifted pockets (its own ~21-day-scale and ~126-day pockets); FX (EUR/USD) shows essentially none; and volatility (VIX) shows a version confined entirely to the untradeable short-lag region. This heterogeneity argues against interpreting the pocket structure as a universal physical regularity of the kind Kolmogorov scaling represents in turbulence, and toward a market-microstructure-specific explanation tied to periodic institutional or calendar-driven flows (Section 6.2).
 
