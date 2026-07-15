@@ -1,12 +1,20 @@
 # Conditional Exceedance Probabilities for Event-Driven Trading
 
-This repository contains the full code, notebooks, and experiments for the **Conditional Probability of Exceedance (CPE)** framework — a live, production-deployed quantitative signal system covering 161 instruments across equities, fixed income, gold, cryptocurrencies, commodities, volatility, and FX.
+This repository contains the full code, notebooks, and experiments for an independent quantitative research program built around the **Conditional Probability of Exceedance (CPE)** framework — a live, production-deployed nonparametric signal system covering 161 instruments across equities, fixed income, gold, cryptocurrencies, commodities, volatility, and FX — plus two further research threads that test complementary angles on the same underlying question of what is predictable in financial markets, and over what horizon.
 
 **Author:** Arun Ramanathan, PhD (Independent Researcher | Singapore)
 
 ---
 
 ## Overview
+
+The work here spans three methodologically distinct threads, all documented as numbered papers below:
+
+1. **The CPE framework** (Papers 1–5, 9) — a nonparametric tail-co-movement signal system, described in full below, that powers the live dashboards.
+2. **Climate-finance and event-study extensions** (Papers 6–8, 10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
+3. **Multifractal predictability limits** (Paper 11) — adapts atmospheric turbulence cascade theory to ask how far ahead financial markets are structurally predictable at all, cross-validated against CPE's own signal density.
+
+### The CPE framework
 
 Rather than forecasting prices or returns, CPE asks a fundamentally different question:
 
@@ -21,7 +29,7 @@ The framework sweeps 51 million candidate configurations across 161 instruments 
 
 This produces 169,357 pairwise signals. A greedy joint-conditioning procedure then identifies multi-predictor configurations — e.g. "when IBIT and BITB are both simultaneously in their upper tails, gold exceeds its 252-day median return with probability 0.94 vs 0.37 unconditionally" — a 2.54× lift confirmed genuinely calibrated out-of-sample in Paper 4.
 
-**Key empirical results across the four-paper series:**
+**Key empirical results from the core CPE series (Papers 1–5):**
 - **Calibration (Paper 4):** 97.0% realised hit rate against 93.0% stated CPE across 103,983 resolved instances over 528 trading days. The framework is slightly conservative — it understated its own edge by ~4 percentage points.
 - **Gold dashboard:** BULLISH throughout all of 2025 (gold: $2,629 → $5,318/oz, +102%). Pivoted BEARISH in early February 2026. Directional discrimination: +7.23% average gold return on BULLISH days vs +2.46% on BEARISH days.
 - **Portfolio tilt (Paper 3):** Hold-to-horizon Sharpe 1.224 (pct_exceeding 1.8% vs 1,000 randomisation repetitions). Cross-sectional extension: Sharpe 1.613 across 61 episode-validated targets.
@@ -30,6 +38,8 @@ This produces 169,357 pairwise signals. A greedy joint-conditioning procedure th
 ---
 
 ## Method Summary
+
+This section describes the core CPE methodology (Papers 1–5, and 9's geography-corrected variant). Paper 10 uses a separate event-study/cumulative-abnormal-return methodology, and Paper 11 uses multifractal cascade and structure-function decomposition — see their respective papers and `notebooks/rein/` / `notebooks/predictability_paper/` for method details.
 
 For a fixed horizon τ and two assets X and Y:
 
@@ -83,6 +93,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 - [Gold Buy Signal Dashboard](https://quantarram.github.io/quant-regime-research/notebooks/gold_dashboard.html)
 - [Multi-Asset Portfolio Tilt Dashboard](https://quantarram.github.io/quant-regime-research/notebooks/portfolio_dashboard.html)
+- [Precious Metals Dashboard (Gold/Silver/Platinum)](https://quantarram.github.io/quant-regime-research/notebooks/precious_metals_dashboard.html)
 - [CPE Atlas Explorer (169K signals)](https://quantarram.github.io/quant-regime-research/notebooks/cpe_dashboard.html)
 
 ---
@@ -225,9 +236,20 @@ https://doi.org/10.5281/zenodo.21373459
 
 ```text
 .
-├── data/                  # Raw and processed price data
-├── notebooks/             # Exploratory and analysis notebooks
-├── src/                   # Core probability estimation and trading logic
+├── data/                          # Raw and processed price data
+├── notebooks/
+│   ├── cpe_engine_parallel.py       # Core CPE sweep engine (Papers 1-5)
+│   ├── joint_cpe_engine.py          # Multi-predictor joint-conditioning
+│   ├── build_gold_dashboard.py      # Gold buy-signal dashboard
+│   ├── build_portfolio_dashboard.py # Multi-asset portfolio tilt dashboard
+│   ├── build_metals_dashboard.py    # Precious metals dashboard
+│   ├── ibkr_paper_ledger.py         # IBKR paper-trading ledger
+│   ├── temperature/                 # Papers 6-9 climate-finance pipelines
+│   ├── rein/                        # Paper 10 hurricane/reinsurer event study
+│   ├── predictability_paper/        # Paper 11 multifractal analysis pipeline
+│   ├── dash_back/                   # Paper 5 dashboard backtest analysis
+│   └── *.html                       # Live dashboard outputs (GitHub Pages)
+├── src/                            # Core probability estimation and trading logic
 ├── requirements.txt
 └── README.md
 ```
