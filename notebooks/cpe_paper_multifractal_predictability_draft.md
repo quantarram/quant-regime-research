@@ -41,7 +41,7 @@ correlated = Σ_{n=1}^{q−1} (−1)^{n+1} C(q,n) ⟨f(R+ΔR)^{q−n} f(R)^n⟩.
 
 At ΔR = 0 the field is fully correlated (correlated = total, decorrelated = 0); as the lag grows, the decorrelated component grows and the correlated component shrinks, terminating — in the atmospheric picture — at total decorrelation. **Figure 1** illustrates this schematically for the classical monotonic case: correlated energy E_c decays smoothly from 1 toward 0 as decorrelated energy E_D rises from 0 toward 1, crossing at the point that defines the predictability limit.
 
-**[Figure 1 here: `figures/fig1_schematic_atmospheric_crossing.png`]**
+![Figure 1](predictability_paper/figures/fig1_schematic_atmospheric_crossing.png)
 *Figure 1. Schematic of the atmospheric correlated/decorrelated energy decomposition. Correlated energy (green) decays monotonically from full correlation at zero lag toward zero as decorrelated energy (red) rises to consume the total (dashed). The predictability limit Δt_p is defined as the lag at which the correlated fraction crosses a critical ratio μ (here μ = 0.5). This one-way, monotonic cascade is the picture the atmospheric formalism assumes throughout — Section 5.2 shows financial markets do not follow it.*
 
 The theoretical predictability limit Δt_p(q) is defined as the lag at which the correlated polyspectrum has fallen to a fixed critical ratio μ of the total:
@@ -71,7 +71,7 @@ parameterized by just two numbers: α, the Lévy index of multifractality (α = 
 2. **Conservation check.** Separately, regress the *unnormalized* first moment ⟨ε_λ¹⟩ against λ; a slope indistinguishable from zero indicates the field is (to first approximation) conservative, H ≈ 0.
 3. **Double Trace Moment (DTM) analysis.** Raise the finest-resolution field to a range of powers η, rebuild the cascade for each, and repeat step 1 at a fixed reference order q_ref to obtain K(q_ref, η). Because K(q, η) = η^α K(q, 1) for a universal-multifractal generator, α follows as the slope of log K(q_ref, η) against log η, and C1 follows from α and the directly measured K(q_ref) via Eq. 6.
 
-**[Figure 2 here: `figures/fig2_schematic_cascade.png`]**
+![Figure 2](predictability_paper/figures/fig2_schematic_cascade.png)
 *Figure 2. Schematic of the dyadic multifractal cascade underlying trace-moment analysis. The raw field at the finest resolution (λ=16, bottom) is repeatedly block-averaged in pairs to produce coarser-resolution versions (λ=8, 4, 2, 1); bar height and shading intensity indicate the local value of the field at each node. Trace moments computed across this pyramid of resolutions give K(q); this is a one-point statistic in the sense of Section 2.3 — no separation or lag is involved, only resolution.*
 
 ### 2.3 Two distinct statistical objects: K(q) and ξ(q)
@@ -84,7 +84,7 @@ For a conservative field (H = 0), Eq. 1 degenerates to Δf = φ — the fluctuat
 
 since K(1) = 0 identically for any universal-multifractal field (Eq. 6 evaluated at q = 1 gives zero regardless of α, C1). This algebraic reduction is exact, but — as Section 3.3 shows — it does not correspond to a physically sensible structure function for financial fields.
 
-**[Figure 3 here: `figures/fig3_schematic_Kq_vs_xiq.png`]**
+![Figure 3](predictability_paper/figures/fig3_schematic_Kq_vs_xiq.png)
 *Figure 3. K(q) versus ξ(q). Left: a one-point moment — the raw flux value ε_λ at many positions, all at the same resolution λ; K(q) describes how the q-th moment of this distribution scales with λ, and is driven at large q by the rare, large excursions (red). Right: a two-point moment — the field f(t) traced over time, with the structure function built from the difference f(t+Δt) − f(t) between two specific, separated points; ξ(q) describes how the q-th moment of this difference scales with the separation Δt.*
 
 ---
@@ -99,14 +99,14 @@ The atmospheric derivation (Eq. 4) depends critically on a spatial wavenumber k,
 
 We estimated the universal-multifractal parameters of SPY's raw daily closing price (the untransformed field — no log, no return, no other normalization — following standard practice in the multifractal literature of using a raw physical field rather than a derived quantity, and matching the convention the author used for rainfall rate in Ramanathan et al., 2022) via TM/DTM analysis, using a dyadic cascade built by successive pairwise block-averaging over the most recent 8,192 trading days (**Figure 2**, Section 2.2). **Figure 4** shows the result.
 
-**[Figure 4 here: `figures/fig4_dtm_analysis_spy.png`]**
+![Figure 4](predictability_paper/figures/fig4_dtm_analysis_spy.png)
 *Figure 4. TM/DTM analysis of SPY's raw daily closing price. (a) The trace-moment scaling function K(q), convex and passing through zero at q=1 as required. (b) The double-trace-moment regression at q_ref=2: log K(2,η) against log η is closely linear (R²=0.9997), with slope giving α=1.98.*
 
 The DTM estimate is stable and precisely determined: α = 1.98, C1 = 0.004, with the DTM regression achieving R² = 0.9997. The K(q) fit itself (Figure 4a) is markedly weaker in R² (0.44–0.46 across q) than the DTM ratio fit — consistent with raw price's multi-decade upward trend contaminating block-averaged moments at coarse resolution (each coarse "box" mostly reflects which era of the trend it falls in, rather than genuine multifractal intermittency); the DTM estimate of α is comparatively robust to this because it is a *ratio* of two similarly trend-affected quantities. Critically, the conservation exponent H — estimated via the scaling of the *unnormalized* first moment ⟨R_λ¹⟩ ~ λ^{−H} — is indistinguishable from zero (H ≈ 0.0000; the associated regression has essentially no slope to recover, so R² is not a meaningful diagnostic here, and the flat slope itself is the evidence). This mirrors a result the author obtained previously for rainfall rate (Ramanathan et al., 2022), where the same diagnostic likewise supported treating the field as conservative.
 
 The two-point structure-function exponent ξ(q) can, separately, be measured directly and empirically from the same raw price series via ⟨|Δp(τ)|^q⟩ ~ τ^{ξ(q)} (**Figure 5**), and this measurement is unaffected by the trend-contamination issue that weakens the K(q) fit, since differencing removes the trend.
 
-**[Figure 5 here: `figures/fig5_structure_function_spy.png`]**
+![Figure 5](predictability_paper/figures/fig5_structure_function_spy.png)
 *Figure 5. Structure-function scaling for SPY raw price. (a) ⟨|Δp(τ)|^q⟩ against lag τ for five representative q, all clean power laws (R² > 0.98 throughout, not shown per-panel for clarity). (b) The fitted exponent ξ(q) against q: concave relative to the dashed linear (monofractal) reference, the standard signature of genuine multifractal scaling.*
 
 ξ(q) is well-defined, clean (R² > 0.98 for every q tested, 0.5 through 6), and concave in q/ξ(q)/q — the expected multifractal signature. What fails is not the measurement of ξ(q) itself, but its use as an input to the atmospheric Δt_p(q) formula via the conservative-field shortcut of Eq. 7, and more generally the applicability of that formula's *physical* assumptions to a field that is empirically conservative, as the next section shows.
@@ -155,7 +155,7 @@ An initial implementation of the local-peak search for G(τ,q) excluded the boun
 
 Across every instrument tested, the correlated fraction C/(C+D) remains within a bounded, instrument-specific range across the full 300-trading-day lag window — never approaching either extreme (full correlation, fraction → 1, or full decorrelation, fraction → 0) that the atmospheric energy-cascade picture (Figure 1) assumes as its terminal state. **Figure 6** shows this directly for four representative instruments (SPY, MSFT, GLD, VIX) at q=2 and q=4: in every panel, the green (correlated) and red (decorrelated) curves visibly bound each other and neither ever collapses to the axis.
 
-**[Figure 6 here: `figures/fig6_correlated_decorrelated_panels.png`]**
+![Figure 6](predictability_paper/figures/fig6_correlated_decorrelated_panels.png)
 *Figure 6. Correlated (green) and decorrelated (red) structure functions against lag, on log-lag axes, for SPY, MSFT, GLD, and VIX at q=2 (top row) and q=4 (bottom row). The shaded region indicates which component is larger at each lag (green shading: correlated dominates, i.e., predictable; pink shading: decorrelated dominates). Gold stars mark the top-5 predictability lags by gap magnitude (boundary-corrected, Section 5.1). Note MSFT's qualitatively different pattern — long, slow crossings rather than the fast early oscillation seen in SPY, GLD, and VIX.*
 
 Representative correlated-fraction ranges (q=2 / q=4) across the fifteen-instrument sample:
@@ -180,7 +180,7 @@ This is a genuine departure from the physical turbulence picture, where E_c/E_T 
 
 Rather than a single decay time, G(τ,q) shows local maxima — "predictability pockets" — recurring at specific lags (visible as the star markers in Figure 6, and directly as peaks in the fine-grained lag scan of **Figure 7**). A pocket at approximately 21–24 trading days recurs across nearly every equity tested: SPY (τ=22 is the top boundary-corrected tradeable q=4 pocket, gap=1142), QQQ (τ=22 is the single strongest q=4 pocket of the entire 300-day scan, gap=1623), IWM, XLK (τ=22, gap=6.99), XLF, XLE, AAPL (τ=22, gap=67.5), GLD (τ=22 present though weaker, gap=332), and TLT. ^VIX also shows this pocket (visible as the local spike near lag 20 in Figure 7's lower panel) despite being a fundamentally different kind of instrument (an index of implied, not realized, volatility), suggesting the mechanism is not specific to equity price dynamics per se.
 
-**[Figure 7 here: `figures/fig7_predictability_pockets.png`]**
+![Figure 7](predictability_paper/figures/fig7_predictability_pockets.png)
 *Figure 7. Correlated fraction (q=4) against lag for SPY (top) and VIX (bottom), full 1–300 trading-day range at daily resolution, with CPE's own horizon grid (21, 63, 126, 252 trading days) marked as vertical dashed lines. Local peaks are visible near the 21-day and 126-day lines for SPY, and near the 21-day line for VIX.*
 
 MSFT is a clear exception: its predictability pockets sit almost entirely at longer horizons (τ=63, 123, 187, 250 — visible in Figure 6's second column as the qualitatively different, slower-oscillating pattern) rather than the ~21-day pocket dominant elsewhere, indicating the pocket structure is real but not universal even within a single asset class.
@@ -205,7 +205,7 @@ Two results stand out (Figure 9, Section 5.6, shows both as a blue/gray split ac
 
 SPY's q=4 tradeable ranking includes τ=241 — within a few trading days of 252, the conventional one-calendar-year trading-day count. Querying the author's pre-existing CPE results table (built via an entirely independent, nonparametric conditional-exceedance search across the same 161-instrument universe, sharing no methodological assumptions with the structure-function approach used in this paper) for SPY as the target instrument confirms that 252 trading days is SPY's single most signal-dense horizon in the CPE framework (**Figure 8**): 317 validated conditional-exceedance signals at exactly τ_future = 252, versus only 62 at τ_future = 63, many reaching CPE = 1.0 (perfect historical conditional hit rate) with lift up to 4.7×.
 
-**[Figure 8 here: `figures/fig8_cpe_cross_validation.png`]**
+![Figure 8](predictability_paper/figures/fig8_cpe_cross_validation.png)
 *Figure 8. Count of validated CPE conditional-exceedance signals for SPY as the target instrument, by forward horizon. The 252-day horizon (red) is the clear maximum, more than 5× the count at 63 days, corroborating the structure-function pocket independently identified at τ=241 (Section 5.4's tradeable ranking table) — a real but modest local peak, smaller in the raw scan than the ~21-day pocket and not the single most visually prominent feature of Figure 7, but the one that lands closest to CPE's own 252-day maximum.*
 
 Because the two methods share no free parameters, no common search procedure, and were developed independently for different purposes (CPE for direct trading-signal generation; the structure-function decomposition presented here as a theoretically motivated predictability diagnostic), this convergence is a meaningful piece of corroborating evidence that the ~annual predictability pocket in SPY is a genuine feature of the instrument rather than an artifact specific to either method.
@@ -214,7 +214,7 @@ Because the two methods share no free parameters, no common search procedure, an
 
 **Figure 9** summarizes the bounded-range property (Section 5.2) and tradeable-pocket status (Section 5.4) together across the complete fifteen-instrument sample, grouped by asset class.
 
-**[Figure 9 here: `figures/fig9_cross_instrument_summary.png`]**
+![Figure 9](predictability_paper/figures/fig9_cross_instrument_summary.png)
 *Figure 9. Correlated-fraction range (q=2, min–max across the 300-day lag window) for all fifteen instruments, grouped by asset class, with the μ=0.5 reference line. Blue bars denote instruments retaining a tradeable predictability pocket at τ≥21 days (q=4, gap magnitude exceeding 10% of the mean decorrelated moment — Section 5.4); gray bars (EUR/USD, VIX) retain none.*
 
 The strength and clarity of the pocket structure varies systematically by asset class, as summarized in Figure 9's grouping: equities (both broad-market and single-name) show it most cleanly and consistently; gold shows a weaker but still-present version; Treasury bonds (TLT) show it moderately; Bitcoin shows related but shifted pockets (its own ~21-day-scale and ~126-day pockets); FX (EUR/USD) shows essentially none; and volatility (VIX) shows a version confined entirely to the untradeable short-lag region. This heterogeneity argues against interpreting the pocket structure as a universal physical regularity of the kind Kolmogorov scaling represents in turbulence, and toward a market-microstructure-specific explanation tied to periodic institutional or calendar-driven flows (Section 6.2).
