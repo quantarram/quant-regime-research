@@ -89,6 +89,9 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7121799)
+- [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7069298)
+- [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7025318)
 - [Paper 8: VPD and Moisture Stress...](https://zenodo.org/records/21021264) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7017560)
 - [Paper 7: Agricultural Crop-Zone Temperatures in the CPE Framework: Heat Stress Thresholds, Growing Degree Days, and the Reversal of the Paper 6 Sugar Signal](https://zenodo.org/records/20993837) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7012738)
 - [Paper 6: Beyond Tail Co-Movement: How Temperature Extremes Shift Financial Return Distributions](https://zenodo.org/records/20964819) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7008418)
@@ -102,6 +105,12 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [What Weather Taught Me About Market Predictability](https://arunramanathans.substack.com/p/what-weather-taught-me-about-market)
+- [33 Historical Episodes Were Actually 3](https://arunramanathans.substack.com/p/33-historical-episodes-were-actually)
+- [Do Hurricanes Move Reinsurer Stocks? One Yes, One "Actually, No"](https://arunramanathans.substack.com/p/do-hurricanes-move-reinsurer-stocks)
+- [The Outliers Matter (And Most of Your Tools Aren't Looking For Them)](https://arunramanathans.substack.com/p/the-outliers-matter-and-most-of-your)
+- [Does the 2026 El Niño Move Sugar Prices? What Eight Historical Events Actually Show](https://arunramanathans.substack.com/p/does-the-2026-el-nino-move-sugar)
+- [The Signal That Wasn't There](https://arunramanathans.substack.com/p/the-signal-that-wasnt-there)
 - [Paper 8: When Heat Meets Drought — The Strongest Signals in the CPE Series](https://arunramanathans.substack.com/p/paper-8-when-heat-meets-drought-the)
 - [Paper 7: From the City to the Field: Solving the Geographic Mismatch in Climate-Finance](https://arunramanathans.substack.com/p/from-the-city-to-the-field-solving)
 - [Paper 6: Temperature Extremes Don't Co-Move With Financial Tails — They Shift the Whole Distribution](https://arunramanathans.substack.com/p/paper-6-temperature-extremes-dont)
@@ -182,6 +191,26 @@ https://doi.org/10.5281/zenodo.20993837
 RAMANATHAN S, A. (2026). Vapour Pressure Deficit and Moisture Stress in the CPE Framework:
 Joint Heat-Drought Conditions as the Strongest Climate-Finance Predictors. Zenodo.
 https://doi.org/10.5281/zenodo.21021264
+```
+
+**Paper 9 — When the Geography is Wrong, the Signal is Wrong**
+```
+RAMANATHAN S, A. (2026). When the Geography is Wrong, the Signal is Wrong. Zenodo.
+https://doi.org/10.5281/zenodo.21057110
+```
+
+**Paper 10 — Do Major Hurricane Landfalls Move Reinsurer Equity?**
+```
+RAMANATHAN S, A. (2026). Do Major Hurricane Landfalls Move Reinsurer Equity? Zenodo.
+https://doi.org/10.5281/zenodo.21231343
+```
+
+**Paper 11 — Empirical Predictability Limits of Financial Markets**
+```
+RAMANATHAN S, A. (2026). Empirical Predictability Limits of Financial Markets via
+Correlated-Decorrelated Structure Function Decomposition: A Departure from
+Atmospheric Turbulence Theory. Zenodo.
+https://doi.org/10.5281/zenodo.21373459
 ```
 ---
 
