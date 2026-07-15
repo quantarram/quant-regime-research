@@ -10,8 +10,8 @@ This repository contains the full code, notebooks, and experiments for an indepe
 
 The work here spans three methodologically distinct threads, all documented as numbered papers below:
 
-1. **The CPE framework** (Papers 1–5, 9) — a nonparametric tail-co-movement signal system, described in full below, that powers the live dashboards.
-2. **Climate-finance and event-study extensions** (Papers 6–8, 10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
+1. **The CPE framework** (Papers 1–5) — a nonparametric tail-co-movement signal system, described in full below, that powers the live dashboards.
+2. **Climate-finance and event-study extensions** (Papers 6–10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
 3. **Multifractal predictability limits** (Paper 11) — adapts atmospheric turbulence cascade theory to ask how far ahead financial markets are structurally predictable at all, cross-validated against CPE's own signal density.
 
 ### The CPE framework
@@ -39,7 +39,7 @@ This produces 169,357 pairwise signals. A greedy joint-conditioning procedure th
 
 ## Method Summary
 
-This section describes the core CPE methodology (Papers 1–5, and 9's geography-corrected variant). Paper 10 uses a separate event-study/cumulative-abnormal-return methodology, and Paper 11 uses multifractal cascade and structure-function decomposition — see their respective papers and `notebooks/rein/` / `notebooks/predictability_paper/` for method details.
+This section describes the core CPE methodology (Papers 1–5). Paper 9 reuses this exact method with geography-corrected coordinates for its temperature predictors, Paper 10 uses a separate event-study/cumulative-abnormal-return methodology, and Paper 11 uses multifractal cascade and structure-function decomposition — see their respective papers and `notebooks/rein/` / `notebooks/predictability_paper/` for method details.
 
 For a fixed horizon τ and two assets X and Y:
 
@@ -61,7 +61,7 @@ All probability tables are computed using pre-2025 data and remain frozen during
 
 ## Reproducibility
 
-**Core CPE framework (Papers 1–5, 9):**
+**Core CPE framework (Papers 1–5):**
 - **Data source:** Daily adjusted close prices via yfinance
 - **Universe:** 161 instruments across 6 asset classes
 - **Training period:** Full history through 2024-12-31
@@ -191,9 +191,9 @@ https://doi.org/10.5281/zenodo.20606184
 
 **Paper 2 — Single-Asset Trading Framework**
 ```
-RAMANATHAN S, A. (2026). A Simple Conditional Exceedance Framework for
+RAMANATHAN S, A. (2026). A Conditional Exceedance Framework for
 Interpretable Trading Decisions. Zenodo.
-https://doi.org/10.5281/zenodo.18382687
+https://doi.org/10.5281/zenodo.20769150
 ```
 
 **Paper 3 — Portfolio Tilt Out-of-Sample Test**
@@ -261,6 +261,7 @@ Correlated-Decorrelated Structure Function Decomposition: A Departure from
 Atmospheric Turbulence Theory. Zenodo.
 https://doi.org/10.5281/zenodo.21373459
 ```
+
 ---
 
 ## LinkedIn
