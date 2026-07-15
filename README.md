@@ -73,7 +73,7 @@ All probability tables are computed using pre-2025 data and remain frozen during
 **Climate-finance extensions (Papers 6–9):**
 - **Weather data source:** Open-Meteo archive API (free, no API key) for daily city/crop-zone temperatures, growing degree days, and vapour pressure deficit
 - **Financial data:** Same yfinance universe and CPE gating thresholds (CPE ≥ 0.80, lift ≥ 1.5×, n ≥ 100) as the core framework, with weather variables added as conditioning predictors
-- **Paper 9 correction:** re-derives Papers 6–7's temperature predictors using crop-zone-accurate (rather than city-centroid) coordinates — see Limitations below for what this correction found
+- **Paper 7 correction:** rebuilds Paper 6's temperature predictors using ERA5-consistent gridded crop-zone coordinates (rather than city centroids) — see Limitations below for what this correction found. Paper 9 is a standalone research-note summary of the whole programme that revisits this same reversal as its lead example, rather than an independent correction of its own.
 
 **Hurricane/reinsurer event study (Paper 10):**
 - **Event data:** Our World in Data, adapted from NOAA HURDAT (1990–2022), supplemented with NOAA/NHC official season totals (2023–2025) — the 14 costliest US hurricane landfalls since 1995
@@ -101,7 +101,7 @@ This repository is intended for research purposes. Honest limitations reported a
 - **Transaction costs:** Not modelled. Transaction cost break-even is ~10.1 bps per one-way leg for the 5-sleeve strategy — above realistic ETF costs but sensitive to AUM and operational overhead.
 
 **Climate-finance extensions (Papers 6–9):**
-- **Geographic mismatch (found and corrected in Paper 9):** Papers 6–7's city-centroid temperature predictors did not always align with the actual crop-growing or demand regions driving the target instrument. Re-deriving the analysis with crop-zone-accurate coordinates caused at least one previously reported signal (temperature ↔ sugar futures) to disappear entirely, indicating it lacked a real causal mechanism. Reported as a negative result rather than suppressed.
+- **Geographic mismatch (found in Paper 6, corrected in Paper 7):** Paper 6's city-centroid temperature predictors did not align with the actual sugar-growing regions driving CANE futures — a signal with real statistical properties (lift 1.42–1.63×) but no plausible geographic transmission mechanism. Paper 7 rebuilt the predictor set using ERA5 gridded crop-zone coordinates; the sugar signal disappeared entirely (zero surviving configurations), while genuine wheat, corn, and natural-gas channels emerged instead. Reported as a negative result rather than suppressed.
 - **Small independent-episode counts:** Several climate-predictor findings (e.g. the El Niño/monsoon → sugar analysis) rest on fewer than 10 historical episodes since 1990. Directionally consistent, but not enough to rule out coincidence to the same standard as the core CPE framework's larger-N signals.
 
 **Hurricane/reinsurer event study (Paper 10):**
