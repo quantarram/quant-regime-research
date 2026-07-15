@@ -61,6 +61,7 @@ All probability tables are computed using pre-2025 data and remain frozen during
 
 ## Reproducibility
 
+**Core CPE framework (Papers 1–5, 9):**
 - **Data source:** Daily adjusted close prices via yfinance
 - **Universe:** 161 instruments across 6 asset classes
 - **Training period:** Full history through 2024-12-31
@@ -69,12 +70,28 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Surviving signals:** 169,357 pairwise | 11,106 prior-gated
 - No parameters are tuned on test data. All configurations frozen at training cutoff.
 
+**Climate-finance extensions (Papers 6–9):**
+- **Weather data source:** Open-Meteo archive API (free, no API key) for daily city/crop-zone temperatures, growing degree days, and vapour pressure deficit
+- **Financial data:** Same yfinance universe and CPE gating thresholds (CPE ≥ 0.80, lift ≥ 1.5×, n ≥ 100) as the core framework, with weather variables added as conditioning predictors
+- **Paper 9 correction:** re-derives Papers 6–7's temperature predictors using crop-zone-accurate (rather than city-centroid) coordinates — see Limitations below for what this correction found
+
+**Hurricane/reinsurer event study (Paper 10):**
+- **Event data:** Our World in Data, adapted from NOAA HURDAT (1990–2022), supplemented with NOAA/NHC official season totals (2023–2025) — the 14 costliest US hurricane landfalls since 1995
+- **Equity data:** yfinance, RenaissanceRe (RNR) and Munich Re (MUV2.DE)
+- **Method:** market-model event study — OLS alpha/beta estimated over a 250-trading-day window ending 30 days before each event (standard gap), used to compute cumulative abnormal returns (CAR) over the event window
+
+**Multifractal predictability limits (Paper 11):**
+- **Data:** raw, untransformed daily price (no log/return/normalization transform) via yfinance, 15-instrument sample (SPY, QQQ, IWM, XLK, XLF, XLE, AAPL, MSFT, JPM, XOM, GLD, BTC-USD, TLT, EURUSD=X, ^VIX)
+- **Method:** Double Trace Moment (DTM) cascade estimation, structure-function scan, and correlated/decorrelated moment decomposition across τ = 1–300 trading days (q = 2, 4), cross-validated against the core CPE framework's own signal density at SPY's ~252-day horizon
+- Full pipeline documented in `notebooks/predictability_paper/README.md`
+
 ---
 
 ## Limitations
 
 This repository is intended for research purposes. Honest limitations reported across the paper series:
 
+**Core CPE framework (Papers 1–5):**
 - **Overlapping t-statistics:** Portfolio significance tests use overlapping weekly observations. Newey-West HAC correction with ~25 lags is required before formal journal submission and would reduce reported t-statistics.
 - **Bitcoin ETF concentration:** 103,983 calibration instances are dominated by IBIT, BITB, and FBTC — three near-identical instruments. Effective independent count is substantially smaller than nominal.
 - **Bearish signal failure:** Bearish CPE signals for gold achieved only 29% realised hit rate against 83.7% stated CPE. Root cause: UVXY/VIXY structural regime change in 2025, where volatility spikes coincided with gold surges rather than gold weakness as in the training period.
@@ -82,6 +99,18 @@ This repository is intended for research purposes. Honest limitations reported a
 - **Single regime:** 1.4 years of evaluation covers one sustained gold bull market. Sustained bear markets, credit crises, and deflationary environments have not been tested.
 - **Data sufficiency:** The validated vol→equity channel rests on 4 independent training-period episodes. Five observations (including the 2025 OOS result) cannot distinguish genuine predictive content from a well-supported coincidence. Approximately 3–5 additional independent episodes are needed.
 - **Transaction costs:** Not modelled. Transaction cost break-even is ~10.1 bps per one-way leg for the 5-sleeve strategy — above realistic ETF costs but sensitive to AUM and operational overhead.
+
+**Climate-finance extensions (Papers 6–9):**
+- **Geographic mismatch (found and corrected in Paper 9):** Papers 6–7's city-centroid temperature predictors did not always align with the actual crop-growing or demand regions driving the target instrument. Re-deriving the analysis with crop-zone-accurate coordinates caused at least one previously reported signal (temperature ↔ sugar futures) to disappear entirely, indicating it lacked a real causal mechanism. Reported as a negative result rather than suppressed.
+- **Small independent-episode counts:** Several climate-predictor findings (e.g. the El Niño/monsoon → sugar analysis) rest on fewer than 10 historical episodes since 1990. Directionally consistent, but not enough to rule out coincidence to the same standard as the core CPE framework's larger-N signals.
+
+**Hurricane/reinsurer event study (Paper 10):**
+- **One of two hypotheses failed to replicate:** the RenaissanceRe (RNR) short-horizon loss reaction held up under two independent statistical methods, but a hypothesized medium-horizon repricing effect in Munich Re did not — it was numerically indistinguishable from a hit of identical strength in a non-cat-exposed control ticker, and is reported as a null result rather than reframed as a weaker positive.
+- **Small event count:** 14 hurricane landfalls since 1995 limits statistical power relative to the core CPE framework's much larger signal-count studies.
+
+**Multifractal predictability limits (Paper 11):**
+- **Not a universal claim:** predictability regimes are instrument- and moment-order-dependent (persistent / single-crossing / oscillating), not a single decay law — see the paper's three-regime typology (Section 5.2) before generalizing any one instrument's result to others.
+- **DTM regression fit is comparatively weak** (R² 0.44–0.46) due to price-trend contamination in the raw (deliberately untransformed) field, though the structure-function and correlated/decorrelated decomposition results this paper relies on most are much better fit (R² > 0.98).
 
 The outputs should be interpreted as evidence of statistical structure and a research prototype that has cleared a first significance threshold — not a deployable trading strategy.
 
