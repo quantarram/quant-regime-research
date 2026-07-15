@@ -1,0 +1,182 @@
+{
+  "SPY": {
+    "2": {
+      "crossings": 47,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 15,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "QQQ": {
+    "2": {
+      "crossings": 30,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 83,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "IWM": {
+    "2": {
+      "crossings": 0,
+      "regime": "persistent",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 32,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    }
+  },
+  "XLK": {
+    "2": {
+      "crossings": 6,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 139,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "XLF": {
+    "2": {
+      "crossings": 25,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 19,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "XLE": {
+    "2": {
+      "crossings": 0,
+      "regime": "persistent",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 81,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "AAPL": {
+    "2": {
+      "crossings": 79,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 51,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "MSFT": {
+    "2": {
+      "crossings": 48,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 94,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "JPM": {
+    "2": {
+      "crossings": 63,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 31,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "XOM": {
+    "2": {
+      "crossings": 0,
+      "regime": "persistent",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 30,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    }
+  },
+  "GLD": {
+    "2": {
+      "crossings": 21,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 27,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "BTC-USD": {
+    "2": {
+      "crossings": 39,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 87,
+      "regime": "oscillating",
+      "dominant_side": "correlated"
+    }
+  },
+  "TLT": {
+    "2": {
+      "crossings": 0,
+      "regime": "persistent",
+      "dominant_side": "correlated"
+    },
+    "4": {
+      "crossings": 17,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "EURUSD=X": {
+    "2": {
+      "crossings": 3,
+      "regime": "single-crossing",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 0,
+      "regime": "persistent",
+      "dominant_side": "decorrelated"
+    }
+  },
+  "^VIX": {
+    "2": {
+      "crossings": 3,
+      "regime": "single-crossing",
+      "dominant_side": "decorrelated"
+    },
+    "4": {
+      "crossings": 7,
+      "regime": "oscillating",
+      "dominant_side": "decorrelated"
+    }
+  }
+}

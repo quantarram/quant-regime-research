@@ -1,7 +1,7 @@
 """
 Generates all figures for the predictability paper: three conceptual
-schematics (Figs. 1-3) and six data-driven figures (Figs. 4-9), reading
-from the JSON result files produced by scripts 01-04.
+schematics (Figs. 1-3) and seven data-driven figures (Figs. 4-10), reading
+from the JSON result files produced by scripts 01-04 and 06.
 """
 import json
 import os
@@ -322,7 +322,7 @@ def fig7_predictability_pockets():
     axes[1].set_xlabel("lag (trading days)")
     fig.suptitle("Predictability pockets vs. lag, with CPE's own horizon grid (21/63/126/252d)", fontsize=10)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIG_DIR, "fig7_predictability_pockets.png"))
+    fig.savefig(os.path.join(FIG_DIR, "fig8_predictability_pockets.png"))
     plt.close(fig)
 
 
@@ -345,7 +345,7 @@ def fig8_cpe_cross_validation():
     ax.set_title("SPY signal density by horizon (CPE framework)\n"
                   "vs. structure-function pocket at $\\tau\\approx241$d", fontsize=9.5)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIG_DIR, "fig8_cpe_cross_validation.png"))
+    fig.savefig(os.path.join(FIG_DIR, "fig9_cpe_cross_validation.png"))
     plt.close(fig)
 
 
@@ -384,7 +384,62 @@ def fig9_cross_instrument_summary():
     ax.set_title("Bounded predictability range by instrument\n"
                   "(blue = has tradeable pocket at $\\tau\\geq21$d, q=4; gray = none)", fontsize=9.5)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIG_DIR, "fig9_cross_instrument_summary.png"))
+    fig.savefig(os.path.join(FIG_DIR, "fig10_cross_instrument_summary.png"))
+    plt.close(fig)
+
+
+# ============================================================
+# Figure 10 (data): crossing-count typology across all instruments
+# ============================================================
+def fig10_crossing_typology():
+    d = load("results_crossing_typology.json")
+    tickers = ["SPY", "QQQ", "IWM", "XLK", "XLF", "XLE", "AAPL", "MSFT", "JPM", "XOM",
+               "GLD", "BTC-USD", "TLT", "EURUSD=X", "^VIX"]
+    labels = [t.replace("^", "").replace("=X", "") for t in tickers]
+
+    regime_color = {"persistent": "#1B7837", "single-crossing": C_ACCENT2, "oscillating": C_DECORR}
+    regime_marker = {"persistent": "s", "single-crossing": "D", "oscillating": "o"}
+
+    fig, ax = plt.subplots(figsize=(7, 5.5))
+    for i, tk in enumerate(tickers):
+        for q, dx, ms in [("2", -0.12, 7), ("4", 0.12, 6)]:
+            e = d[tk][q]
+            n = e["crossings"]
+            regime = e["regime"]
+            ax.scatter(n, i + dx, color=regime_color[regime], marker=regime_marker[regime],
+                       s=ms ** 2, zorder=5, edgecolor="black", linewidth=0.4)
+
+    ax.set_yticks(range(len(tickers)))
+    ax.set_yticklabels(labels, fontsize=9)
+    ax.invert_yaxis()
+    ax.set_xlabel("number of correlated/decorrelated crossings over 300-day lag window")
+    ax.axvspan(-3, 0.5, color="#1B7837", alpha=0.05)
+    ax.axvspan(0.5, 5.5, color=C_ACCENT2, alpha=0.05)
+    ax.axvspan(5.5, 145, color=C_DECORR, alpha=0.05)
+    ax.set_xlim(-3, 145)
+
+    handles = [
+        plt.Line2D([0], [0], marker="s", color="w", markerfacecolor=regime_color["persistent"],
+                   markeredgecolor="black", markersize=8, label="persistent (0 crossings)"),
+        plt.Line2D([0], [0], marker="D", color="w", markerfacecolor=regime_color["single-crossing"],
+                   markeredgecolor="black", markersize=7, label="single-crossing (1-5)"),
+        plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=regime_color["oscillating"],
+                   markeredgecolor="black", markersize=7, label="oscillating (>5)"),
+    ]
+    leg1 = ax.legend(handles=handles, loc="lower right", fontsize=8, title="regime", title_fontsize=8.5)
+    ax.add_artist(leg1)
+    size_handles = [
+        plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markeredgecolor="black",
+                   markersize=7, label="q=2"),
+        plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markeredgecolor="black",
+                   markersize=6, label="q=4"),
+    ]
+    ax.legend(handles=size_handles, loc="upper right", fontsize=8, title="moment order", title_fontsize=8.5)
+    ax.add_artist(leg1)
+
+    ax.set_title("Crossing-count typology: how many times do correlated\nand decorrelated swap dominance?", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(os.path.join(FIG_DIR, "fig7_crossing_typology.png"))
     plt.close(fig)
 
 
@@ -398,4 +453,5 @@ if __name__ == "__main__":
     fig7_predictability_pockets()
     fig8_cpe_cross_validation()
     fig9_cross_instrument_summary()
+    fig10_crossing_typology()
     print("All figures written to", FIG_DIR)
