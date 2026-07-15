@@ -130,6 +130,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 ## Visual Overview
 
 - [Framework Infographic (PDF)](notebooks/infographic_combined.pdf) — a 3-panel explainer covering what conditional exceedance is, a worked gold example, and the multi-asset atlas. **Note:** this is a point-in-time snapshot (16 June 2026) — the embedded prices, CPE values, and signal counts are illustrative of the methodology, not current; see the Live Dashboards above for today's numbers.
+- [CPE vs. Traditional Quant Tools](notebooks/infographic_1_cpe_v2.html) — the framework's core pitch in one panel: traditional approaches fit a model, choose a distributional family, and hope it holds out-of-sample; CPE instead counts historical occurrences directly and states a verifiable probability, no distributional assumptions. Uses Paper 1's published statistics (161 instruments, 169k surviving signals, 4.85× peak lift), not live data.
 
 ---
 
