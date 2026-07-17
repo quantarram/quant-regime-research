@@ -138,17 +138,17 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
-- [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7121799)
-- [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7069298)
-- [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7025318)
-- [Paper 8: VPD and Moisture Stress...](https://zenodo.org/records/21021264) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7017560)
-- [Paper 7: Agricultural Crop-Zone Temperatures in the CPE Framework: Heat Stress Thresholds, Growing Degree Days, and the Reversal of the Paper 6 Sugar Signal](https://zenodo.org/records/20993837) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7012738)
-- [Paper 6: Beyond Tail Co-Movement: How Temperature Extremes Shift Financial Return Distributions](https://zenodo.org/records/20964819) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7008418)
-- [Paper 5: Corrected Inference for the CPE Portfolio Tilt Strategy: Newey-West HAC Standard Errors and Robustness Checks](https://zenodo.org/records/20908417) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7000559)
-- [Paper 4: Signal-Level Calibration and Dashboard Utility of the CPE Framework](https://zenodo.org/records/20830462) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6990498)
-- [Paper 3: From Descriptive Atlas to Tradeable Signal](https://zenodo.org/records/20815386) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6980979)
-- [Paper 2: A Conditional Exceedance Framework for Interpretable Trading Decisions](https://zenodo.org/records/20769150) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6969158)
-- [Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe](https://zenodo.org/records/20606184) | [SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6931838)
+- [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
+- [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343)
+- [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110)
+- [Paper 8: VPD and Moisture Stress...](https://zenodo.org/records/21021264)
+- [Paper 7: Agricultural Crop-Zone Temperatures in the CPE Framework: Heat Stress Thresholds, Growing Degree Days, and the Reversal of the Paper 6 Sugar Signal](https://zenodo.org/records/20993837)
+- [Paper 6: Beyond Tail Co-Movement: How Temperature Extremes Shift Financial Return Distributions](https://zenodo.org/records/20964819)
+- [Paper 5: Corrected Inference for the CPE Portfolio Tilt Strategy: Newey-West HAC Standard Errors and Robustness Checks](https://zenodo.org/records/20908417)
+- [Paper 4: Signal-Level Calibration and Dashboard Utility of the CPE Framework](https://zenodo.org/records/20830462)
+- [Paper 3: From Descriptive Atlas to Tradeable Signal](https://zenodo.org/records/20815386)
+- [Paper 2: A Conditional Exceedance Framework for Interpretable Trading Decisions](https://zenodo.org/records/20769150)
+- [Paper 1: A Descriptive Atlas of Conditional Exceedance Structure Across a Multi-Asset Universe](https://zenodo.org/records/20606184)
 
 ---
 
