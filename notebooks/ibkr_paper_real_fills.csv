@@ -1,0 +1,6 @@
+fill_date,ticker,asset_class,shares,fill_price_usd,ledger_ref_price_usd,slippage_pct,notes
+2026-07-13,SPY,equities,82,755.31,754.95,0.048,Opening position
+2026-07-13,GLD,gold,138,377.95,377.01,0.249,"Opening position; real proxy for GC=F used in ledger/model"
+2026-07-13,TLT,bonds,103,84.55,84.47,0.095,Opening position
+2026-07-13,IBIT,crypto,1227,36.34,36.23,0.304,Opening position
+2026-07-13,UUP,fx,919,28.33,28.39,-0.211,"Opening position; first order attempt silently failed to submit, resubmitted as market order"
