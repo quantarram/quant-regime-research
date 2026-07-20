@@ -123,6 +123,14 @@ def fit_and_predict_quantiles(ticker, horizon, variant, feature_panel, price_ser
         m = lgb.LGBMRegressor(**LGB_BASE, objective="quantile", alpha=a)
         m.fit(X_train, y_train)
         preds[a] = float(m.predict(X_today)[0])
+    # Each alpha is an independently-fit model with no constraint that they stay
+    # ordered ("quantile crossing") -- monotone rearrangement (Chernozhukov,
+    # Fernandez-Val & Galichon, 2010): sort the predicted values and reassign to
+    # the (already-ascending) alpha grid. Confirmed occurring for a handful of
+    # long-horizon informed models (e.g. XLE@252d) via direct inspection of
+    # dashboard output.
+    sorted_vals = sorted(preds[a] for a in ALPHAS)
+    preds = dict(zip(ALPHAS, sorted_vals))
     return preds, as_of_date
 
 
