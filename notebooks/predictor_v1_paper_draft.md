@@ -34,10 +34,14 @@ Twenty-two instruments: nine broad-market/sector ETFs (SPY, QQQ, IWM, DIA, VTI, 
 
 ### 2.2 Multifractal dynamics features
 
-Each instrument's own price dynamics are summarized by the rolling structure-function and trace-moment features developed in Paper 11 (Ramanathan, 2026) and its antecedents (Ramanathan et al., 2019, 2022), computed on a trailing 512-trading-day window, refreshed daily:
+Each instrument's own price dynamics are summarized by the rolling structure-function and trace-moment features developed in Paper 11 (Ramanathan, 2026) and its antecedents (Ramanathan et al., 2019, 2022), computed on a trailing 512-trading-day window, refreshed daily. Structure-function exponents ξ(q) are estimated from the scaling relation
+
+<div class="eqn-center"><img src="predictor_v1/eq_figs/eq_structfunc.svg" alt="structure-function scaling relation"></div>
+
+fit at q = 2, 4 across lags τ ∈ {1,2,4,8,16,32,64}. The resulting feature set is:
 
 - **Trace-moment parameters** α, C1, H, from Double Trace Moment analysis of the raw price cascade (Paper 11, Eq. 5–6).
-- **Structure-function exponents** ξ(q) at q = 2, 4, from `⟨|Δp(τ)|^q⟩ ~ τ^ξ(q)` fit across lags τ ∈ {1,2,4,8,16,32,64}.
+- **Structure-function exponents** ξ(q) at q = 2, 4 (above).
 - **Correlated/decorrelated structure-function gap**, G(τ,q) = C(τ,q) − D(τ,q) (Paper 11, Eq. 8–9), computed on the absolute price-increment field at τ ∈ {1,5,21} and q ∈ {2,4}, giving six gap features per instrument per day.
 
 These eleven raw features (α, C1, H, ξ₂, ξ₄, and six gap terms) are z-scored **cross-sectionally, per calendar date**, within one of two disjoint instrument groups (an original 12-instrument panel sharing a z-score reference group with ^VIX and TLT as context sources, and a 10-instrument "new-ticker" panel z-scored independently) — never pooling the two groups, and never z-scoring an instrument against its own historical time series, which would reintroduce a slow-moving, level-dependent bias into what is meant to be a pure shape/regime feature.
@@ -48,22 +52,19 @@ Two forward-looking regime signals, each previously causally validated (Granger 
 
 **Credit-spread regime**, from the ratio of high-yield to investment-grade corporate bond ETFs:
 
-R_credit(t) = HYG(t) / LQD(t),
-credit_spread_regime(t) = [R_credit(t) − MA₂₀₀(R_credit)(t)] / SD₂₀₀(R_credit)(t),  (Eq. 1)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq1_credit_regime.svg" alt="Equation 1"><span class="eqn-num">(1)</span></div>
 
 using a plain 200-trading-day rolling mean and standard deviation with no minimum-period relaxation (the feature is undefined for the first 200 days of any series).
 
 **VIX-term-structure regime**, from the ratio of medium-term to short-term VIX futures ETPs:
 
-R_vix(t) = ln[VIXM(t) / VIXY(t)],
-vix_term_slope(t) = [R_vix(t) − MA₂₀₀(R_vix)(t)] / SD₂₀₀(R_vix)(t),  (Eq. 2)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq2_vix_regime.svg" alt="Equation 2"><span class="eqn-num">(2)</span></div>
 
 using a 200-day rolling window with `min_periods = 100` — an intentional asymmetry against Eq. 1, inherited from the original feature-engineering work and preserved exactly rather than "corrected" for aesthetic symmetry, since the two features were developed and validated independently and there is no principled reason they should share an availability convention.
 
 Each instrument's own multifractal gap and structure-function-exponent z-scores are then interacted multiplicatively with both regime signals:
 
-interact_gap,credit(t) = gap_τ=21,q=4_z(t) · credit_spread_regime(t),
-interact_ξ,credit(t) = ξ₄_z(t) · credit_spread_regime(t),  (Eq. 3)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq3_interactions.svg" alt="Equation 3"><span class="eqn-num">(3)</span></div>
 
 and symmetrically for the VIX-term regime, giving three additional feature columns per regime (the interaction pair plus the raw regime level itself).
 
@@ -84,10 +85,9 @@ For each instrument, four candidate forecasting models compete on equal footing 
 
 For each candidate and horizon H, five independent LightGBM quantile regressors are fit, one per quantile level α ∈ {0.10, 0.25, 0.50, 0.75, 0.90}, each minimizing the pinball loss
 
-L_α(y, ŷ) = { α(y − ŷ)         if y ≥ ŷ
-            { (1 − α)(ŷ − y)   if y < ŷ,  (Eq. 4)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq4_pinball.svg" alt="Equation 4"><span class="eqn-num">(4)</span></div>
 
-with y the realized H-day-forward log return, using `n_estimators=200, max_depth=4, learning_rate=0.05, subsample=0.8, colsample_bytree=0.8`. Seven horizons are searched: H ∈ {1, 5, 21, 63, 126, 189, 252} trading days.
+— the standard piecewise pinball loss (α(y−ŷ) for y ≥ ŷ, (1−α)(ŷ−y) for y < ŷ), written here in its equivalent single-expression max form; identical objective, unchanged from `objective="quantile"` in the actual LightGBM calls throughout this work. Here y is the realized H-day-forward log return, fit using `n_estimators=200, max_depth=4, learning_rate=0.05, subsample=0.8, colsample_bytree=0.8`. Seven horizons are searched: H ∈ {1, 5, 21, 63, 126, 189, 252} trading days.
 
 ### 3.3 Selection methodology and a data-snooping correction
 
@@ -100,7 +100,7 @@ The full historical out-of-sample period is split chronologically at a single fi
 
 The winning **horizon** per instrument is chosen by Fractional Skill Score (FSS; Roberts & Lean, 2008) — skill above the climatology candidate, averaged across a grid of evaluation windows (21, 63, 126, 252 days) and return-magnitude thresholds (±5%, ±7.5%, ±10%) — computed on the selection period only. The winning **candidate** (climatology vs. credit-only vs. vix-only vs. both) at that horizon is then chosen by holdout-period mean absolute percentage price error (MAPE):
 
-MAPE = (1/N) Σ | P̂(t+H) / P(t+H) − 1 | × 100,  P̂(t+H) = P(t) · exp(q̂₀.₅(t)),  (Eq. 5)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq5_mape.svg" alt="Equation 5"><span class="eqn-num">(5)</span></div>
 
 i.e., price accuracy, not skill-score, is the final deciding criterion — chosen deliberately over FSS as the tiebreaker because FSS answers "does the model get the rate of threshold-crossings right" while MAPE answers "how close is the actual point forecast," and the two disagree for 9 of 22 instruments; the median forecast's absolute accuracy is the more economically direct question.
 
@@ -142,7 +142,7 @@ Five structurally distinct ways of converting the master model's forecasts into 
 
 Statistical significance of any risk-adjusted excess return is assessed via a market-model (Jensen's alpha) regression of net strategy daily returns on a benchmark's daily returns:
 
-r_strategy(t) = α + β · r_benchmark(t) + ε(t),  (Eq. 6)
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq6_jensens_alpha.svg" alt="Equation 6"><span class="eqn-num">(6)</span></div>
 
 with α and its analytic (not resampling-based) standard error and t-statistic estimated by ordinary least squares.
 

@@ -123,3 +123,42 @@ code {
 /* References section: hanging indent */
 h2:has(+ p) {
 }
+
+/* Numbered display equations (rendered math images, see
+   predictor_v1/render_paper_equations.py) -- classic journal layout: image
+   centered in the column, equation tag flush right, via symmetric flex
+   spacers either side. Additive only -- does not alter any rule above. */
+.eqn-row {
+  display: flex;
+  align-items: center;
+  margin: 1em 0;
+  page-break-inside: avoid;
+}
+
+.eqn-row .eqn-spacer {
+  flex: 1 1 0;
+}
+
+.eqn-row img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.eqn-row .eqn-num {
+  flex: 1 1 0;
+  text-align: right;
+  font-family: "Georgia", serif;
+  font-size: 10.6pt;
+  padding-right: 2pt;
+}
+
+.eqn-center {
+  text-align: center;
+  margin: 0.9em 0;
+  page-break-inside: avoid;
+}
+
+.eqn-center img {
+  max-width: 100%;
+}
