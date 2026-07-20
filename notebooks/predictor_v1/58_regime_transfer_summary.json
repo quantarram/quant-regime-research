@@ -1,0 +1,10 @@
+{
+  "GLD": {
+    "n_segments": 286,
+    "pct_transferred_ok": 38.46153846153847
+  },
+  "JPM": {
+    "n_segments": 372,
+    "pct_transferred_ok": 35.752688172043015
+  }
+}
