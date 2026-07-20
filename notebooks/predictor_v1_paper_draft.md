@@ -253,6 +253,14 @@ The correction is refit from a trailing window of already-resolved (prediction, 
 
 The dashboard (`predictor_dashboard.html`, published via GitHub Pages alongside this research program's other live dashboards) is deliberately built as a forecast-accuracy tracker — predicted price, quantile band, and holdout-honest MAPE per instrument — with no buy/sell signal, verdict score, or trading-recommendation styling of any kind, directly because Section 5 found no instrument with demonstrated tradeable alpha. A mechanical guardrail (a grep for forbidden trading-verdict tokens) runs on every generated build to enforce this.
 
+### 7.4 A quantile-crossing bug, caught and fixed
+
+**A live-deployment-specific bug, invisible to every backtest metric reported above, caught by direct inspection of the dashboard's own output.** Each of the five quantile levels (α ∈ {0.10, 0.25, 0.50, 0.75, 0.90}) is fit as an independent LightGBM model (Section 3.2); nothing constrains their predictions to stay ordered relative to one another at a given prediction date, a well-known failure mode of independently-fit quantile regressors known as *quantile crossing*. Section 4's MAPE metric only ever scores the median (q0.5, Eq. 7) and is blind to this: a crossed band can look fine on every backtest number reported in this paper while showing an internally-impossible result live (e.g., a median forecast below its own 10th-percentile forecast).
+
+Checking all 22 live predictions directly (not merely assumed correct because the backtest was) found exactly this: 3 of 22 instruments — XLE, EURUSD=X, and XLP, all long-horizon (189–252 day) informed-model forecasts, where per-quantile training targets are visibly noisier — had a crossed quantile ordering. XLE was the worst case: a predicted median of \$46.26, below its own predicted 10th percentile of \$49.21. Climatology-based instruments never showed this failure, consistent with their being read from a fixed empirical quantile table (inherently ordered by construction) rather than five separately-optimized models.
+
+Fixed with *monotone rearrangement* (Chernozhukov, Fernández-Val & Galichon, 2010): at each prediction date, the five raw quantile outputs are sorted and reassigned to the (already-ascending) α grid, in log-return space before conversion to price — a standard, minimal correction that changes nothing about which model produced the prediction, only enforces the ordering constraint the model's own architecture cannot guarantee. Applied before the GLD/JPM rolling correction (Section 7.2), which is itself order-preserving (both moment-matching and quantile-mapping are monotonic transforms) and so does not reintroduce crossing once removed. Verified 0 of 22 instruments crossing after the fix, live.
+
 ---
 
 ## 8. Discussion
@@ -284,6 +292,8 @@ A master-model forecasting framework combining causally-validated market regime 
 ---
 
 ## References
+
+Chernozhukov, V., Fernández-Val, I., & Galichon, A. (2010). Quantile and probability curves without crossing. *Econometrica*, 78(3), 1093–1125.
 
 Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. *The Annals of Statistics*, 29(5), 1189–1232.
 
