@@ -1,0 +1,178 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "variant": "both",
+    "selection_skill": 0.12140368894038178,
+    "holdout_skill": -0.07255582328313792,
+    "n_selection": 1259,
+    "n_holdout": 855
+  },
+  "DIA": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "selection_skill": 0.059433471861807086,
+    "holdout_skill": 0.09268419948036621,
+    "n_selection": 1259,
+    "n_holdout": 981
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "selection_skill": 0.1106984374832688,
+    "holdout_skill": 0.16454557293882943,
+    "n_selection": 1256,
+    "n_holdout": 923
+  },
+  "GLD": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "selection_skill": 0.07471984989219271,
+    "holdout_skill": 0.13455187392285167,
+    "n_selection": 1259,
+    "n_holdout": 928
+  },
+  "IWM": {
+    "horizon": 21,
+    "variant": "credit_only",
+    "selection_skill": 0.04503100795777493,
+    "holdout_skill": -0.10692865374173033,
+    "n_selection": 2015,
+    "n_holdout": 1086
+  },
+  "IYR": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "selection_skill": 0.15649850229448725,
+    "holdout_skill": -0.1864264664057897,
+    "n_selection": 1259,
+    "n_holdout": 949
+  },
+  "JPM": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "selection_skill": 0.13140537661660867,
+    "holdout_skill": -0.03722072640834173,
+    "n_selection": 1259,
+    "n_holdout": 855
+  },
+  "MSFT": {
+    "horizon": 189,
+    "variant": "credit_only",
+    "selection_skill": 0.0946134093140853,
+    "holdout_skill": -0.09885953492844735,
+    "n_selection": 2015,
+    "n_holdout": 918
+  },
+  "QQQ": {
+    "horizon": 21,
+    "variant": "both",
+    "selection_skill": 0.05942383303652893,
+    "holdout_skill": 0.00529631025403543,
+    "n_selection": 1259,
+    "n_holdout": 1086
+  },
+  "SPY": {
+    "horizon": 189,
+    "variant": "credit_only",
+    "selection_skill": 0.06499153689427073,
+    "holdout_skill": -0.11633109737761438,
+    "n_selection": 2015,
+    "n_holdout": 918
+  },
+  "VOX": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "selection_skill": 0.11156620199868478,
+    "holdout_skill": -0.11413532624005701,
+    "n_selection": 1259,
+    "n_holdout": 886
+  },
+  "VTI": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "selection_skill": 0.10992537179248418,
+    "holdout_skill": -0.07248231766009244,
+    "n_selection": 1259,
+    "n_holdout": 918
+  },
+  "XLB": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "selection_skill": 0.08748889494656675,
+    "holdout_skill": -0.13167223568001402,
+    "n_selection": 1259,
+    "n_holdout": 981
+  },
+  "XLE": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "selection_skill": 0.17652128381002619,
+    "holdout_skill": 0.014337534780832106,
+    "n_selection": 1259,
+    "n_holdout": 855
+  },
+  "XLF": {
+    "horizon": 189,
+    "variant": "both",
+    "selection_skill": 0.07919657022272864,
+    "holdout_skill": -0.07314730857654295,
+    "n_selection": 1259,
+    "n_holdout": 918
+  },
+  "XLI": {
+    "horizon": 5,
+    "variant": "credit_only",
+    "selection_skill": 0.022232101822006356,
+    "holdout_skill": 0.007431088265517527,
+    "n_selection": 2015,
+    "n_holdout": 1102
+  },
+  "XLK": {
+    "horizon": 189,
+    "variant": "credit_only",
+    "selection_skill": 0.096542309551916,
+    "holdout_skill": -0.10233690933386386,
+    "n_selection": 2015,
+    "n_holdout": 918
+  },
+  "XLP": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "selection_skill": 0.033591798783216276,
+    "holdout_skill": -0.06329116371772214,
+    "n_selection": 1259,
+    "n_holdout": 855
+  },
+  "XLU": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "selection_skill": 0.09372973076684699,
+    "holdout_skill": 0.006946140440906801,
+    "n_selection": 1259,
+    "n_holdout": 981
+  },
+  "XLV": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "selection_skill": -0.00018122866128281873,
+    "holdout_skill": -3.7583108422403755e-05,
+    "n_selection": 2015,
+    "n_holdout": 1106
+  },
+  "XLY": {
+    "horizon": 252,
+    "variant": "both",
+    "selection_skill": 0.04226937085341109,
+    "holdout_skill": -0.16541995280860222,
+    "n_selection": 1259,
+    "n_holdout": 855
+  },
+  "XOM": {
+    "horizon": 63,
+    "variant": "both",
+    "selection_skill": 0.1414682559583227,
+    "holdout_skill": -0.05103747622119298,
+    "n_selection": 1259,
+    "n_holdout": 1044
+  }
+}

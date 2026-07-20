@@ -1,0 +1,640 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 354,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.11004876570235848,
+      "ols": 0.10469984647517276,
+      "moment_match": 0.21546650593126004,
+      "quantile_map": 0.2040433864115188
+    },
+    "mae_return_raw": 0.09041981708626345,
+    "mae_return_climatology": 0.25973623329231005,
+    "mae_return_ols": 0.09984252467746609,
+    "mae_return_moment_match": 0.1047736437235671,
+    "mae_return_quantile_map": 0.09445015790600705,
+    "mape_price_raw": 9.322582293613348,
+    "mape_price_climatology": 27.072520242144225,
+    "mape_price_ols": 9.940053833122034,
+    "mape_price_moment_match": 10.782035406324,
+    "mape_price_quantile_map": 9.738664873516617,
+    "mape_price_selected": 9.940053833122034,
+    "ols_params": {
+      "a": 0.19422461764566268,
+      "b": -0.2797689374090389
+    },
+    "best_method": "ols"
+  },
+  "DIA": {
+    "horizon": 126,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 480,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.043747502772605085,
+      "ols": 0.08793488011771146,
+      "moment_match": 0.07114166750707306,
+      "quantile_map": 0.069935955866366
+    },
+    "mae_return_raw": 0.058580187756020204,
+    "mae_return_climatology": 0.058580187756020204,
+    "mae_return_ols": 0.06123067789670632,
+    "mae_return_moment_match": 0.08626140952028359,
+    "mae_return_quantile_map": 0.08073112878656855,
+    "mape_price_raw": 5.8489392814777785,
+    "mape_price_climatology": 5.8489392814777785,
+    "mape_price_ols": 6.020243859338651,
+    "mape_price_moment_match": 8.485924300649145,
+    "mape_price_quantile_map": 7.900106455390675,
+    "mape_price_selected": 5.8489392814777785,
+    "ols_params": {
+      "a": -0.009864731367828073,
+      "b": 0.8983017325023495
+    },
+    "best_method": "raw"
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 422,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.018271123867758247,
+      "ols": 0.02522089329319251,
+      "moment_match": 0.03475436500208547,
+      "quantile_map": 0.03779031884492197
+    },
+    "mae_return_raw": 0.04458570117972546,
+    "mae_return_climatology": 0.060231366484238755,
+    "mae_return_ols": 0.04837877495742143,
+    "mae_return_moment_match": 0.06123886305450198,
+    "mae_return_quantile_map": 0.06923815708242033,
+    "mape_price_raw": 4.405593211404455,
+    "mape_price_climatology": 5.808024251218697,
+    "mape_price_ols": 4.800461096297302,
+    "mape_price_moment_match": 6.116292585839015,
+    "mape_price_quantile_map": 6.87228568235249,
+    "mape_price_selected": 4.405593211404455,
+    "ols_params": {
+      "a": -0.0013813864024896294,
+      "b": 1.3192974579451306
+    },
+    "best_method": "raw"
+  },
+  "GLD": {
+    "horizon": 189,
+    "winner": "vix_only",
+    "n_calib": 501,
+    "n_verify": 427,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.21854039529161673,
+      "ols": 0.13918219973977244,
+      "moment_match": 0.25292900805866175,
+      "quantile_map": 0.22617173986294303
+    },
+    "mae_return_raw": 0.22963638384505988,
+    "mae_return_climatology": 0.34012387696510743,
+    "mae_return_ols": 0.34018303856540233,
+    "mae_return_moment_match": 0.1469516057388833,
+    "mae_return_quantile_map": 0.08257819987724202,
+    "mape_price_raw": 20.231512708752923,
+    "mape_price_climatology": 28.559852376993767,
+    "mape_price_ols": 28.430309254951037,
+    "mape_price_moment_match": 16.013159292786057,
+    "mape_price_quantile_map": 8.100357487571744,
+    "mape_price_selected": 28.430309254951037,
+    "ols_params": {
+      "a": 0.0698466783521762,
+      "b": -1.907065019285974
+    },
+    "best_method": "ols"
+  },
+  "IWM": {
+    "horizon": 21,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 585,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.05453510616818016,
+      "ols": 0.05327024585359158,
+      "moment_match": 0.06717156701789298,
+      "quantile_map": 0.06882383956945211
+    },
+    "mae_return_raw": 0.047493562004036476,
+    "mae_return_climatology": 0.047493562004036476,
+    "mae_return_ols": 0.046163541606390426,
+    "mae_return_moment_match": 0.07109089026422012,
+    "mae_return_quantile_map": 0.07271186801430389,
+    "mape_price_raw": 4.752395160790116,
+    "mape_price_climatology": 4.752395160790116,
+    "mape_price_ols": 4.560423442385836,
+    "mape_price_moment_match": 6.982324613201064,
+    "mape_price_quantile_map": 7.156656238403658,
+    "mape_price_selected": 4.560423442385836,
+    "ols_params": {
+      "a": -0.006851233120770097,
+      "b": 0.39766158893238357
+    },
+    "best_method": "ols"
+  },
+  "IYR": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 448,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.06757549882181471,
+      "ols": 0.16368576628690748,
+      "moment_match": 0.11663453787201765,
+      "quantile_map": 0.1178751813201622
+    },
+    "mae_return_raw": 0.07415061080886962,
+    "mae_return_climatology": 0.07415061080886962,
+    "mae_return_ols": 0.09295769288070396,
+    "mae_return_moment_match": 0.15136689070086534,
+    "mae_return_quantile_map": 0.15246244348478238,
+    "mape_price_raw": 7.555875133315324,
+    "mape_price_climatology": 7.555875133315324,
+    "mape_price_ols": 8.730741878846164,
+    "mape_price_moment_match": 13.816456800419042,
+    "mape_price_quantile_map": 13.980658970778945,
+    "mape_price_selected": 7.555875133315324,
+    "ols_params": {
+      "a": -0.07787227619626526,
+      "b": 0.7247227468318962
+    },
+    "best_method": "raw"
+  },
+  "JPM": {
+    "horizon": 252,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 354,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.31284243925358773,
+      "ols": 0.20965705433564674,
+      "moment_match": 0.21911953166995934,
+      "quantile_map": 0.23888673099860927
+    },
+    "mae_return_raw": 0.14556681868203644,
+    "mae_return_climatology": 0.22072043947702616,
+    "mae_return_ols": 0.07338877018554422,
+    "mae_return_moment_match": 0.20907563428031883,
+    "mae_return_quantile_map": 0.24140031482296925,
+    "mape_price_raw": 13.369155279088703,
+    "mape_price_climatology": 19.299863427252077,
+    "mape_price_ols": 7.689086239544632,
+    "mape_price_moment_match": 24.122174485026843,
+    "mape_price_quantile_map": 28.32320300598615,
+    "mape_price_selected": 7.689086239544632,
+    "ols_params": {
+      "a": 0.13731837168294575,
+      "b": 1.3248644888981742
+    },
+    "best_method": "ols"
+  },
+  "MSFT": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 417,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.09470648315427883,
+      "ols": 0.0938478143539014,
+      "moment_match": 0.20039526568038452,
+      "quantile_map": 0.19804284337720057
+    },
+    "mae_return_raw": 0.1456504032199272,
+    "mae_return_climatology": 0.1456504032199272,
+    "mae_return_ols": 0.15439747353397273,
+    "mae_return_moment_match": 0.20104051567211567,
+    "mae_return_quantile_map": 0.19076177527429902,
+    "mape_price_raw": 16.482702420671856,
+    "mape_price_climatology": 16.482702420671856,
+    "mape_price_ols": 17.62349092059712,
+    "mape_price_moment_match": 23.26884000930797,
+    "mape_price_quantile_map": 21.497468774604545,
+    "mape_price_selected": 17.62349092059712,
+    "ols_params": {
+      "a": 0.2040732750992454,
+      "b": -0.271703736267613
+    },
+    "best_method": "ols"
+  },
+  "QQQ": {
+    "horizon": 21,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 585,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.03615656553871929,
+      "ols": 0.03772612883515588,
+      "moment_match": 0.06709007188801655,
+      "quantile_map": 0.07265397559895274
+    },
+    "mae_return_raw": 0.04315992339119418,
+    "mae_return_climatology": 0.04315992339119418,
+    "mae_return_ols": 0.042113724199916554,
+    "mae_return_moment_match": 0.06598328131736655,
+    "mae_return_quantile_map": 0.06748445921587516,
+    "mape_price_raw": 4.304840986854544,
+    "mape_price_climatology": 4.304840986854544,
+    "mape_price_ols": 4.15970617953227,
+    "mape_price_moment_match": 6.523561215780424,
+    "mape_price_quantile_map": 6.657178637841114,
+    "mape_price_selected": 4.304840986854544,
+    "ols_params": {
+      "a": -0.0009646160921802429,
+      "b": 0.3953029116685563
+    },
+    "best_method": "raw"
+  },
+  "SPY": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 417,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.08316197745250928,
+      "ols": 0.1396617930762996,
+      "moment_match": 0.13311643993568315,
+      "quantile_map": 0.1253541362090939
+    },
+    "mae_return_raw": 0.059815404810877625,
+    "mae_return_climatology": 0.059815404810877625,
+    "mae_return_ols": 0.059188484176896976,
+    "mae_return_moment_match": 0.1022050484345218,
+    "mae_return_quantile_map": 0.09776564959033811,
+    "mape_price_raw": 5.879483598478243,
+    "mape_price_climatology": 5.879483598478243,
+    "mape_price_ols": 5.762991239674434,
+    "mape_price_moment_match": 9.910535634233279,
+    "mape_price_quantile_map": 9.450206682046506,
+    "mape_price_selected": 5.879483598478243,
+    "ols_params": {
+      "a": 0.03371300705882953,
+      "b": 0.5910379267139616
+    },
+    "best_method": "raw"
+  },
+  "VOX": {
+    "horizon": 252,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 385,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.16631624589306604,
+      "ols": 0.17527048651363178,
+      "moment_match": 0.20889486457695822,
+      "quantile_map": 0.17303434454971395
+    },
+    "mae_return_raw": 0.11569252850949316,
+    "mae_return_climatology": 0.11569252850949316,
+    "mae_return_ols": 0.07342056143281565,
+    "mae_return_moment_match": 0.17152146629598822,
+    "mae_return_quantile_map": 0.1645547037626163,
+    "mape_price_raw": 10.775981401531787,
+    "mape_price_climatology": 10.775981401531787,
+    "mape_price_ols": 7.0208937285957,
+    "mape_price_moment_match": 15.670985946989177,
+    "mape_price_quantile_map": 14.66973430595761,
+    "mape_price_selected": 10.775981401531787,
+    "ols_params": {
+      "a": 0.09399167137981551,
+      "b": 0.6002887392806135
+    },
+    "best_method": "raw"
+  },
+  "VTI": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 417,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.0799583683773988,
+      "ols": 0.14116381431001726,
+      "moment_match": 0.13649631452787236,
+      "quantile_map": 0.126583813831113
+    },
+    "mae_return_raw": 0.06145739277558957,
+    "mae_return_climatology": 0.06145739277558957,
+    "mae_return_ols": 0.06133938593356455,
+    "mae_return_moment_match": 0.10576140027537215,
+    "mae_return_quantile_map": 0.10246265787684637,
+    "mape_price_raw": 6.040458832680888,
+    "mape_price_climatology": 6.040458832680888,
+    "mape_price_ols": 5.94841623438335,
+    "mape_price_moment_match": 10.194370589683876,
+    "mape_price_quantile_map": 9.833746658388588,
+    "mape_price_selected": 6.040458832680888,
+    "ols_params": {
+      "a": 0.03408887963785441,
+      "b": 0.5404198320254411
+    },
+    "best_method": "raw"
+  },
+  "XLB": {
+    "horizon": 126,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 480,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.05716849347738554,
+      "ols": 0.09036257987791957,
+      "moment_match": 0.0882761442503107,
+      "quantile_map": 0.08845409502370886
+    },
+    "mae_return_raw": 0.07336317905133702,
+    "mae_return_climatology": 0.07336317905133702,
+    "mae_return_ols": 0.07170730510081164,
+    "mae_return_moment_match": 0.10055086719059186,
+    "mae_return_quantile_map": 0.09946621008864515,
+    "mape_price_raw": 7.547608494881747,
+    "mape_price_climatology": 7.547608494881747,
+    "mape_price_ols": 7.154679922920046,
+    "mape_price_moment_match": 10.112775514811128,
+    "mape_price_quantile_map": 10.018281634940912,
+    "mape_price_selected": 7.547608494881747,
+    "ols_params": {
+      "a": -0.010146826181674685,
+      "b": 0.6534082991961987
+    },
+    "best_method": "raw"
+  },
+  "XLE": {
+    "horizon": 252,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 354,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.06279070082509383,
+      "ols": 0.0646297816469893,
+      "moment_match": 0.08659511239475785,
+      "quantile_map": 0.28598273075853653
+    },
+    "mae_return_raw": 0.12773352886020614,
+    "mae_return_climatology": 0.14788268742955862,
+    "mae_return_ols": 0.13562401613292802,
+    "mae_return_moment_match": 0.18912929980799495,
+    "mae_return_quantile_map": 0.7626460227427994,
+    "mape_price_raw": 11.940404221996374,
+    "mape_price_climatology": 14.697082965847882,
+    "mape_price_ols": 12.122105603091695,
+    "mape_price_moment_match": 16.273043283617554,
+    "mape_price_quantile_map": 49.021922547670854,
+    "mape_price_selected": 11.940404221996374,
+    "ols_params": {
+      "a": -0.048842198854321096,
+      "b": 0.8923910294960442
+    },
+    "best_method": "raw"
+  },
+  "XLF": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 417,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.10859095781871272,
+      "ols": 0.21262320514985752,
+      "moment_match": 0.23124638988515586,
+      "quantile_map": 0.2276444363639075
+    },
+    "mae_return_raw": 0.0681839731902171,
+    "mae_return_climatology": 0.0681839731902171,
+    "mae_return_ols": 0.0809102974154326,
+    "mae_return_moment_match": 0.10433187313231707,
+    "mae_return_quantile_map": 0.10834784179446995,
+    "mape_price_raw": 6.821644667906221,
+    "mape_price_climatology": 6.821644667906221,
+    "mape_price_ols": 7.801737490681683,
+    "mape_price_moment_match": 9.920693594607048,
+    "mape_price_quantile_map": 10.277064767408092,
+    "mape_price_selected": 6.821644667906221,
+    "ols_params": {
+      "a": 0.06784804398948373,
+      "b": 0.050932381414080456
+    },
+    "best_method": "raw"
+  },
+  "XLI": {
+    "horizon": 5,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 601,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.019152726544558508,
+      "ols": 0.017693472687272296,
+      "moment_match": 0.02955465441913959,
+      "quantile_map": 0.035766929380475924
+    },
+    "mae_return_raw": 0.018170421866008497,
+    "mae_return_climatology": 0.020365231148470306,
+    "mae_return_ols": 0.017286258036985365,
+    "mae_return_moment_match": 0.0400001532985569,
+    "mae_return_quantile_map": 0.03927916120611307,
+    "mape_price_raw": 1.8089969093305667,
+    "mape_price_climatology": 2.0375880680465897,
+    "mape_price_ols": 1.7269111067866554,
+    "mape_price_moment_match": 3.9860157433889762,
+    "mape_price_quantile_map": 3.9167204450128903,
+    "mape_price_selected": 1.7269111067866554,
+    "ols_params": {
+      "a": 0.0010442815206365193,
+      "b": -0.40305946684462174
+    },
+    "best_method": "ols"
+  },
+  "XLK": {
+    "horizon": 189,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 417,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.10013231951448874,
+      "ols": 0.09314048548337166,
+      "moment_match": 0.17410527754441255,
+      "quantile_map": 0.19668091160384296
+    },
+    "mae_return_raw": 0.09232059289739812,
+    "mae_return_climatology": 0.09232059289739812,
+    "mae_return_ols": 0.0806448670285336,
+    "mae_return_moment_match": 0.14940932364470208,
+    "mae_return_quantile_map": 0.1507487167167869,
+    "mape_price_raw": 9.004379733088056,
+    "mape_price_climatology": 9.004379733088056,
+    "mape_price_ols": 8.138074736719059,
+    "mape_price_moment_match": 15.220416781023808,
+    "mape_price_quantile_map": 15.049957660746283,
+    "mape_price_selected": 8.138074736719059,
+    "ols_params": {
+      "a": 0.15179098561906335,
+      "b": -0.0027356121761516455
+    },
+    "best_method": "ols"
+  },
+  "XLP": {
+    "horizon": 252,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 354,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.07404994304785564,
+      "ols": 0.12216209497323896,
+      "moment_match": 0.1768213762589132,
+      "quantile_map": 0.17005894421739154
+    },
+    "mae_return_raw": 0.0734571697770021,
+    "mae_return_climatology": 0.09069404312815003,
+    "mae_return_ols": 0.05134941031418423,
+    "mae_return_moment_match": 0.10183373724787834,
+    "mae_return_quantile_map": 0.10077528979345132,
+    "mape_price_raw": 7.630299408592983,
+    "mape_price_climatology": 9.61255896570648,
+    "mape_price_ols": 5.047182534004583,
+    "mape_price_moment_match": 10.1931578489957,
+    "mape_price_quantile_map": 10.237635815216251,
+    "mape_price_selected": 7.630299408592983,
+    "ols_params": {
+      "a": 0.16883462519762596,
+      "b": -1.1973033922578684
+    },
+    "best_method": "raw"
+  },
+  "XLU": {
+    "horizon": 126,
+    "winner": "vix_only",
+    "n_calib": 501,
+    "n_verify": 480,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.06744989859915729,
+      "ols": 0.0912058342266158,
+      "moment_match": 0.10764439899362896,
+      "quantile_map": 0.10696041032401914
+    },
+    "mae_return_raw": 0.07447225034958257,
+    "mae_return_climatology": 0.08139431149742231,
+    "mae_return_ols": 0.08801141444752046,
+    "mae_return_moment_match": 0.10668066795848376,
+    "mae_return_quantile_map": 0.1057308123684577,
+    "mape_price_raw": 7.047180793327137,
+    "mape_price_climatology": 7.842143109681318,
+    "mape_price_ols": 8.254094148803498,
+    "mape_price_moment_match": 10.304131152634307,
+    "mape_price_quantile_map": 10.180066615651135,
+    "mape_price_selected": 7.047180793327137,
+    "ols_params": {
+      "a": -0.012903917754369616,
+      "b": 0.7503728922914219
+    },
+    "best_method": "raw"
+  },
+  "XLV": {
+    "horizon": 1,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 605,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.0054537525627047665,
+      "ols": 0.00547544804481988,
+      "moment_match": 0.010160314736960004,
+      "quantile_map": 0.010162240598376603
+    },
+    "mae_return_raw": 0.006833347550225963,
+    "mae_return_climatology": 0.007925402307554253,
+    "mae_return_ols": 0.006824815467545985,
+    "mae_return_moment_match": 0.013724802946942442,
+    "mae_return_quantile_map": 0.014118998498812806,
+    "mape_price_raw": 0.6840190116762396,
+    "mape_price_climatology": 0.7932120606620376,
+    "mape_price_ols": 0.6826900286200502,
+    "mape_price_moment_match": 1.3762420843377663,
+    "mape_price_quantile_map": 1.4106721316157425,
+    "mape_price_selected": 0.6840190116762396,
+    "ols_params": {
+      "a": -0.0008127467886892342,
+      "b": 1.133235346582475
+    },
+    "best_method": "raw"
+  },
+  "XLY": {
+    "horizon": 252,
+    "winner": "climatology",
+    "n_calib": 501,
+    "n_verify": 354,
+    "selected_method": "raw",
+    "internal_val_mae": {
+      "raw": 0.08159664174035383,
+      "ols": 0.11336060891604711,
+      "moment_match": 0.19243804315413168,
+      "quantile_map": 0.16972546537500058
+    },
+    "mae_return_raw": 0.06325183139303711,
+    "mae_return_climatology": 0.06325183139303711,
+    "mae_return_ols": 0.076681457396596,
+    "mae_return_moment_match": 0.12622859527205907,
+    "mae_return_quantile_map": 0.11536388113966993,
+    "mape_price_raw": 6.385117346607105,
+    "mape_price_climatology": 6.385117346607105,
+    "mape_price_ols": 7.299265506295676,
+    "mape_price_moment_match": 11.8035025856861,
+    "mape_price_quantile_map": 10.680497175989846,
+    "mape_price_selected": 6.385117346607105,
+    "ols_params": {
+      "a": 0.08368381883949026,
+      "b": 0.08793908764079102
+    },
+    "best_method": "raw"
+  },
+  "XOM": {
+    "horizon": 63,
+    "winner": "credit_only",
+    "n_calib": 501,
+    "n_verify": 543,
+    "selected_method": "ols",
+    "internal_val_mae": {
+      "raw": 0.10213849213893955,
+      "ols": 0.09173352996142466,
+      "moment_match": 0.11879728346004495,
+      "quantile_map": 0.11109196050661638
+    },
+    "mae_return_raw": 0.07739266915596657,
+    "mae_return_climatology": 0.0922168191435062,
+    "mae_return_ols": 0.09490947224305385,
+    "mae_return_moment_match": 0.16594791470211384,
+    "mae_return_quantile_map": 0.173864892775487,
+    "mape_price_raw": 7.283080871049181,
+    "mape_price_climatology": 8.789812093118536,
+    "mape_price_ols": 9.773579532546629,
+    "mape_price_moment_match": 14.872408861481551,
+    "mape_price_quantile_map": 15.492129907585047,
+    "mape_price_selected": 9.773579532546629,
+    "ols_params": {
+      "a": 0.09759349088502084,
+      "b": -0.6316983462755291
+    },
+    "best_method": "ols"
+  }
+}

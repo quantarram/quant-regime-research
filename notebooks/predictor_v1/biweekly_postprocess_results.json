@@ -1,0 +1,222 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "winner": "both",
+    "n_test": 855,
+    "mape_raw": 13.257707237465885,
+    "mape_moment_continuous": 42.352711138713794,
+    "mape_quantile_continuous": 19.317983235516184,
+    "mape_moment_firstraw": 27.137828622038672,
+    "mape_quantile_firstraw": 16.73777835683473
+  },
+  "DIA": {
+    "horizon": 126,
+    "winner": "vix_only",
+    "n_test": 981,
+    "mape_raw": 5.775753228079949,
+    "mape_moment_continuous": 12.644483980434462,
+    "mape_quantile_continuous": 9.105899304160673,
+    "mape_moment_firstraw": 9.296824616431692,
+    "mape_quantile_firstraw": 7.314505090980042
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "winner": "vix_only",
+    "n_test": 923,
+    "mape_raw": 4.220979901932143,
+    "mape_moment_continuous": 14.38564402500189,
+    "mape_quantile_continuous": 7.223478914330787,
+    "mape_moment_firstraw": 9.25783106936303,
+    "mape_quantile_firstraw": 5.7147581786608255
+  },
+  "GLD": {
+    "horizon": 189,
+    "winner": "vix_only",
+    "n_test": 928,
+    "mape_raw": 15.457990683080785,
+    "mape_moment_continuous": 20.515354876921187,
+    "mape_quantile_continuous": 11.809125459488197,
+    "mape_moment_firstraw": 16.716031227748424,
+    "mape_quantile_firstraw": 13.702386439937092
+  },
+  "IWM": {
+    "horizon": 21,
+    "winner": "credit_only",
+    "n_test": 1086,
+    "mape_raw": 6.0336155779637055,
+    "mape_moment_continuous": 11.368755200531737,
+    "mape_quantile_continuous": 8.244040411161068,
+    "mape_moment_firstraw": 8.390332269262805,
+    "mape_quantile_firstraw": 6.96830532485613
+  },
+  "IYR": {
+    "horizon": 189,
+    "winner": "vix_only",
+    "n_test": 949,
+    "mape_raw": 11.430533784645636,
+    "mape_moment_continuous": 31.496209208865984,
+    "mape_quantile_continuous": 15.213049042886873,
+    "mape_moment_firstraw": 20.996933258940746,
+    "mape_quantile_firstraw": 13.642785701658807
+  },
+  "JPM": {
+    "horizon": 252,
+    "winner": "vix_only",
+    "n_test": 855,
+    "mape_raw": 17.155834360035293,
+    "mape_moment_continuous": 38.24057531571759,
+    "mape_quantile_continuous": 23.26771091410735,
+    "mape_moment_firstraw": 27.17582555980229,
+    "mape_quantile_firstraw": 20.340489159987456
+  },
+  "MSFT": {
+    "horizon": 189,
+    "winner": "credit_only",
+    "n_test": 918,
+    "mape_raw": 20.228946143338497,
+    "mape_moment_continuous": 49.64664172189429,
+    "mape_quantile_continuous": 28.092911137496422,
+    "mape_moment_firstraw": 32.65573285286842,
+    "mape_quantile_firstraw": 24.251917464520915
+  },
+  "QQQ": {
+    "horizon": 21,
+    "winner": "both",
+    "n_test": 1086,
+    "mape_raw": 5.183738010149802,
+    "mape_moment_continuous": 8.074530854888486,
+    "mape_quantile_continuous": 7.520694493084094,
+    "mape_moment_firstraw": 6.280774400920533,
+    "mape_quantile_firstraw": 6.367863011922445
+  },
+  "SPY": {
+    "horizon": 189,
+    "winner": "credit_only",
+    "n_test": 918,
+    "mape_raw": 10.508117163784139,
+    "mape_moment_continuous": 16.818975521209513,
+    "mape_quantile_continuous": 12.523723056387464,
+    "mape_moment_firstraw": 14.382332676736848,
+    "mape_quantile_firstraw": 11.362914881458295
+  },
+  "VOX": {
+    "horizon": 252,
+    "winner": "vix_only",
+    "n_test": 886,
+    "mape_raw": 20.774744131263418,
+    "mape_moment_continuous": 47.564688675495944,
+    "mape_quantile_continuous": 24.233096773977074,
+    "mape_moment_firstraw": 32.89647018561608,
+    "mape_quantile_firstraw": 22.455958561893027
+  },
+  "VTI": {
+    "horizon": 189,
+    "winner": "vix_only",
+    "n_test": 918,
+    "mape_raw": 10.310679873937575,
+    "mape_moment_continuous": 35.91876024695166,
+    "mape_quantile_continuous": 13.587317554627104,
+    "mape_moment_firstraw": 23.136058545816624,
+    "mape_quantile_firstraw": 11.780288127727518
+  },
+  "XLB": {
+    "horizon": 126,
+    "winner": "vix_only",
+    "n_test": 981,
+    "mape_raw": 8.321108073014369,
+    "mape_moment_continuous": 16.642650287735638,
+    "mape_quantile_continuous": 12.294268776834684,
+    "mape_moment_firstraw": 11.526684992586619,
+    "mape_quantile_firstraw": 9.658446397252474
+  },
+  "XLE": {
+    "horizon": 252,
+    "winner": "vix_only",
+    "n_test": 855,
+    "mape_raw": 17.159050489706626,
+    "mape_moment_continuous": 65.90405507384685,
+    "mape_quantile_continuous": 26.674949399374775,
+    "mape_moment_firstraw": 39.682812172311245,
+    "mape_quantile_firstraw": 21.465852983672264
+  },
+  "XLF": {
+    "horizon": 189,
+    "winner": "both",
+    "n_test": 918,
+    "mape_raw": 11.455034587309482,
+    "mape_moment_continuous": 20.94735544879264,
+    "mape_quantile_continuous": 14.066021215108163,
+    "mape_moment_firstraw": 16.581501865209454,
+    "mape_quantile_firstraw": 12.769257379078978
+  },
+  "XLI": {
+    "horizon": 5,
+    "winner": "credit_only",
+    "n_test": 1102,
+    "mape_raw": 1.9885918432521823,
+    "mape_moment_continuous": 3.152200916203894,
+    "mape_quantile_continuous": 3.1387137248647057,
+    "mape_moment_firstraw": 2.5155986570436513,
+    "mape_quantile_firstraw": 2.6287895440312274
+  },
+  "XLK": {
+    "horizon": 189,
+    "winner": "credit_only",
+    "n_test": 918,
+    "mape_raw": 16.06090079079241,
+    "mape_moment_continuous": 33.85830556219837,
+    "mape_quantile_continuous": 21.144719398528792,
+    "mape_moment_firstraw": 23.788904246042794,
+    "mape_quantile_firstraw": 17.930019132130834
+  },
+  "XLP": {
+    "horizon": 252,
+    "winner": "vix_only",
+    "n_test": 855,
+    "mape_raw": 8.988177812155987,
+    "mape_moment_continuous": 16.340132420549846,
+    "mape_quantile_continuous": 9.192797452370662,
+    "mape_moment_firstraw": 13.146871480652935,
+    "mape_quantile_firstraw": 9.337003095535284
+  },
+  "XLU": {
+    "horizon": 126,
+    "winner": "vix_only",
+    "n_test": 981,
+    "mape_raw": 7.120891617119525,
+    "mape_moment_continuous": 13.450698809307701,
+    "mape_quantile_continuous": 11.411329707352543,
+    "mape_moment_firstraw": 10.75710162570548,
+    "mape_quantile_firstraw": 9.334046737560993
+  },
+  "XLV": {
+    "horizon": 1,
+    "winner": "climatology",
+    "n_test": 1106,
+    "mape_raw": 0.8138702845693976,
+    "mape_moment_continuous": 1.0874759134252394,
+    "mape_quantile_continuous": 0.991516739576205,
+    "mape_moment_firstraw": 0.966366395914941,
+    "mape_quantile_firstraw": 0.9201499908784988
+  },
+  "XLY": {
+    "horizon": 252,
+    "winner": "both",
+    "n_test": 855,
+    "mape_raw": 18.01439961499857,
+    "mape_moment_continuous": 59.01684241877868,
+    "mape_quantile_continuous": 22.401951955573495,
+    "mape_moment_firstraw": 35.2325270567139,
+    "mape_quantile_firstraw": 19.4990874058822
+  },
+  "XOM": {
+    "horizon": 63,
+    "winner": "both",
+    "n_test": 1044,
+    "mape_raw": 10.380908617303287,
+    "mape_moment_continuous": 20.899516591603504,
+    "mape_quantile_continuous": 14.004062774256923,
+    "mape_moment_firstraw": 15.621259097139085,
+    "mape_quantile_firstraw": 12.103426782598286
+  }
+}

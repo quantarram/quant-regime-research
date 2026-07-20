@@ -1,0 +1,122 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "variant": "both",
+    "skill": 0.03785632000118544
+  },
+  "BTC-USD": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill": 0.027250492657242553
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill": 0.11065577825679068
+  },
+  "GLD": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill": 0.13088994670368298
+  },
+  "IWM": {
+    "horizon": 21,
+    "variant": "both",
+    "skill": 0.020330678095385357
+  },
+  "JPM": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill": 0.08281387729843648
+  },
+  "MSFT": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill": 0.06664816716478139
+  },
+  "QQQ": {
+    "horizon": 21,
+    "variant": "both",
+    "skill": 0.02867052072704601
+  },
+  "SPY": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill": 0.00023958162540940742
+  },
+  "XLE": {
+    "horizon": 252,
+    "variant": "both",
+    "skill": 0.1641639976667748
+  },
+  "XLF": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill": 0.033185032435879225
+  },
+  "XLK": {
+    "horizon": 63,
+    "variant": "credit_only",
+    "skill": 0.038370729703566475
+  },
+  "XOM": {
+    "horizon": 189,
+    "variant": "credit_only",
+    "skill": 0.09845897735832576
+  },
+  "DIA": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill": 0.08641898201078069
+  },
+  "IYR": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill": 0.054886028498714656
+  },
+  "VOX": {
+    "horizon": 63,
+    "variant": "vix_only",
+    "skill": 0.01657755598687677
+  },
+  "VTI": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill": 0.1038738771670944
+  },
+  "XLB": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill": 0.011123193044147994
+  },
+  "XLI": {
+    "horizon": 21,
+    "variant": "credit_only",
+    "skill": 0.016643496281048442
+  },
+  "XLP": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill": 0.008703871563248422
+  },
+  "XLRE": {
+    "horizon": 5,
+    "variant": "credit_only",
+    "skill": 0.007903877610351218
+  },
+  "XLU": {
+    "horizon": 126,
+    "variant": "both",
+    "skill": 0.07437171264372866
+  },
+  "XLV": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill": 9.077674257293444e-05
+  },
+  "XLY": {
+    "horizon": 63,
+    "variant": "credit_only",
+    "skill": 0.011312749421508062
+  }
+}

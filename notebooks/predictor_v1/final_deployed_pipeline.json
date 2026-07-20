@@ -1,0 +1,158 @@
+{
+  "AAPL": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "method": "raw",
+    "mape_deployed": 12.329155551410778,
+    "mape_raw": 12.329155551410778
+  },
+  "DIA": {
+    "winner": "climatology",
+    "horizon": 126,
+    "method": "raw",
+    "mape_deployed": 5.675195324834743,
+    "mape_raw": 5.675195324834743
+  },
+  "EURUSD=X": {
+    "winner": "credit_only",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 3.8812460289905184,
+    "mape_raw": 3.8812460289905184
+  },
+  "GLD": {
+    "winner": "vix_only",
+    "horizon": 189,
+    "method": "rolling_postprocessed",
+    "mape_deployed": 12.030685839528072,
+    "mape_raw": 20.231512708752923,
+    "mape_whole_period_fyi": 14.428319250215878
+  },
+  "IWM": {
+    "winner": "climatology",
+    "horizon": 21,
+    "method": "raw",
+    "mape_deployed": 5.182901553462803,
+    "mape_raw": 5.182901553462803
+  },
+  "IYR": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 11.242152089054368,
+    "mape_raw": 11.242152089054368
+  },
+  "JPM": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "method": "rolling_postprocessed",
+    "mape_deployed": 9.573500431580452,
+    "mape_raw": 13.369155279088703,
+    "mape_whole_period_fyi": 15.505938333701616
+  },
+  "MSFT": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 17.24196067481758,
+    "mape_raw": 17.24196067481758
+  },
+  "QQQ": {
+    "winner": "climatology",
+    "horizon": 21,
+    "method": "raw",
+    "mape_deployed": 5.044856844777603,
+    "mape_raw": 5.044856844777603
+  },
+  "SPY": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 8.174727884142396,
+    "mape_raw": 8.174727884142396
+  },
+  "VOX": {
+    "winner": "climatology",
+    "horizon": 252,
+    "method": "raw",
+    "mape_deployed": 15.046807414636664,
+    "mape_raw": 15.046807414636664
+  },
+  "VTI": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 8.305168878775858,
+    "mape_raw": 8.305168878775858
+  },
+  "XLB": {
+    "winner": "climatology",
+    "horizon": 126,
+    "method": "raw",
+    "mape_deployed": 7.649971439167097,
+    "mape_raw": 7.649971439167097
+  },
+  "XLE": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "method": "raw",
+    "mape_deployed": 10.310946707897397,
+    "mape_raw": 10.310946707897397
+  },
+  "XLF": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 10.265176890269128,
+    "mape_raw": 10.265176890269128
+  },
+  "XLI": {
+    "winner": "credit_only",
+    "horizon": 5,
+    "method": "raw",
+    "mape_deployed": 1.9885918432521823,
+    "mape_raw": 1.9885918432521823
+  },
+  "XLK": {
+    "winner": "climatology",
+    "horizon": 189,
+    "method": "raw",
+    "mape_deployed": 12.558540476356997,
+    "mape_raw": 12.558540476356997
+  },
+  "XLP": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "method": "raw",
+    "mape_deployed": 8.585953398935754,
+    "mape_raw": 8.585953398935754
+  },
+  "XLU": {
+    "winner": "vix_only",
+    "horizon": 126,
+    "method": "raw",
+    "mape_deployed": 7.120891617119525,
+    "mape_raw": 7.120891617119525
+  },
+  "XLV": {
+    "winner": "credit_only",
+    "horizon": 1,
+    "method": "raw",
+    "mape_deployed": 0.7244290693867063,
+    "mape_raw": 0.7244290693867063
+  },
+  "XLY": {
+    "winner": "climatology",
+    "horizon": 252,
+    "method": "raw",
+    "mape_deployed": 11.33565211510948,
+    "mape_raw": 11.33565211510948
+  },
+  "XOM": {
+    "winner": "credit_only",
+    "horizon": 63,
+    "method": "raw",
+    "mape_deployed": 8.821858274877687,
+    "mape_raw": 8.821858274877687
+  }
+}

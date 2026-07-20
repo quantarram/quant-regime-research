@@ -1,0 +1,618 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 35.58645702158138,
+        "mape_pct": 17.680203222709057,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 23.891805033576006,
+        "mape_pct": 12.329155551410778,
+        "fss_holdout_skill": -0.0516675867017606
+      },
+      "vix_only": {
+        "mae": 26.093726139201795,
+        "mape_pct": 13.473258432379229,
+        "fss_holdout_skill": -0.0606595893328214
+      },
+      "both": {
+        "mae": 25.521189005440306,
+        "mape_pct": 13.257707237465887,
+        "fss_holdout_skill": -0.0725558232831379
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "climatology",
+    "agree": false
+  },
+  "DIA": {
+    "horizon": 126,
+    "candidates": {
+      "climatology": {
+        "mae": 21.504522828690533,
+        "mape_pct": 5.675195324834743,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 24.344385153846915,
+        "mape_pct": 6.111443396103806,
+        "fss_holdout_skill": -0.0272739160697952
+      },
+      "vix_only": {
+        "mae": 22.675848206912285,
+        "mape_pct": 5.77575322807995,
+        "fss_holdout_skill": 0.0926841994803662
+      },
+      "both": {
+        "mae": 22.35604362979209,
+        "mape_pct": 5.707790382128877,
+        "fss_holdout_skill": 0.0447211869105855
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "vix_only",
+    "agree": false
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 0.06700952414375648,
+        "mape_pct": 6.060867426744245,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 0.04261806849167314,
+        "mape_pct": 3.8812460289905184,
+        "fss_holdout_skill": 0.1688153433214127
+      },
+      "vix_only": {
+        "mae": 0.046548763188615117,
+        "mape_pct": 4.220979901932143,
+        "fss_holdout_skill": 0.1645455729388294
+      },
+      "both": {
+        "mae": 0.049186415548948086,
+        "mape_pct": 4.468504719078487,
+        "fss_holdout_skill": 0.1900020887845757
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "both",
+    "agree": false
+  },
+  "GLD": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 59.42843477364826,
+        "mape_pct": 19.944386825690625,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 47.87819188357399,
+        "mape_pct": 16.030212510546107,
+        "fss_holdout_skill": -0.1015506810716183
+      },
+      "vix_only": {
+        "mae": 44.915164856057636,
+        "mape_pct": 15.457990683080785,
+        "fss_holdout_skill": 0.1345518739228516
+      },
+      "both": {
+        "mae": 46.40747899914542,
+        "mape_pct": 15.85901142380623,
+        "fss_holdout_skill": 0.0700953820195808
+      }
+    },
+    "price_based_winner": "vix_only",
+    "fss_based_winner": "vix_only",
+    "agree": true
+  },
+  "IWM": {
+    "horizon": 21,
+    "candidates": {
+      "climatology": {
+        "mae": 10.398412673683325,
+        "mape_pct": 5.182901553462802,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 11.794922295459308,
+        "mape_pct": 6.033615577963706,
+        "fss_holdout_skill": -0.1069286537417303
+      },
+      "vix_only": {
+        "mae": 11.52824978462263,
+        "mape_pct": 5.7313901979857755,
+        "fss_holdout_skill": -0.0189426587033542
+      },
+      "both": {
+        "mae": 10.602126200214448,
+        "mape_pct": 5.2787289276444085,
+        "fss_holdout_skill": -0.0149817274769316
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "IYR": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 9.33957974681128,
+        "mape_pct": 11.24215208905437,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 9.564175530591609,
+        "mape_pct": 11.397905359302564,
+        "fss_holdout_skill": -0.1938438047132299
+      },
+      "vix_only": {
+        "mae": 9.509309329694071,
+        "mape_pct": 11.430533784645638,
+        "fss_holdout_skill": -0.1864264664057897
+      },
+      "both": {
+        "mae": 9.545794224732044,
+        "mape_pct": 11.408179915082414,
+        "fss_holdout_skill": -0.1254622820907355
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "JPM": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 33.71712670558101,
+        "mape_pct": 15.984036503156304,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 34.164534359098,
+        "mape_pct": 15.387429229319174,
+        "fss_holdout_skill": 0.0898269871741082
+      },
+      "vix_only": {
+        "mae": 37.589492439063584,
+        "mape_pct": 17.15583436003529,
+        "fss_holdout_skill": -0.0372207264083417
+      },
+      "both": {
+        "mae": 38.33876510353249,
+        "mape_pct": 17.442791396062663,
+        "fss_holdout_skill": -0.0396596865296596
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "credit_only",
+    "agree": true
+  },
+  "MSFT": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 60.059490598973994,
+        "mape_pct": 17.241960674817584,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 74.34057826851641,
+        "mape_pct": 20.228946143338504,
+        "fss_holdout_skill": -0.0988595349284473
+      },
+      "vix_only": {
+        "mae": 71.14083203209528,
+        "mape_pct": 20.04394210337839,
+        "fss_holdout_skill": 0.0215254625887237
+      },
+      "both": {
+        "mae": 71.99647066978359,
+        "mape_pct": 20.204398687959422,
+        "fss_holdout_skill": -0.0495283626928997
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "vix_only",
+    "agree": false
+  },
+  "QQQ": {
+    "horizon": 21,
+    "candidates": {
+      "climatology": {
+        "mae": 20.861362583052873,
+        "mape_pct": 5.044856844777604,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 22.09593433703786,
+        "mape_pct": 5.377316585310665,
+        "fss_holdout_skill": -0.0745261253971025
+      },
+      "vix_only": {
+        "mae": 22.221764418571606,
+        "mape_pct": 5.264942210929727,
+        "fss_holdout_skill": 0.0195258435426609
+      },
+      "both": {
+        "mae": 21.592344038820304,
+        "mape_pct": 5.183738010149802,
+        "fss_holdout_skill": 0.0052963102540354
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "vix_only",
+    "agree": false
+  },
+  "SPY": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 39.92038680246424,
+        "mape_pct": 8.174727884142394,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 56.942201211434956,
+        "mape_pct": 10.50811716378414,
+        "fss_holdout_skill": -0.1163310973776143
+      },
+      "vix_only": {
+        "mae": 52.10233620267593,
+        "mape_pct": 9.829834707717534,
+        "fss_holdout_skill": -0.0635777868509748
+      },
+      "both": {
+        "mae": 52.40063836839594,
+        "mape_pct": 9.96106528916524,
+        "fss_holdout_skill": -0.0536386598458477
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "VOX": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 19.953177290554475,
+        "mape_pct": 15.046807414636662,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 27.451251581125753,
+        "mape_pct": 20.15193847180603,
+        "fss_holdout_skill": -0.1381284732295579
+      },
+      "vix_only": {
+        "mae": 28.020912804035824,
+        "mape_pct": 20.774744131263414,
+        "fss_holdout_skill": -0.114135326240057
+      },
+      "both": {
+        "mae": 28.473874209766677,
+        "mape_pct": 21.023315189930468,
+        "fss_holdout_skill": -0.0768399822515501
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "VTI": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 20.073980789822233,
+        "mape_pct": 8.30516887877586,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 24.080897440586092,
+        "mape_pct": 9.373544191395517,
+        "fss_holdout_skill": -0.0811295048489133
+      },
+      "vix_only": {
+        "mae": 26.203455137844323,
+        "mape_pct": 10.310679873937573,
+        "fss_holdout_skill": -0.0724823176600924
+      },
+      "both": {
+        "mae": 26.109524070073093,
+        "mape_pct": 10.305616817426243,
+        "fss_holdout_skill": -0.0564275301964755
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "XLB": {
+    "horizon": 126,
+    "candidates": {
+      "climatology": {
+        "mae": 3.0993173542469084,
+        "mape_pct": 7.649971439167097,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 3.2769518740838603,
+        "mape_pct": 7.912274102472493,
+        "fss_holdout_skill": -0.0934100827691293
+      },
+      "vix_only": {
+        "mae": 3.5091069280288254,
+        "mape_pct": 8.32110807301437,
+        "fss_holdout_skill": -0.131672235680014
+      },
+      "both": {
+        "mae": 3.484686783918048,
+        "mape_pct": 8.281737924001787,
+        "fss_holdout_skill": -0.0930130192542424
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "XLE": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 5.44219145103505,
+        "mape_pct": 12.263998143136964,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 4.5858976078191285,
+        "mape_pct": 10.310946707897399,
+        "fss_holdout_skill": 0.0033896691731806
+      },
+      "vix_only": {
+        "mae": 7.36255354736276,
+        "mape_pct": 17.159050489706626,
+        "fss_holdout_skill": 0.0143375347808321
+      },
+      "both": {
+        "mae": 6.989970978479189,
+        "mape_pct": 16.256502033049497,
+        "fss_holdout_skill": 0.0564685324560911
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "both",
+    "agree": false
+  },
+  "XLF": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 4.017481337240048,
+        "mape_pct": 10.26517689026913,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 4.4358077617189196,
+        "mape_pct": 11.30812389631909,
+        "fss_holdout_skill": -0.1094458403525062
+      },
+      "vix_only": {
+        "mae": 4.7108924271867165,
+        "mape_pct": 12.178845476795605,
+        "fss_holdout_skill": -0.0670343277658212
+      },
+      "both": {
+        "mae": 4.496635202103987,
+        "mape_pct": 11.455034587309484,
+        "fss_holdout_skill": -0.0731473085765429
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "XLI": {
+    "horizon": 5,
+    "candidates": {
+      "climatology": {
+        "mae": 2.38018225767911,
+        "mape_pct": 2.057492633874293,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 2.3040094578761354,
+        "mape_pct": 1.9885918432521823,
+        "fss_holdout_skill": 0.0074310882655175
+      },
+      "vix_only": {
+        "mae": 2.3065154505219616,
+        "mape_pct": 1.9942269708435172,
+        "fss_holdout_skill": -0.0206635058571547
+      },
+      "both": {
+        "mae": 2.3789966573064665,
+        "mape_pct": 2.0360099514125594,
+        "fss_holdout_skill": -0.0103023426521013
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "credit_only",
+    "agree": true
+  },
+  "XLK": {
+    "horizon": 189,
+    "candidates": {
+      "climatology": {
+        "mae": 12.220263675008919,
+        "mape_pct": 12.558540476356997,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 16.925081485540435,
+        "mape_pct": 16.060900790792413,
+        "fss_holdout_skill": -0.1023369093338638
+      },
+      "vix_only": {
+        "mae": 17.896413278149947,
+        "mape_pct": 17.319731988051167,
+        "fss_holdout_skill": -0.0857603334651143
+      },
+      "both": {
+        "mae": 17.504102316031418,
+        "mape_pct": 16.980923880320887,
+        "fss_holdout_skill": -0.1158285859412955
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "XLP": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 6.769500368650942,
+        "mape_pct": 9.323055993985285,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 6.300761412304773,
+        "mape_pct": 8.585953398935755,
+        "fss_holdout_skill": -0.0303758705492665
+      },
+      "vix_only": {
+        "mae": 6.422354914367967,
+        "mape_pct": 8.988177812155985,
+        "fss_holdout_skill": -0.0632911637177221
+      },
+      "both": {
+        "mae": 6.678425870155586,
+        "mape_pct": 9.323173327349714,
+        "fss_holdout_skill": -0.046173743536521
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "climatology",
+    "agree": false
+  },
+  "XLU": {
+    "horizon": 126,
+    "candidates": {
+      "climatology": {
+        "mae": 2.888529015507098,
+        "mape_pct": 8.382622765791863,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 2.675384785640864,
+        "mape_pct": 7.941682868467684,
+        "fss_holdout_skill": -0.0457318533242634
+      },
+      "vix_only": {
+        "mae": 2.484820439557098,
+        "mape_pct": 7.120891617119525,
+        "fss_holdout_skill": 0.0069461404409068
+      },
+      "both": {
+        "mae": 2.5527682608111686,
+        "mape_pct": 7.359253402836235,
+        "fss_holdout_skill": 0.0203866430494591
+      }
+    },
+    "price_based_winner": "vix_only",
+    "fss_based_winner": "both",
+    "agree": false
+  },
+  "XLV": {
+    "horizon": 1,
+    "candidates": {
+      "climatology": {
+        "mae": 1.0822011809249876,
+        "mape_pct": 0.8138702845693978,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 0.962630819407657,
+        "mape_pct": 0.7244290693867061,
+        "fss_holdout_skill": -3.7583108422403755e-05
+      },
+      "vix_only": {
+        "mae": 0.9759421675311915,
+        "mape_pct": 0.7349526702015887,
+        "fss_holdout_skill": 0.0
+      },
+      "both": {
+        "mae": 0.9694194027508622,
+        "mape_pct": 0.7296347649813163,
+        "fss_holdout_skill": -1.0193999327320902e-05
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "climatology",
+    "agree": false
+  },
+  "XLY": {
+    "horizon": 252,
+    "candidates": {
+      "climatology": {
+        "mae": 9.759943727718973,
+        "mape_pct": 11.335652115109482,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 16.708413440659886,
+        "mape_pct": 18.351385139070835,
+        "fss_holdout_skill": -0.1735866885705091
+      },
+      "vix_only": {
+        "mae": 16.76419904288618,
+        "mape_pct": 18.730134108907052,
+        "fss_holdout_skill": -0.1246141641150104
+      },
+      "both": {
+        "mae": 16.136801638108583,
+        "mape_pct": 18.01439961499857,
+        "fss_holdout_skill": -0.1654199528086022
+      }
+    },
+    "price_based_winner": "climatology",
+    "fss_based_winner": "climatology",
+    "agree": true
+  },
+  "XOM": {
+    "horizon": 63,
+    "candidates": {
+      "climatology": {
+        "mae": 9.74359704556409,
+        "mape_pct": 9.020107948796237,
+        "fss_holdout_skill": 0.0
+      },
+      "credit_only": {
+        "mae": 9.44584413698653,
+        "mape_pct": 8.821858274877687,
+        "fss_holdout_skill": 0.0478404901683225
+      },
+      "vix_only": {
+        "mae": 11.497474812620656,
+        "mape_pct": 10.55110753681627,
+        "fss_holdout_skill": -0.0659702895346273
+      },
+      "both": {
+        "mae": 11.35776594199375,
+        "mape_pct": 10.380908617303287,
+        "fss_holdout_skill": -0.0510374762211929
+      }
+    },
+    "price_based_winner": "credit_only",
+    "fss_based_winner": "credit_only",
+    "agree": true
+  }
+}

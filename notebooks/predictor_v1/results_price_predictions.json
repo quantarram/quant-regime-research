@@ -1,0 +1,170 @@
+{
+  "XLE": {
+    "horizon": 252,
+    "variant": "both",
+    "skill_above_climatology": 0.1641639976667748,
+    "n_oos": 2114,
+    "weak_signal": false
+  },
+  "GLD": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.13088994670368298,
+    "n_oos": 2124,
+    "weak_signal": false
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.11065577825679068,
+    "n_oos": 2179,
+    "weak_signal": false
+  },
+  "VTI": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.1038738771670944,
+    "n_oos": 2177,
+    "weak_signal": false
+  },
+  "XOM": {
+    "horizon": 189,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.09845897735832576,
+    "n_oos": 2933,
+    "weak_signal": false
+  },
+  "DIA": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.08641898201078069,
+    "n_oos": 2240,
+    "weak_signal": false
+  },
+  "JPM": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.08281387729843648,
+    "n_oos": 2114,
+    "weak_signal": false
+  },
+  "XLU": {
+    "horizon": 126,
+    "variant": "both",
+    "skill_above_climatology": 0.07437171264372866,
+    "n_oos": 2240,
+    "weak_signal": false
+  },
+  "MSFT": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.06664816716478139,
+    "n_oos": 2114,
+    "weak_signal": false
+  },
+  "IYR": {
+    "horizon": 189,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.054886028498714656,
+    "n_oos": 2208,
+    "weak_signal": false
+  },
+  "XLK": {
+    "horizon": 63,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.038370729703566475,
+    "n_oos": 3059,
+    "weak_signal": false
+  },
+  "AAPL": {
+    "horizon": 252,
+    "variant": "both",
+    "skill_above_climatology": 0.03785632000118544,
+    "n_oos": 2114,
+    "weak_signal": false
+  },
+  "XLF": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.033185032435879225,
+    "n_oos": 2240,
+    "weak_signal": false
+  },
+  "QQQ": {
+    "horizon": 21,
+    "variant": "both",
+    "skill_above_climatology": 0.02867052072704601,
+    "n_oos": 2345,
+    "weak_signal": false
+  },
+  "BTC-USD": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.027250492657242553,
+    "n_oos": 1107,
+    "weak_signal": false
+  },
+  "IWM": {
+    "horizon": 21,
+    "variant": "both",
+    "skill_above_climatology": 0.020330678095385357,
+    "n_oos": 2345,
+    "weak_signal": false
+  },
+  "XLI": {
+    "horizon": 21,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.016643496281048442,
+    "n_oos": 3101,
+    "weak_signal": false
+  },
+  "VOX": {
+    "horizon": 63,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.01657755598687677,
+    "n_oos": 2334,
+    "weak_signal": false
+  },
+  "XLY": {
+    "horizon": 63,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.011312749421508062,
+    "n_oos": 3059,
+    "weak_signal": false
+  },
+  "XLB": {
+    "horizon": 126,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.011123193044147994,
+    "n_oos": 2240,
+    "weak_signal": false
+  },
+  "XLP": {
+    "horizon": 252,
+    "variant": "vix_only",
+    "skill_above_climatology": 0.008703871563248422,
+    "n_oos": 2114,
+    "weak_signal": true
+  },
+  "XLRE": {
+    "horizon": 5,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.007903877610351218,
+    "n_oos": 851,
+    "weak_signal": true
+  },
+  "SPY": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill_above_climatology": 0.00023958162540940742,
+    "n_oos": 3121,
+    "weak_signal": true
+  },
+  "XLV": {
+    "horizon": 1,
+    "variant": "credit_only",
+    "skill_above_climatology": 9.077674257293444e-05,
+    "n_oos": 3121,
+    "weak_signal": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "stationarity": {
+    "skew_idx": true,
+    "spy_ret": true,
+    "spy_rvol21": true
+  },
+  "granger": {
+    "spy_ret": {
+      "n": 8317,
+      "lags": {
+        "1": {
+          "cand_causes_target_p": 0.8762038326949906,
+          "target_causes_cand_p": 0.017625464883535183
+        },
+        "5": {
+          "cand_causes_target_p": 0.8551302017063562,
+          "target_causes_cand_p": 0.7267770862814142
+        },
+        "21": {
+          "cand_causes_target_p": 0.3080723021131399,
+          "target_causes_cand_p": 0.15185060364949968
+        }
+      }
+    },
+    "spy_rvol21": {
+      "n": 8297,
+      "lags": {
+        "1": {
+          "cand_causes_target_p": 0.006640277632440825,
+          "target_causes_cand_p": 0.05317402754852402
+        },
+        "5": {
+          "cand_causes_target_p": 0.003452997840612709,
+          "target_causes_cand_p": 0.7016592130324387
+        },
+        "21": {
+          "cand_causes_target_p": 0.00026012462569677085,
+          "target_causes_cand_p": 0.35018302705884974
+        }
+      }
+    }
+  },
+  "ccf": {
+    "spy_ret": {
+      "peak_lag": 0,
+      "peak_corr": 0.04179070069813491,
+      "sig_threshold": 0.021491796545303973
+    },
+    "spy_rvol21": {
+      "peak_lag": 4,
+      "peak_corr": -0.21751797750953886,
+      "sig_threshold": 0.0215176840475157
+    }
+  },
+  "multivariate": {
+    "skew_idx": {
+      "F": 0.9030434676057334,
+      "p": 0.47788093764442674
+    },
+    "vix_term_slope": {
+      "F": 11.5177713025408,
+      "p": 4.0216236240447364e-11
+    },
+    "credit_spread_regime": {
+      "F": 3.6516685842630054,
+      "p": 0.002650098602905168
+    }
+  }
+}

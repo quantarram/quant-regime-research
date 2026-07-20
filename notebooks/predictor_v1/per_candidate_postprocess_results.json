@@ -1,0 +1,684 @@
+{
+  "AAPL": {
+    "horizon": 252,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 12.329155551410778,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 17.680203222709057,
+        "mape_postprocessed": 33.13886338485277
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 855,
+        "mape_raw": 12.329155551410778,
+        "mape_postprocessed": 25.340066231672015
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 13.473258432379232,
+        "mape_postprocessed": 33.109410118652875
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 13.257707237465885,
+        "mape_postprocessed": 27.930621550738604
+      }
+    }
+  },
+  "DIA": {
+    "horizon": 126,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 5.675195324834743,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 5.675195324834743,
+        "mape_postprocessed": 8.746416212425952
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 981,
+        "mape_raw": 6.111443396103806,
+        "mape_postprocessed": 8.085423113421605
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 5.775753228079949,
+        "mape_postprocessed": 11.559001765899977
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 5.707790382128877,
+        "mape_postprocessed": 10.275577354474331
+      }
+    }
+  },
+  "EURUSD=X": {
+    "horizon": 189,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 3.8812460289905184,
+    "candidates": {
+      "clim": {
+        "n_selection": 1256,
+        "n_test": 923,
+        "mape_raw": 6.060867426744245,
+        "mape_postprocessed": 7.84446403460348
+      },
+      "credit_only": {
+        "n_selection": 2012,
+        "n_test": 923,
+        "mape_raw": 3.8812460289905184,
+        "mape_postprocessed": 4.668167068251358
+      },
+      "vix_only": {
+        "n_selection": 1256,
+        "n_test": 923,
+        "mape_raw": 4.220979901932143,
+        "mape_postprocessed": 5.8689921516033365
+      },
+      "both": {
+        "n_selection": 1256,
+        "n_test": 923,
+        "mape_raw": 4.468504719078488,
+        "mape_postprocessed": 5.6825157954924155
+      }
+    }
+  },
+  "GLD": {
+    "horizon": 189,
+    "old_winner": "vix_only",
+    "old_single_winner_mape": 15.457990683080785,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 928,
+        "mape_raw": 19.944386825690625,
+        "mape_postprocessed": 16.468325733721905
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 928,
+        "mape_raw": 16.030212510546107,
+        "mape_postprocessed": 15.09884663384024
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 928,
+        "mape_raw": 15.457990683080785,
+        "mape_postprocessed": 11.468087504620492
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 928,
+        "mape_raw": 15.85901142380623,
+        "mape_postprocessed": 12.028127713285695
+      }
+    }
+  },
+  "IWM": {
+    "horizon": 21,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 5.182901553462803,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.182901553462803,
+        "mape_postprocessed": 6.641769576750674
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 1086,
+        "mape_raw": 6.0336155779637055,
+        "mape_postprocessed": 12.113775015608875
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.731390197985776,
+        "mape_postprocessed": 11.068629667278671
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.2787289276444085,
+        "mape_postprocessed": 14.450584873050962
+      }
+    }
+  },
+  "IYR": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 11.242152089054368,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 949,
+        "mape_raw": 11.242152089054368,
+        "mape_postprocessed": 15.034842033370289
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 949,
+        "mape_raw": 11.397905359302566,
+        "mape_postprocessed": 17.866400754814258
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 949,
+        "mape_raw": 11.430533784645636,
+        "mape_postprocessed": 30.246167372938633
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 949,
+        "mape_raw": 11.408179915082416,
+        "mape_postprocessed": 27.57398310021328
+      }
+    }
+  },
+  "JPM": {
+    "horizon": 252,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 15.38742922931917,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 15.984036503156302,
+        "mape_postprocessed": 25.05150826164792
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 855,
+        "mape_raw": 15.38742922931917,
+        "mape_postprocessed": 12.988095955378887
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 17.155834360035293,
+        "mape_postprocessed": 28.732011332290348
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 17.442791396062663,
+        "mape_postprocessed": 29.838434629417186
+      }
+    }
+  },
+  "MSFT": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 17.24196067481758,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 17.24196067481758,
+        "mape_postprocessed": 22.452616398229814
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 918,
+        "mape_raw": 20.228946143338497,
+        "mape_postprocessed": 36.5810215632625
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 20.04394210337839,
+        "mape_postprocessed": 37.60448611679673
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 20.204398687959422,
+        "mape_postprocessed": 44.762400521116405
+      }
+    }
+  },
+  "QQQ": {
+    "horizon": 21,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 5.044856844777603,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.044856844777603,
+        "mape_postprocessed": 6.3535353479313565
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 1086,
+        "mape_raw": 5.377316585310666,
+        "mape_postprocessed": 7.597078536160734
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.264942210929727,
+        "mape_postprocessed": 7.452041655661665
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 1086,
+        "mape_raw": 5.183738010149802,
+        "mape_postprocessed": 6.087006540613809
+      }
+    }
+  },
+  "SPY": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 8.174727884142396,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 8.174727884142396,
+        "mape_postprocessed": 11.589813928909736
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 918,
+        "mape_raw": 10.508117163784139,
+        "mape_postprocessed": 17.074263987472246
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 9.829834707717536,
+        "mape_postprocessed": 21.087627358063045
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 9.96106528916524,
+        "mape_postprocessed": 21.131154890260078
+      }
+    }
+  },
+  "VOX": {
+    "horizon": 252,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 15.046807414636664,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 886,
+        "mape_raw": 15.046807414636664,
+        "mape_postprocessed": 24.207041323091065
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 886,
+        "mape_raw": 20.151938471806027,
+        "mape_postprocessed": 37.852446017397554
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 886,
+        "mape_raw": 20.774744131263418,
+        "mape_postprocessed": 56.89812036138978
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 886,
+        "mape_raw": 21.023315189930468,
+        "mape_postprocessed": 61.89806274356805
+      }
+    }
+  },
+  "VTI": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 8.305168878775858,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 8.305168878775858,
+        "mape_postprocessed": 12.45783411022645
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 918,
+        "mape_raw": 9.373544191395517,
+        "mape_postprocessed": 12.987663867625693
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 10.310679873937575,
+        "mape_postprocessed": 23.573852188052935
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 10.305616817426243,
+        "mape_postprocessed": 22.896544415477685
+      }
+    }
+  },
+  "XLB": {
+    "horizon": 126,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 7.649971439167097,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 7.649971439167097,
+        "mape_postprocessed": 11.743732301127412
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 981,
+        "mape_raw": 7.912274102472491,
+        "mape_postprocessed": 10.440741405383498
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 8.321108073014369,
+        "mape_postprocessed": 9.822313062505252
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 8.281737924001787,
+        "mape_postprocessed": 10.9678382457803
+      }
+    }
+  },
+  "XLE": {
+    "horizon": 252,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 10.310946707897397,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 12.263998143136964,
+        "mape_postprocessed": 33.70043676851285
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 855,
+        "mape_raw": 10.310946707897397,
+        "mape_postprocessed": 32.770315622024874
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 17.159050489706626,
+        "mape_postprocessed": 62.26552511812107
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 16.256502033049497,
+        "mape_postprocessed": 80.73724655821304
+      }
+    }
+  },
+  "XLF": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 10.265176890269128,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 10.265176890269128,
+        "mape_postprocessed": 17.66432207425639
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 918,
+        "mape_raw": 11.308123896319092,
+        "mape_postprocessed": 15.069670211510894
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 12.178845476795605,
+        "mape_postprocessed": 20.10753335414105
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 11.455034587309482,
+        "mape_postprocessed": 18.276391693957756
+      }
+    }
+  },
+  "XLI": {
+    "horizon": 5,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 1.9885918432521823,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 1102,
+        "mape_raw": 2.0574926338742925,
+        "mape_postprocessed": 2.9108767752740596
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 1102,
+        "mape_raw": 1.9885918432521823,
+        "mape_postprocessed": 3.0397799878048555
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 1102,
+        "mape_raw": 1.994226970843517,
+        "mape_postprocessed": 2.995860827802502
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 1102,
+        "mape_raw": 2.036009951412559,
+        "mape_postprocessed": 4.076914518409913
+      }
+    }
+  },
+  "XLK": {
+    "horizon": 189,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 12.558540476356997,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 12.558540476356997,
+        "mape_postprocessed": 16.52242783598823
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 918,
+        "mape_raw": 16.06090079079241,
+        "mape_postprocessed": 31.393342537730533
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 17.319731988051164,
+        "mape_postprocessed": 31.289520854623103
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 918,
+        "mape_raw": 16.980923880320884,
+        "mape_postprocessed": 34.465252832774055
+      }
+    }
+  },
+  "XLP": {
+    "horizon": 252,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 8.585953398935754,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 9.323055993985287,
+        "mape_postprocessed": 8.44846805809198
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 855,
+        "mape_raw": 8.585953398935754,
+        "mape_postprocessed": 11.778071493685475
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 8.988177812155987,
+        "mape_postprocessed": 17.99674483708214
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 9.323173327349714,
+        "mape_postprocessed": 29.530323522318458
+      }
+    }
+  },
+  "XLU": {
+    "horizon": 126,
+    "old_winner": "vix_only",
+    "old_single_winner_mape": 7.120891617119525,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 8.382622765791863,
+        "mape_postprocessed": 9.517846771048717
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 981,
+        "mape_raw": 7.941682868467684,
+        "mape_postprocessed": 10.152550034270037
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 7.120891617119525,
+        "mape_postprocessed": 16.99636968119746
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 981,
+        "mape_raw": 7.359253402836234,
+        "mape_postprocessed": 13.107133047609468
+      }
+    }
+  },
+  "XLV": {
+    "horizon": 1,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 0.7244290693867063,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 1106,
+        "mape_raw": 0.8138702845693976,
+        "mape_postprocessed": 1.092011701780709
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 1106,
+        "mape_raw": 0.7244290693867063,
+        "mape_postprocessed": 0.7904567364556099
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 1106,
+        "mape_raw": 0.7349526702015889,
+        "mape_postprocessed": 0.9508416651683603
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 1106,
+        "mape_raw": 0.7296347649813164,
+        "mape_postprocessed": 0.9092513196242478
+      }
+    }
+  },
+  "XLY": {
+    "horizon": 252,
+    "old_winner": "climatology",
+    "old_single_winner_mape": 11.33565211510948,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 11.33565211510948,
+        "mape_postprocessed": 17.028635940312835
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 855,
+        "mape_raw": 18.351385139070835,
+        "mape_postprocessed": 40.10914878470974
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 18.730134108907052,
+        "mape_postprocessed": 47.630577263095006
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 855,
+        "mape_raw": 18.01439961499857,
+        "mape_postprocessed": 47.12309077111972
+      }
+    }
+  },
+  "XOM": {
+    "horizon": 63,
+    "old_winner": "credit_only",
+    "old_single_winner_mape": 8.821858274877687,
+    "candidates": {
+      "clim": {
+        "n_selection": 1259,
+        "n_test": 1044,
+        "mape_raw": 9.020107948796237,
+        "mape_postprocessed": 15.632785261417915
+      },
+      "credit_only": {
+        "n_selection": 2015,
+        "n_test": 1044,
+        "mape_raw": 8.821858274877687,
+        "mape_postprocessed": 14.500408443176847
+      },
+      "vix_only": {
+        "n_selection": 1259,
+        "n_test": 1044,
+        "mape_raw": 10.55110753681627,
+        "mape_postprocessed": 21.822752435224487
+      },
+      "both": {
+        "n_selection": 1259,
+        "n_test": 1044,
+        "mape_raw": 10.380908617303287,
+        "mape_postprocessed": 17.800777092319635
+      }
+    }
+  }
+}

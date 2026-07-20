@@ -1,0 +1,69 @@
+{
+  "stationarity": {
+    "fed_funds_implied_change_21d": true,
+    "spy_ret": true,
+    "spy_rvol21": true
+  },
+  "granger": {
+    "spy_ret": {
+      "n": 6417,
+      "lags": {
+        "1": {
+          "cand_causes_target_p": 0.22855453175003654,
+          "target_causes_cand_p": 0.2478857239597827
+        },
+        "5": {
+          "cand_causes_target_p": 0.0023494101160951085,
+          "target_causes_cand_p": 0.7659669776688001
+        },
+        "21": {
+          "cand_causes_target_p": 3.3786422913707997e-07,
+          "target_causes_cand_p": 0.12858561434518523
+        }
+      }
+    },
+    "spy_rvol21": {
+      "n": 6417,
+      "lags": {
+        "1": {
+          "cand_causes_target_p": 0.40495673860612835,
+          "target_causes_cand_p": 0.0002744862613415354
+        },
+        "5": {
+          "cand_causes_target_p": 7.3614702160248555e-06,
+          "target_causes_cand_p": 3.428061985447512e-08
+        },
+        "21": {
+          "cand_causes_target_p": 1.8302858873825594e-05,
+          "target_causes_cand_p": 2.9206348052520855e-06
+        }
+      }
+    }
+  },
+  "ccf": {
+    "spy_ret": {
+      "peak_lag": -27,
+      "peak_corr": 0.048259119077864183,
+      "sig_threshold": 0.024467525618255846
+    },
+    "spy_rvol21": {
+      "peak_lag": 0,
+      "peak_corr": -0.3649798329833762,
+      "sig_threshold": 0.024467525618255846
+    }
+  },
+  "multivariate": {
+    "fed_funds_chg": {
+      "F": 2.805745061307419,
+      "p": 0.015460396771105745
+    },
+    "vix_term_slope": {
+      "F": 11.551137061838062,
+      "p": 3.7134448440082136e-11
+    },
+    "credit_spread_regime": {
+      "F": 3.7520678818960334,
+      "p": 0.002139011340941067
+    }
+  }
+}

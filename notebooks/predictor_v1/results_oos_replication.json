@@ -1,0 +1,52 @@
+{
+  "XLI": {
+    "n": 3101,
+    "hit_baseline": 0.1636904761904762,
+    "hit_macro_interaction": 0.2057877813504823
+  },
+  "XLB": {
+    "n": 3101,
+    "hit_baseline": 0.14732142857142858,
+    "hit_macro_interaction": 0.17041800643086816
+  },
+  "XLY": {
+    "n": 3101,
+    "hit_baseline": 0.046130952380952384,
+    "hit_macro_interaction": 0.1045016077170418
+  },
+  "XLP": {
+    "n": 3101,
+    "hit_baseline": 0.13392857142857142,
+    "hit_macro_interaction": 0.1832797427652733
+  },
+  "XLU": {
+    "n": 3101,
+    "hit_baseline": 0.08482142857142858,
+    "hit_macro_interaction": 0.06430868167202572
+  },
+  "XLV": {
+    "n": 3101,
+    "hit_baseline": 0.12053571428571429,
+    "hit_macro_interaction": 0.12861736334405144
+  },
+  "XLC": {
+    "n": 83,
+    "hit_baseline": 0.0,
+    "hit_macro_interaction": 0.0
+  },
+  "XLRE": {
+    "n": 835,
+    "hit_baseline": 0.17857142857142858,
+    "hit_macro_interaction": 0.125
+  },
+  "DIA": {
+    "n": 3101,
+    "hit_baseline": 0.03720238095238095,
+    "hit_macro_interaction": 0.10610932475884244
+  },
+  "VTI": {
+    "n": 3101,
+    "hit_baseline": 0.049107142857142856,
+    "hit_macro_interaction": 0.16559485530546625
+  }
+}

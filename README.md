@@ -13,6 +13,7 @@ The work here spans three methodologically distinct threads, all documented as n
 1. **The CPE framework** (Papers 1–5) — a nonparametric tail-co-movement signal system, described in full below, that powers the live dashboards.
 2. **Climate-finance and event-study extensions** (Papers 6–10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
 3. **Multifractal predictability limits** (Paper 11) — adapts atmospheric turbulence cascade theory to ask how far ahead financial markets are structurally predictable at all, cross-validated against CPE's own signal density.
+4. **Regime-conditioned price forecasting** (Paper 12) — a fully independent, ML-based (LightGBM quantile regression) forecasting system for 22 instruments, reusing Paper 11's multifractal features and two causally-validated market-regime signals. Its central finding: real, holdout-honest statistical skill for roughly half the panel does not translate into demonstrated tradeable alpha for *any* instrument, under five independently designed trading-strategy tests — a result treated as the paper's main contribution rather than suppressed, and now deployed as an honest, forecast-only (no buy/sell signal) live dashboard.
 
 ### The CPE framework
 
@@ -85,6 +86,12 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Method:** Double Trace Moment (DTM) cascade estimation, structure-function scan, and correlated/decorrelated moment decomposition across τ = 1–300 trading days (q = 2, 4), cross-validated against the core CPE framework's own signal density at SPY's ~252-day horizon
 - Full pipeline documented in `notebooks/predictability_paper/README.md`
 
+**Regime-conditioned price forecasting (Paper 12, draft):**
+- **Data:** yfinance daily adjusted close, 22-instrument universe (equities, sector ETFs, gold, FX), plus credit (HYG/LQD) and VIX-term-structure (VIXM/VIXY) regime proxies
+- **Method:** LightGBM quantile regression (5 quantile levels) on each instrument's own multifractal features (reused from Paper 11) interacted with two causally-validated regime signals, selected per instrument from four candidates (climatology, credit-regime, VIX-regime, combined) via a genuine chronological selection/holdout split (`HOLDOUT_START = 2022-01-01`) — a data-snooping bug in an earlier selection procedure was caught and fixed mid-project (one instrument's headline skill score was ~12× inflated before the fix)
+- **Economic validation:** five independently designed trading-strategy tests (directional, price-target, portfolio, Kelly-sized, cross-sectional relative-value) and five independently designed post-processing/bias-correction designs, all benchmarked against each instrument's own buy-and-hold return (a benchmark-specification bug — testing against a generic market index instead — produced one spurious "significant alpha" result, caught and corrected)
+- Full pipeline documented in `notebooks/predictor_v1/` and `notebooks/predictor_v1_paper_draft.md`
+
 ---
 
 ## Limitations
@@ -112,6 +119,11 @@ This repository is intended for research purposes. Honest limitations reported a
 - **Not a universal claim:** predictability regimes are instrument- and moment-order-dependent (persistent / single-crossing / oscillating), not a single decay law — see the paper's three-regime typology (Section 5.2) before generalizing any one instrument's result to others.
 - **DTM regression fit is comparatively weak** (R² 0.44–0.46) due to price-trend contamination in the raw (deliberately untransformed) field, though the structure-function and correlated/decorrelated decomposition results this paper relies on most are much better fit (R² > 0.98).
 
+**Regime-conditioned price forecasting (Paper 12, draft):**
+- **Zero instruments show demonstrated tradeable alpha.** This is the headline limitation, not a footnote: across five independently designed trading-strategy tests (directional, price-target, portfolio, Kelly-sized, cross-sectional relative-value long/short), none of the 22 instruments shows statistically significant risk-adjusted alpha against the properly specified benchmark (its own buy-and-hold return). Real, holdout-honest forecast-accuracy skill exists for roughly half the panel, but does not translate into economic value for any instrument tested — the live dashboard is deliberately built as a forecast-accuracy tracker with no buy/sell signal, for exactly this reason.
+- **Post-processing/bias-correction only helps 2 of 22 instruments** (GLD, JPM), across five independently designed correction techniques — the other 20 are made worse by every correction attempted, evidence their forecast errors are irreducible noise rather than a correctable bias.
+- **Overlapping-window t-statistics:** the alpha significance tests use analytic OLS standard errors appropriate to the point estimates tested, but do not yet correct for autocorrelation in overlapping long-horizon (63–252 day) return windows — an analytic effective-sample-size correction, not a resampling-based fix, is the natural next step.
+
 The outputs should be interpreted as evidence of statistical structure and a research prototype that has cleared a first significance threshold — not a deployable trading strategy.
 
 ---
@@ -124,6 +136,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 - [Multi-Asset Portfolio Tilt Dashboard](https://quantarram.github.io/quant-regime-research/notebooks/portfolio_dashboard.html)
 - [Precious Metals Dashboard (Gold/Silver/Platinum)](https://quantarram.github.io/quant-regime-research/notebooks/precious_metals_dashboard.html)
 - [CPE Atlas Explorer (169K signals)](https://quantarram.github.io/quant-regime-research/notebooks/cpe_dashboard.html)
+- [Predictor Dashboard (22-instrument price forecasts, Paper 12)](https://quantarram.github.io/quant-regime-research/notebooks/predictor_dashboard.html) — forecast-accuracy tool only, deliberately no buy/sell signal (see Paper 12's limitations above)
 
 ---
 
@@ -138,6 +151,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 12 (draft, not yet submitted to Zenodo): A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](notebooks/predictor_v1_paper_draft.md)
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
 - [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343)
 - [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110)
@@ -282,10 +296,15 @@ https://doi.org/10.5281/zenodo.21373459
 │   ├── build_gold_dashboard.py      # Gold buy-signal dashboard
 │   ├── build_portfolio_dashboard.py # Multi-asset portfolio tilt dashboard
 │   ├── build_metals_dashboard.py    # Precious metals dashboard
+│   ├── build_predictor_dashboard.py # Paper 12 live price-forecast dashboard
 │   ├── ibkr_paper_ledger.py         # IBKR paper-trading ledger
 │   ├── temperature/                 # Papers 6-9 climate-finance pipelines
 │   ├── rein/                        # Paper 10 hurricane/reinsurer event study
 │   ├── predictability_paper/        # Paper 11 multifractal analysis pipeline
+│   ├── predictor_v1/                # Paper 12 forecasting pipeline (features, model
+│   │                                 # selection, trading strategies, post-processing,
+│   │                                 # live-deployment modules)
+│   ├── predictor_v1_paper_draft.md  # Paper 12 draft preprint
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
