@@ -81,13 +81,27 @@ For each instrument, four candidate forecasting models compete on equal footing 
 3. **VIX-only**: as above, substituting the VIX-term-slope interaction terms.
 4. **Both**: baseline features plus all six interaction terms from both regimes.
 
-### 3.2 Quantile regression
+### 3.2 Quantile regression via gradient-boosted decision trees
 
-For each candidate and horizon H, five independent LightGBM quantile regressors are fit, one per quantile level α ∈ {0.10, 0.25, 0.50, 0.75, 0.90}, each minimizing the pinball loss
+**Why gradient-boosted trees.** An earlier, model-family comparison stage of this research program (single-quantile point regression, price-level MAPE, horizons 1/5/21 days) benchmarked ordinary least squares, random forest, XGBoost, LightGBM, and a feed-forward neural network (MLP) against the same physically-meaningful multifractal/regime feature panel used throughout this paper. The result was a clear inductive-bias story rather than a narrow single-model victory: the three tree ensembles (random forest, XGBoost, LightGBM) clustered tightly together and dominated at every horizon (e.g., 21-day MAPE of 5.1%, 5.9%, and 5.9% respectively), OLS trailed noticeably behind them (10.5% at 21 days), and the MLP was 4–5× worse than every tree-based method at every horizon (24.9% at 21 days) — the signature of a data-hungry architecture overfitting a feature panel with far more engineered nonlinear structure than sample size. Tree ensembles' native handling of nonlinear feature interactions without a specified functional form, invariance to feature scale, and robustness at moderate sample sizes make them the appropriate inductive bias for this problem; a neural network's usual advantage — learning representations from raw, high-dimensional, weakly-structured inputs — is not in play here, since the multifractal and regime features are already hand-engineered, low-dimensional, and individually interpretable. LightGBM specifically was carried forward into the production quantile system not because it uniquely won that point-regression comparison, but because its native `objective="quantile"` implementation lets the same tree-ensemble architecture output a full five-quantile forecast band directly, with no separate model family or post hoc interval-construction step required.
+
+For each candidate and horizon H, five independent LightGBM quantile regressors are fit, one per quantile level α ∈ {0.10, 0.25, 0.50, 0.75, 0.90}, each minimizing the pinball loss (Koenker & Bassett, 1978)
 
 <div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq4_pinball.svg" alt="Equation 4"><span class="eqn-num">(4)</span></div>
 
 — the standard piecewise pinball loss (α(y−ŷ) for y ≥ ŷ, (1−α)(ŷ−y) for y < ŷ), written here in its equivalent single-expression max form; identical objective, unchanged from `objective="quantile"` in the actual LightGBM calls throughout this work. Here y is the realized H-day-forward log return, fit using `n_estimators=200, max_depth=4, learning_rate=0.05, subsample=0.8, colsample_bytree=0.8`. Seven horizons are searched: H ∈ {1, 5, 21, 63, 126, 189, 252} trading days.
+
+**Gradient boosting as functional gradient descent.** A gradient-boosted ensemble minimizes Eq. 4 by building up an additive model in M stages,
+
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq5_ensemble.svg" alt="Equation 5"><span class="eqn-num">(5)</span></div>
+
+where F₀ is a constant initial guess (the training set's own α-quantile), each successive stage's tree is a regression tree, and η is the learning rate (Friedman, 2001). Each new tree is fit not to the raw targets but to the *pseudo-residuals* — the negative functional gradient of Eq. 4 with respect to the current ensemble's predictions, evaluated at each training point. This gradient has an unusually clean closed form for the pinball loss: it depends only on which side of the current prediction the true value falls, not on the size of the miss,
+
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq6_pseudoresidual.svg" alt="Equation 6"><span class="eqn-num">(6)</span></div>
+
+where 𝟙[·] is the indicator function. This is what makes gradient-boosted quantile regression tractable at all: every tree in the ensemble is simply being pointed toward reducing miscoverage at its assigned quantile level, five independent times over (once per α), rather than fit to five different re-weighted copies of the raw return target.
+
+**Why LightGBM specifically, among gradient-boosting implementations.** LightGBM (Ke et al., 2017) departs from earlier gradient-boosting implementations (e.g., XGBoost's default level-wise growth) in growing trees *leaf-wise*: at each boosting round it splits whichever leaf yields the largest loss reduction, rather than expanding every leaf at the current depth uniformly, reaching a given loss reduction with fewer total splits — the `max_depth=4` constraint used throughout this work caps this growth to prevent the resulting asymmetric trees from overfitting the comparatively short (selection-period-only) training windows. It also bins continuous features into discrete histograms before split-finding (histogram-based split search) and combines gradient-based one-side sampling (retaining the training points with the largest gradients, which contribute the most information at each round, while randomly subsampling the rest) with exclusive feature bundling (merging mutually-exclusive sparse features, such as the two regimes' six interaction columns, into fewer effective features). Together these make LightGBM well matched to this paper's setting specifically: dozens of independent (ticker, horizon, variant, quantile) model fits — up to 22 × 7 × 3 × 5 in the full selection grid — running repeatedly across a walk-forward evaluation, where per-model training speed compounds directly into how much of the selection grid (Section 3.3) is computationally feasible to search at all.
 
 ### 3.3 Selection methodology and a data-snooping correction
 
@@ -100,7 +114,7 @@ The full historical out-of-sample period is split chronologically at a single fi
 
 The winning **horizon** per instrument is chosen by Fractional Skill Score (FSS; Roberts & Lean, 2008) — skill above the climatology candidate, averaged across a grid of evaluation windows (21, 63, 126, 252 days) and return-magnitude thresholds (±5%, ±7.5%, ±10%) — computed on the selection period only. The winning **candidate** (climatology vs. credit-only vs. vix-only vs. both) at that horizon is then chosen by holdout-period mean absolute percentage price error (MAPE):
 
-<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq5_mape.svg" alt="Equation 5"><span class="eqn-num">(5)</span></div>
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq7_mape.svg" alt="Equation 7"><span class="eqn-num">(7)</span></div>
 
 i.e., price accuracy, not skill-score, is the final deciding criterion — chosen deliberately over FSS as the tiebreaker because FSS answers "does the model get the rate of threshold-crossings right" while MAPE answers "how close is the actual point forecast," and the two disagree for 9 of 22 instruments; the median forecast's absolute accuracy is the more economically direct question.
 
@@ -142,7 +156,7 @@ Five structurally distinct ways of converting the master model's forecasts into 
 
 Statistical significance of any risk-adjusted excess return is assessed via a market-model (Jensen's alpha) regression of net strategy daily returns on a benchmark's daily returns:
 
-<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq6_jensens_alpha.svg" alt="Equation 6"><span class="eqn-num">(6)</span></div>
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq_figs/eq8_jensens_alpha.svg" alt="Equation 8"><span class="eqn-num">(8)</span></div>
 
 with α and its analytic (not resampling-based) standard error and t-statistic estimated by ordinary least squares.
 
@@ -270,6 +284,12 @@ A master-model forecasting framework combining causally-validated market regime 
 ---
 
 ## References
+
+Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. *The Annals of Statistics*, 29(5), 1189–1232.
+
+Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., & Liu, T.-Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. *Advances in Neural Information Processing Systems*, 30.
+
+Koenker, R., & Bassett, G. (1978). Regression quantiles. *Econometrica*, 46(1), 33–50.
 
 Ramanathan, A., Satyanarayana, A. N. V., & Mandal, M. (2019). Theoretical predictability limits of spatially anisotropic multifractal processes: implications for weather prediction. *Earth and Space Science*, 6(7), 1067–1080.
 

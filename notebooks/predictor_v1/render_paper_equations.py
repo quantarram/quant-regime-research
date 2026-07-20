@@ -83,12 +83,18 @@ EQUATIONS = {
     "eq4_pinball": [
         r"$L_{\alpha}(y, \hat{y}) \;=\; \max\!\left[\, \alpha (y - \hat{y}),\;\; (\alpha - 1)(y - \hat{y}) \,\right]$",
     ],
-    "eq5_mape": [
+    "eq5_ensemble": [
+        r"$F_{M}(x) \;=\; F_{0}(x) \,+\, \eta \sum_{m=1}^{M} h_{m}(x)$",
+    ],
+    "eq6_pseudoresidual": [
+        r"$r_{i}^{(m)} \;=\; \alpha \,-\, \mathbb{1}\!\left[\, y_{i} < F_{m-1}(x_{i}) \,\right]$",
+    ],
+    "eq7_mape": [
         r"$\mathrm{MAPE} \;=\; \dfrac{1}{N}\sum_{t=1}^{N}"
         r"\left| \dfrac{\hat{P}(t+H)}{P(t+H)} - 1 \right| \times 100$",
         r"$\mathrm{where}\quad \hat{P}(t+H) \;=\; P(t)\cdot \exp\!\left(\hat{q}_{0.5}(t)\right)$",
     ],
-    "eq6_jensens_alpha": [
+    "eq8_jensens_alpha": [
         r"$r_{\mathrm{strategy}}(t) \;=\; \alpha \,+\, \beta\, r_{\mathrm{benchmark}}(t) \,+\, \varepsilon(t)$",
     ],
 }
