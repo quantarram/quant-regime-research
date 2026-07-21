@@ -88,9 +88,10 @@ All probability tables are computed using pre-2025 data and remain frozen during
 
 **Regime-conditioned price forecasting (Paper 12, draft):**
 - **Data:** yfinance daily adjusted close, 22-instrument universe (equities, sector ETFs, gold, FX), plus credit (HYG/LQD) and VIX-term-structure (VIXM/VIXY) regime proxies
-- **Method:** LightGBM quantile regression (5 quantile levels) on each instrument's own multifractal features (reused from Paper 11) interacted with two causally-validated regime signals, selected per instrument from four candidates (climatology, credit-regime, VIX-regime, combined) via a genuine chronological selection/holdout split (`HOLDOUT_START = 2022-01-01`) — a data-snooping bug in an earlier selection procedure was caught and fixed mid-project (one instrument's headline skill score was ~12× inflated before the fix)
+- **Method:** LightGBM quantile regression (5 quantile levels) on each instrument's own multifractal features (reused from Paper 11) interacted with two causally-validated regime signals, selected per instrument from four candidates (climatology, credit-regime, VIX-regime, combined) via a genuine chronological selection/holdout split (`HOLDOUT_START = 2022-01-01`) — a data-snooping bug in an earlier selection procedure was caught and fixed mid-project (one instrument's headline skill score was ~12× inflated before the fix). Gradient-boosted trees were chosen over an earlier model-family comparison (OLS, random forest, XGBoost, LightGBM, a feed-forward neural net) that found tree ensembles broadly dominant; LightGBM specifically for its native quantile ("pinball loss") objective, which produces the full 5-quantile forecast band directly.
 - **Economic validation:** five independently designed trading-strategy tests (directional, price-target, portfolio, Kelly-sized, cross-sectional relative-value) and five independently designed post-processing/bias-correction designs, all benchmarked against each instrument's own buy-and-hold return (a benchmark-specification bug — testing against a generic market index instead — produced one spurious "significant alpha" result, caught and corrected)
-- Full pipeline documented in `notebooks/predictor_v1/` and `notebooks/predictor_v1_paper_draft.md`
+- **Live-deployment bug, caught post-launch:** the five quantile levels are fit as independent models with no constraint that they stay ordered ("quantile crossing") — found via direct inspection of live dashboard output (one instrument's median forecast briefly fell below its own 10th-percentile forecast), invisible to every backtest metric since those only score the median. Fixed with monotone rearrangement (Chernozhukov, Fernández-Val & Galichon, 2010); verified 0/22 instruments affected after the fix.
+- Full pipeline documented in `notebooks/predictor_v1/` and `notebooks/predictor_v1_paper_draft.md` (PDF also available, ready for Zenodo submission)
 
 ---
 
@@ -151,7 +152,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
-- [Paper 12 (draft, not yet submitted to Zenodo): A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](notebooks/predictor_v1_paper_draft.md)
+- [Paper 12 (draft, PDF ready for Zenodo submission, not yet uploaded): A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](notebooks/predictor_v1_paper_draft.md) ([PDF](notebooks/predictor_v1_paper_draft.pdf))
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
 - [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343)
 - [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110)
@@ -305,6 +306,7 @@ https://doi.org/10.5281/zenodo.21373459
 │   │                                 # selection, trading strategies, post-processing,
 │   │                                 # live-deployment modules)
 │   ├── predictor_v1_paper_draft.md  # Paper 12 draft preprint
+│   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF (ready for Zenodo submission)
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
