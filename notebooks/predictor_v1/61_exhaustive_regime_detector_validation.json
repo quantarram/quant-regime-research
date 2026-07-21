@@ -1,0 +1,182 @@
+{
+  "AAPL": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "predictability_limit_days": 22,
+    "n_segments": 129,
+    "pct_transferred_ok": 61.240310077519375,
+    "runs_test": {
+      "n_runs": 47,
+      "expected_runs": 62.24031007751938,
+      "z": -2.8388111229115798,
+      "p_value": 0.004528195144652303,
+      "n1": 79,
+      "n2": 50
+    }
+  },
+  "EURUSD=X": {
+    "winner": "credit_only",
+    "horizon": 189,
+    "predictability_limit_days": 43,
+    "n_segments": 67,
+    "pct_transferred_ok": 46.26865671641791,
+    "runs_test": {
+      "n_runs": 28,
+      "expected_runs": 34.3134328358209,
+      "z": -1.5632782647930608,
+      "p_value": 0.11798715834697382,
+      "n1": 31,
+      "n2": 36
+    }
+  },
+  "GLD": {
+    "winner": "vix_only",
+    "horizon": 189,
+    "predictability_limit_days": 22,
+    "n_segments": 98,
+    "pct_transferred_ok": 72.44897959183673,
+    "runs_test": {
+      "n_runs": 29,
+      "expected_runs": 40.12244897959184,
+      "z": -2.836500582087399,
+      "p_value": 0.00456108952215506,
+      "n1": 71,
+      "n2": 27
+    }
+  },
+  "IWM": {
+    "winner": "climatology",
+    "horizon": 21,
+    "predictability_limit_days": 23,
+    "n_segments": 100,
+    "pct_transferred_ok": 28.999999999999996,
+    "runs_test": {
+      "n_runs": 36,
+      "expected_runs": 42.18,
+      "z": -1.5116732743948287,
+      "p_value": 0.13061700074515747,
+      "n1": 29,
+      "n2": 71
+    }
+  },
+  "JPM": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "predictability_limit_days": 23,
+    "n_segments": 123,
+    "pct_transferred_ok": 65.85365853658537,
+    "runs_test": {
+      "n_runs": 31,
+      "expected_runs": 56.31707317073171,
+      "z": -5.101473502402022,
+      "p_value": 3.3701921187123673e-07,
+      "n1": 81,
+      "n2": 42
+    }
+  },
+  "MSFT": {
+    "winner": "climatology",
+    "horizon": 189,
+    "predictability_limit_days": 63,
+    "n_segments": 33,
+    "pct_transferred_ok": 57.57575757575758,
+    "runs_test": {
+      "n_runs": 14,
+      "expected_runs": 17.12121212121212,
+      "z": -1.1308529229561401,
+      "p_value": 0.25811700057473086,
+      "n1": 19,
+      "n2": 14
+    }
+  },
+  "QQQ": {
+    "winner": "climatology",
+    "horizon": 21,
+    "predictability_limit_days": 22,
+    "n_segments": 105,
+    "pct_transferred_ok": 36.19047619047619,
+    "runs_test": {
+      "n_runs": 53,
+      "expected_runs": 49.49523809523809,
+      "z": 0.7447330143204786,
+      "p_value": 0.4564331368085708,
+      "n1": 38,
+      "n2": 67
+    }
+  },
+  "SPY": {
+    "winner": "climatology",
+    "horizon": 189,
+    "predictability_limit_days": 22,
+    "n_segments": 97,
+    "pct_transferred_ok": 76.28865979381443,
+    "runs_test": {
+      "n_runs": 32,
+      "expected_runs": 36.09278350515464,
+      "z": -1.1593491558134925,
+      "p_value": 0.24631389264802195,
+      "n1": 74,
+      "n2": 23
+    }
+  },
+  "XLE": {
+    "winner": "credit_only",
+    "horizon": 252,
+    "predictability_limit_days": 27,
+    "n_segments": 105,
+    "pct_transferred_ok": 51.42857142857142,
+    "runs_test": {
+      "n_runs": 47,
+      "expected_runs": 53.457142857142856,
+      "z": -1.267453146691137,
+      "p_value": 0.2049933066383287,
+      "n1": 54,
+      "n2": 51
+    }
+  },
+  "XLF": {
+    "winner": "climatology",
+    "horizon": 189,
+    "predictability_limit_days": 33,
+    "n_segments": 64,
+    "pct_transferred_ok": 76.5625,
+    "runs_test": {
+      "n_runs": 21,
+      "expected_runs": 23.96875,
+      "z": -1.0489928981580858,
+      "p_value": 0.29418138703124175,
+      "n1": 49,
+      "n2": 15
+    }
+  },
+  "XLK": {
+    "winner": "climatology",
+    "horizon": 189,
+    "predictability_limit_days": 22,
+    "n_segments": 97,
+    "pct_transferred_ok": 72.16494845360825,
+    "runs_test": {
+      "n_runs": 30,
+      "expected_runs": 39.96907216494845,
+      "z": -2.5393077097344503,
+      "p_value": 0.0111072084369217,
+      "n1": 70,
+      "n2": 27
+    }
+  },
+  "XOM": {
+    "winner": "credit_only",
+    "horizon": 63,
+    "predictability_limit_days": 27,
+    "n_segments": 112,
+    "pct_transferred_ok": 34.82142857142857,
+    "runs_test": {
+      "n_runs": 49,
+      "expected_runs": 51.839285714285715,
+      "z": -0.5942715807060198,
+      "p_value": 0.5523304833955434,
+      "n1": 39,
+      "n2": 73
+    }
+  }
+}
