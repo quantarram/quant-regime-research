@@ -1,0 +1,22 @@
+{
+  "GLD": {
+    "window_days": 22,
+    "n_test": 928,
+    "n_refits": 43,
+    "n_fallback_raw_days": 0,
+    "mape_raw_late": 20.231512708752923,
+    "mape_predictability_limit_corrected_late": 13.234346074500417,
+    "mape_deployed_late": 12.030685839528072,
+    "beats_deployed": false
+  },
+  "JPM": {
+    "window_days": 23,
+    "n_test": 855,
+    "n_refits": 38,
+    "n_fallback_raw_days": 0,
+    "mape_raw_late": 13.369155279088703,
+    "mape_predictability_limit_corrected_late": 28.52054229647763,
+    "mape_deployed_late": 9.573500431580452,
+    "beats_deployed": false
+  }
+}
