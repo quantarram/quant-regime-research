@@ -1,0 +1,12 @@
+{
+  "GLD": {
+    "window_days": 22,
+    "n_segments": 98,
+    "pct_transferred_ok": 72.44897959183673
+  },
+  "JPM": {
+    "window_days": 23,
+    "n_segments": 123,
+    "pct_transferred_ok": 65.85365853658537
+  }
+}
