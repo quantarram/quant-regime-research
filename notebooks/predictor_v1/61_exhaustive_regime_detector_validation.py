@@ -71,7 +71,7 @@ def fit_quantile_map_only(trail_df, n_q=10):
     return {"raw_q_u": raw_q_u, "act_q_u": act_q_u}
 
 
-def run_transfer_test(ticker, horizon, winner, oos_all, window):
+def run_transfer_test(ticker, horizon, winner, oos_all, window, with_dates=False):
     df = load_pairs(ticker, horizon, winner, oos_all)
     results = []
     i = window
@@ -86,7 +86,11 @@ def run_transfer_test(ticker, horizon, winner, oos_all, window):
         corrected = pl.quantile_map_apply(seg["raw"].values, params["raw_q_u"], params["act_q_u"]) \
             if len(params["raw_q_u"]) >= 2 else seg["raw"].values
         corr_mae = float(np.mean(np.abs(corrected - seg["y_true"].values)))
-        results.append(bool(corr_mae < raw_mae))
+        ok = bool(corr_mae < raw_mae)
+        if with_dates:
+            results.append({"seg_start": seg["date"].iloc[0], "seg_end": seg["date"].iloc[-1], "transferred_ok": ok})
+        else:
+            results.append(ok)
         i += window
     return results
 

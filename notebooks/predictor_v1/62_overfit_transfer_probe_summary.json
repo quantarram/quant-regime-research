@@ -1,0 +1,66 @@
+{
+  "GLD": {
+    "features-based": {
+      "ok_n": 70,
+      "ok_mean_mae": 0.0377719276723231,
+      "fail_n": 27,
+      "fail_mean_mae": 0.03950841962672899,
+      "mannwhitney_p_fail_greater": 0.24313735337261194
+    },
+    "price-only": {
+      "ok_n": 70,
+      "ok_mean_mae": 0.042530752232998334,
+      "fail_n": 27,
+      "fail_mean_mae": 0.040213880006723185,
+      "mannwhitney_p_fail_greater": 0.5304759527718939
+    }
+  },
+  "JPM": {
+    "features-based": {
+      "ok_n": 81,
+      "ok_mean_mae": 0.05371236680494371,
+      "fail_n": 41,
+      "fail_mean_mae": 0.08870478005381464,
+      "mannwhitney_p_fail_greater": 0.0009491746984312381
+    },
+    "price-only": {
+      "ok_n": 81,
+      "ok_mean_mae": 0.06619476148963879,
+      "fail_n": 41,
+      "fail_mean_mae": 0.10247719125062882,
+      "mannwhitney_p_fail_greater": 0.00015977319429795396
+    }
+  },
+  "AAPL": {
+    "features-based": {
+      "ok_n": 78,
+      "ok_mean_mae": 0.07294311488159727,
+      "fail_n": 50,
+      "fail_mean_mae": 0.07289282189706739,
+      "mannwhitney_p_fail_greater": 0.5476216333917633
+    },
+    "price-only": {
+      "ok_n": 78,
+      "ok_mean_mae": 0.08848009995801177,
+      "fail_n": 50,
+      "fail_mean_mae": 0.0904439160602047,
+      "mannwhitney_p_fail_greater": 0.606825400333076
+    }
+  },
+  "XLK": {
+    "features-based": {
+      "ok_n": 69,
+      "ok_mean_mae": 0.05088469322569981,
+      "fail_n": 27,
+      "fail_mean_mae": 0.06449383006308879,
+      "mannwhitney_p_fail_greater": 0.012253290465901531
+    },
+    "price-only": {
+      "ok_n": 69,
+      "ok_mean_mae": 0.059898427082344226,
+      "fail_n": 27,
+      "fail_mean_mae": 0.0913976979188212,
+      "mannwhitney_p_fail_greater": 0.0005117215070571726
+    }
+  }
+}
