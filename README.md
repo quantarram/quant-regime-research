@@ -86,7 +86,7 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Method:** Double Trace Moment (DTM) cascade estimation, structure-function scan, and correlated/decorrelated moment decomposition across τ = 1–300 trading days (q = 2, 4), cross-validated against the core CPE framework's own signal density at SPY's ~252-day horizon
 - Full pipeline documented in `notebooks/predictability_paper/README.md`
 
-**Regime-conditioned price forecasting (Paper 12, draft):**
+**Regime-conditioned price forecasting (Paper 12):**
 - **Data:** yfinance daily adjusted close, 22-instrument universe (equities, sector ETFs, gold, FX), plus credit (HYG/LQD) and VIX-term-structure (VIXM/VIXY) regime proxies
 - **Method:** LightGBM quantile regression (5 quantile levels) on each instrument's own multifractal features (reused from Paper 11) interacted with two causally-validated regime signals, selected per instrument from four candidates (climatology, credit-regime, VIX-regime, combined) via a genuine chronological selection/holdout split (`HOLDOUT_START = 2022-01-01`) — a data-snooping bug in an earlier selection procedure was caught and fixed mid-project (one instrument's headline skill score was ~12× inflated before the fix). Gradient-boosted trees were chosen over an earlier model-family comparison (OLS, random forest, XGBoost, LightGBM, a feed-forward neural net) that found tree ensembles broadly dominant; LightGBM specifically for its native quantile ("pinball loss") objective, which produces the full 5-quantile forecast band directly.
 - **Economic validation:** five independently designed trading-strategy tests (directional, price-target, portfolio, Kelly-sized, cross-sectional relative-value) and five independently designed post-processing/bias-correction designs, all benchmarked against each instrument's own buy-and-hold return (a benchmark-specification bug — testing against a generic market index instead — produced one spurious "significant alpha" result, caught and corrected)
@@ -120,7 +120,7 @@ This repository is intended for research purposes. Honest limitations reported a
 - **Not a universal claim:** predictability regimes are instrument- and moment-order-dependent (persistent / single-crossing / oscillating), not a single decay law — see the paper's three-regime typology (Section 5.2) before generalizing any one instrument's result to others.
 - **DTM regression fit is comparatively weak** (R² 0.44–0.46) due to price-trend contamination in the raw (deliberately untransformed) field, though the structure-function and correlated/decorrelated decomposition results this paper relies on most are much better fit (R² > 0.98).
 
-**Regime-conditioned price forecasting (Paper 12, draft):**
+**Regime-conditioned price forecasting (Paper 12):**
 - **Zero instruments show demonstrated tradeable alpha.** This is the headline limitation, not a footnote: across five independently designed trading-strategy tests (directional, price-target, portfolio, Kelly-sized, cross-sectional relative-value long/short), none of the 22 instruments shows statistically significant risk-adjusted alpha against the properly specified benchmark (its own buy-and-hold return). Real, holdout-honest forecast-accuracy skill exists for roughly half the panel, but does not translate into economic value for any instrument tested — the live dashboard is deliberately built as a forecast-accuracy tracker with no buy/sell signal, for exactly this reason.
 - **Post-processing/bias-correction only helps 2 of 22 instruments** (GLD, JPM), across five independently designed correction techniques — the other 20 are made worse by every correction attempted, evidence their forecast errors are irreducible noise rather than a correctable bias.
 - **Overlapping-window t-statistics:** the alpha significance tests use analytic OLS standard errors appropriate to the point estimates tested, but do not yet correct for autocorrelation in overlapping long-horizon (63–252 day) return windows — an analytic effective-sample-size correction, not a resampling-based fix, is the natural next step.
@@ -152,7 +152,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
-- [Paper 12 (draft, PDF ready for Zenodo submission, not yet uploaded): A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](notebooks/predictor_v1_paper_draft.md) ([PDF](notebooks/predictor_v1_paper_draft.pdf))
+- [Paper 12: A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](https://zenodo.org/records/21454884)
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
 - [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343)
 - [Paper 9: When the Geography is Wrong, the Signal is Wrong](https://zenodo.org/records/21057110)
@@ -277,6 +277,13 @@ Atmospheric Turbulence Theory. Zenodo.
 https://doi.org/10.5281/zenodo.21373459
 ```
 
+**Paper 12 — A Master-Model Framework for Regime-Conditioned Price Forecasting**
+```
+RAMANATHAN S, A. (2026). A Master-Model Framework for Regime-Conditioned Price
+Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha. Zenodo.
+https://doi.org/10.5281/zenodo.21454884
+```
+
 ---
 
 ## LinkedIn
@@ -305,8 +312,8 @@ https://doi.org/10.5281/zenodo.21373459
 │   ├── predictor_v1/                # Paper 12 forecasting pipeline (features, model
 │   │                                 # selection, trading strategies, post-processing,
 │   │                                 # live-deployment modules)
-│   ├── predictor_v1_paper_draft.md  # Paper 12 draft preprint
-│   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF (ready for Zenodo submission)
+│   ├── predictor_v1_paper_draft.md  # Paper 12 preprint (published: zenodo.org/records/21454884)
+│   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF, as submitted to Zenodo
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
