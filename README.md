@@ -14,6 +14,7 @@ The work here spans three methodologically distinct threads, all documented as n
 2. **Climate-finance and event-study extensions** (Papers 6–10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
 3. **Multifractal predictability limits** (Paper 11) — adapts atmospheric turbulence cascade theory to ask how far ahead financial markets are structurally predictable at all, cross-validated against CPE's own signal density.
 4. **Regime-conditioned price forecasting** (Paper 12) — a fully independent, ML-based (LightGBM quantile regression) forecasting system for 22 instruments, reusing Paper 11's multifractal features and two causally-validated market-regime signals. Its central finding: real, holdout-honest statistical skill for roughly half the panel does not translate into demonstrated tradeable alpha for *any* instrument, under five independently designed trading-strategy tests — a result treated as the paper's main contribution rather than suppressed, and now deployed as an honest, forecast-only (no buy/sell signal) live dashboard.
+5. **Predictability limits as AI/ML regime detectors** (Paper 13) — repurposes Paper 11's empirical predictability limit as a practical, instrument-specific rule for how much history any AI/ML model should train on, and when its training data should be considered stale. Demonstrated across 12 instruments via direct predicted-vs-actual curve comparison (deliberately no significance testing), and framed explicitly as a general concept-drift/training-window rule applicable to any non-stationary AI/ML pipeline, not just financial markets.
 
 ### The CPE framework
 
@@ -152,6 +153,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 13: Predictability Limits as Regime Detectors: A Practical Rule for How Much History an AI/ML Model Should Train On](https://zenodo.org/records/21482869)
 - [Paper 12: A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](https://zenodo.org/records/21454884)
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
 - [Paper 10: Do Major Hurricane Landfalls Move Reinsurer Equity?](https://zenodo.org/records/21231343)
@@ -284,6 +286,13 @@ Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha. Zenodo.
 https://doi.org/10.5281/zenodo.21454884
 ```
 
+**Paper 13 — Predictability Limits as Regime Detectors**
+```
+RAMANATHAN S, A. (2026). Predictability Limits as Regime Detectors: A Practical
+Rule for How Much History an AI/ML Model Should Train On. Zenodo.
+https://doi.org/10.5281/zenodo.21482869
+```
+
 ---
 
 ## LinkedIn
@@ -311,9 +320,12 @@ https://doi.org/10.5281/zenodo.21454884
 │   ├── predictability_paper/        # Paper 11 multifractal analysis pipeline
 │   ├── predictor_v1/                # Paper 12 forecasting pipeline (features, model
 │   │                                 # selection, trading strategies, post-processing,
-│   │                                 # live-deployment modules)
+│   │                                 # live-deployment modules) + Paper 13's regime-
+│   │                                 # detector scripts (59-64_*.py) in the same dir
 │   ├── predictor_v1_paper_draft.md  # Paper 12 preprint (published: zenodo.org/records/21454884)
 │   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF, as submitted to Zenodo
+│   ├── regime_detector_paper_draft.md  # Paper 13 preprint (published: zenodo.org/records/21482869)
+│   ├── regime_detector_paper_draft.pdf # Paper 13 PDF, as submitted to Zenodo
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
