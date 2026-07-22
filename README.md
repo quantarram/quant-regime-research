@@ -172,6 +172,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [How Much History Should Your Model Actually See?](https://arunramanathans.substack.com/p/how-much-history-should-your-model) (Paper 13)
 - [What Weather Taught Me About Market Predictability](https://arunramanathans.substack.com/p/what-weather-taught-me-about-market)
 - [33 Historical Episodes Were Actually 3](https://arunramanathans.substack.com/p/33-historical-episodes-were-actually)
 - [Do Hurricanes Move Reinsurer Stocks? One Yes, One "Actually, No"](https://arunramanathans.substack.com/p/do-hurricanes-move-reinsurer-stocks)
