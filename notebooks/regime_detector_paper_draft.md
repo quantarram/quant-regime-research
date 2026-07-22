@@ -50,9 +50,20 @@ The obvious way to use τ\* is to train a model on the first τ\* days of a wind
 
 With w_train = w_test = τ\*, that maximum gap is nearly 2τ\* — already twice the very limit the window is supposed to respect, for a substantial part of the comparison (the gap between the *first* training observation and the *last* test observation). Only halving both windows keeps every training-test pair within τ\* days of each other, which is what "respecting the predictability limit" actually requires. Every result in this paper uses w = ⌊τ\*/2⌋ for both the training and the test window.
 
+![Schematic](predictor_v1/schematic_fresh_vs_stale_design.png)
+*Schematic. The fresh-vs-stale training design (Section 3.3), shown before the equations that define it precisely. A model trained on the immediately preceding w-day window (fresh, blue) and a model trained on an equally-sized window from at least 2τ\* days earlier (stale, red) are both applied to the identical test window; only their training source differs.*
+
 ### 3.2 The overfit-transfer diagnostic
 
-To test whether a window this size still describes the instrument's dynamics one window later, this paper fits a deliberately unregularized model — an unconstrained-depth decision tree (`max_depth=None, min_samples_leaf=1`; Breiman et al., 1984), which achieves exactly zero training error by construction, one leaf per training row — on the w-day training window, and evaluates its predictions on the immediately following w-day test window. The logic: a model with no regularization memorizes the fine-grained idiosyncrasies of its training window rather than learning anything that generalizes on purpose. If the next window genuinely belongs to the same regime, those idiosyncrasies should still carry some real information forward. If the regime has changed, they should not — and unlike a well-regularized model (which is built to generalize and can mask a real regime change behind uniformly mediocre performance everywhere), an overfit model has no such safety net, making it a more sensitive probe for exactly this question.
+To test whether a window this size still describes the instrument's dynamics one window later, this paper fits a deliberately unregularized model — an unconstrained-depth decision tree (`max_depth=None, min_samples_leaf=1, min_samples_split=2`; scikit-learn's `DecisionTreeRegressor`; Breiman et al., 1984) — on the w-day training window, and evaluates its predictions on the immediately following w-day test window.
+
+A regression tree of this kind grows by recursive binary splitting: at each node, over every candidate feature j and threshold s, it chooses the split minimizing the combined within-child sum of squared deviations from each child's own mean,
+
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq13_figs/eq5_split_criterion.svg" alt="Equation 4"><span class="eqn-num">(4)</span></div>
+
+and recurses on each child. With no floor on tree depth and no minimum leaf size beyond a single training row, this process does not stop until every leaf contains exactly one training example — the tree does not *approximately* fit its training window, it interpolates it exactly. This was verified directly rather than assumed: on every training window tested, the fitted tree's own training-set error is exactly 0.000000 and its leaf count exactly equals its row count, one leaf per day.
+
+This is precisely the property the diagnostic needs. A model with no regularization memorizes the fine-grained idiosyncrasies of its training window rather than learning anything that generalizes on purpose. If the next window genuinely belongs to the same regime, those idiosyncrasies should still carry some real information forward. If the regime has changed, they should not — and unlike a well-regularized model (which is built to generalize and can mask a real regime change behind uniformly mediocre performance everywhere), an overfit model has no such safety net, making it a more sensitive probe for exactly this question. A single unconstrained tree, rather than an ensemble of shallow ones, is also the natural choice of *contrast* against this research program's own deployed forecasting system (Paper 12), which uses gradient-boosted trees of depth 4, heavily regularized (subsampling, column subsampling, a slow learning rate) specifically to generalize — the diagnostic in this paper is deliberately that system's mirror image, built to do the opposite.
 
 Two independent feature variants are tested, separately, for every instrument:
 
@@ -66,7 +77,7 @@ The central comparison of this paper contrasts two training sources for the iden
 - **Fresh**: trained on the immediately preceding w-day window (Section 3.1).
 - **Stale**: trained on an equally-sized w-day window drawn from at least
 
-<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq13_figs/eq4_stale_criterion.svg" alt="Equation 4"><span class="eqn-num">(4)</span></div>
+<div class="eqn-row"><span class="eqn-spacer"></span><img src="predictor_v1/eq13_figs/eq4_stale_criterion.svg" alt="Equation 5"><span class="eqn-num">(5)</span></div>
 
 days before the test window begins — comfortably beyond the predictability limit, by construction. Both models are applied to the same test window, and both sets of predictions are plotted directly against the same realized outcome curve. No summary statistic stands between the reader and the comparison.
 

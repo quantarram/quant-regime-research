@@ -63,6 +63,10 @@ EQUATIONS = {
     "eq4_stale_criterion": [
         r"$\ell_{\mathrm{stale}} \;\geq\; 2\,\tau^{*}$",
     ],
+    "eq5_split_criterion": [
+        r"$Q(j, s) \;=\!\! \sum_{i:\,x_{ij} \leq s} \!\! \left(y_i - \bar{y}_L\right)^{2}$",
+        r"$\qquad\quad +\!\! \sum_{i:\,x_{ij} > s} \!\! \left(y_i - \bar{y}_R\right)^{2}$",
+    ],
 }
 
 if __name__ == "__main__":
