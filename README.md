@@ -186,6 +186,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [Can a Smarter Model Beat a Real Predictability Limit?](https://arunramanathans.substack.com/p/can-a-smarter-model-beat-a-real-predictability) (Paper 14)
 - [How Much History Should Your Model Actually See?](https://arunramanathans.substack.com/p/how-much-history-should-your-model) (Paper 13)
 - [What Weather Taught Me About Market Predictability](https://arunramanathans.substack.com/p/what-weather-taught-me-about-market)
 - [33 Historical Episodes Were Actually 3](https://arunramanathans.substack.com/p/33-historical-episodes-were-actually)
