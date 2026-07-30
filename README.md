@@ -103,7 +103,7 @@ All probability tables are computed using pre-2025 data and remain frozen during
 **Testing AI/ML architecture, depth, and training-window size (Paper 14):**
 - **Data:** yfinance daily adjusted close, reusing Paper 12's 22-instrument universe and Paper 11's already-published predictability-limit results directly (no new estimation performed)
 - **Method:** three tests against the same measured limit — (1) five architecturally distinct models (climatology, an unregularized tree, RL policy-gradient, conditional GAN, conditional VAE) given an identical fair training budget, on the 3 instruments with the largest measured predictability limits; (2) a direct follow-up giving three of those models a genuine one-hidden-layer nonlinearity, hand-implemented with manually derived backpropagation and validated on synthetic data before use; (3) a training-window-size sweep from 0.5x to 8x the predictability limit across all 12 instruments, with fixed test segmentation throughout so only training-data amount and staleness vary
-- Full pipeline documented in `notebooks/predictor_v1/` (scripts 65–70) and `notebooks/architecture_ceiling_paper_draft.md` (PDF also available, submitted to Zenodo)
+- Full pipeline documented in `notebooks/predictor_v1/` (scripts 65–70) and `notebooks/architecture_ceiling_paper_draft.md` (PDF also available, published: zenodo.org/records/21696948)
 
 ---
 
