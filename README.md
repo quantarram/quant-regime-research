@@ -15,6 +15,7 @@ The work here spans three methodologically distinct threads, all documented as n
 3. **Multifractal predictability limits** (Paper 11) — adapts atmospheric turbulence cascade theory to ask how far ahead financial markets are structurally predictable at all, cross-validated against CPE's own signal density.
 4. **Regime-conditioned price forecasting** (Paper 12) — a fully independent, ML-based (LightGBM quantile regression) forecasting system for 22 instruments, reusing Paper 11's multifractal features and two causally-validated market-regime signals. Its central finding: real, holdout-honest statistical skill for roughly half the panel does not translate into demonstrated tradeable alpha for *any* instrument, under five independently designed trading-strategy tests — a result treated as the paper's main contribution rather than suppressed, and now deployed as an honest, forecast-only (no buy/sell signal) live dashboard.
 5. **Predictability limits as AI/ML regime detectors** (Paper 13) — repurposes Paper 11's empirical predictability limit as a practical, instrument-specific rule for how much history any AI/ML model should train on, and when its training data should be considered stale. Demonstrated across 12 instruments via direct predicted-vs-actual curve comparison (deliberately no significance testing), and framed explicitly as a general concept-drift/training-window rule applicable to any non-stationary AI/ML pipeline, not just financial markets.
+6. **Does sophistication beat the limit? Testing AI/ML architecture, depth, and training-window size** (Paper 14) — asks the natural next question after Paper 13: can real architectural sophistication buy its way past the measured predictability limit anyway? Five architecturally distinct models — climatology, an unregularized tree, a reinforcement-learning forecaster, a conditional GAN, and a conditional VAE — given an identical fair training budget show no separation in skill; a follow-up giving three of them a genuine, hand-built hidden layer of nonlinearity at the same budget changes nothing; and sweeping training-window size from inside the limit out to 8x beyond it shows error climbing, not falling, as more data is added — the opposite of what a small-sample explanation would predict. Modeled explicitly on how Lorenz's atmospheric predictability limit was itself confirmed decades after being proposed, not by argument but by real, increasingly sophisticated weather models running into the same wall.
 
 ### The CPE framework
 
@@ -94,6 +95,11 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Live-deployment bug, caught post-launch:** the five quantile levels are fit as independent models with no constraint that they stay ordered ("quantile crossing") — found via direct inspection of live dashboard output (one instrument's median forecast briefly fell below its own 10th-percentile forecast), invisible to every backtest metric since those only score the median. Fixed with monotone rearrangement (Chernozhukov, Fernández-Val & Galichon, 2010); verified 0/22 instruments affected after the fix.
 - Full pipeline documented in `notebooks/predictor_v1/` and `notebooks/predictor_v1_paper_draft.md` (PDF also available, ready for Zenodo submission)
 
+**Testing AI/ML architecture, depth, and training-window size (Paper 14):**
+- **Data:** yfinance daily adjusted close, reusing Paper 12's 22-instrument universe and Paper 11's already-published predictability-limit results directly (no new estimation performed)
+- **Method:** three tests against the same measured limit — (1) five architecturally distinct models (climatology, an unregularized tree, RL policy-gradient, conditional GAN, conditional VAE) given an identical fair training budget, on the 3 instruments with the largest measured predictability limits; (2) a direct follow-up giving three of those models a genuine one-hidden-layer nonlinearity, hand-implemented with manually derived backpropagation and validated on synthetic data before use; (3) a training-window-size sweep from 0.5x to 8x the predictability limit across all 12 instruments, with fixed test segmentation throughout so only training-data amount and staleness vary
+- Full pipeline documented in `notebooks/predictor_v1/` (scripts 65–70) and `notebooks/architecture_ceiling_paper_draft.md` (PDF also available, submitted to Zenodo)
+
 ---
 
 ## Limitations
@@ -126,6 +132,12 @@ This repository is intended for research purposes. Honest limitations reported a
 - **Post-processing/bias-correction only helps 2 of 22 instruments** (GLD, JPM), across five independently designed correction techniques — the other 20 are made worse by every correction attempted, evidence their forecast errors are irreducible noise rather than a correctable bias.
 - **Overlapping-window t-statistics:** the alpha significance tests use analytic OLS standard errors appropriate to the point estimates tested, but do not yet correct for autocorrelation in overlapping long-horizon (63–252 day) return windows — an analytic effective-sample-size correction, not a resampling-based fix, is the natural next step.
 
+**Testing AI/ML architecture, depth, and training-window size (Paper 14):**
+- **Scale of implementations.** All non-trivial architectures are numpy-native, sized to training windows of 11–504 rows, not production-scale deep networks — though depth itself is directly tested (a genuine hidden layer, hand-backpropagated) and found not to change the result, so the finding is not merely a fact about linear models. Large-scale, heavily-parameterized versions trained on data pooled across many instruments remain untested, and would themselves require training past the predictability limit for any single instrument — the very thing the window-size sweep shows degrades performance.
+- **Gradual, not a sharp cliff.** Degradation as training-window size grows is progressive in every instrument, consistent with a genuine structural limit but meaning "beyond the limit" is a matter of degree, not a bright line a reader can point to on any single panel.
+- **IWM and QQQ's flat/reversing error curves are explained, not just reported.** Their 21-day forecast horizon leaves them with only 6–17% fresh-trained skill over a naive no-change baseline, versus 57–76% for the other ten instruments — a dose-response relationship along horizon length, not an unexplained anomaly.
+- **No metrics, by design, not by omission.** As in Paper 13, no significance test or skill score is reported for the architecture comparisons; the window-size degradation is quantified directly as mean absolute error (expressed as % of price), a descriptive summary rather than an inferential test.
+
 The outputs should be interpreted as evidence of statistical structure and a research prototype that has cleared a first significance threshold — not a deployable trading strategy.
 
 ---
@@ -149,11 +161,13 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 - [Multi-Asset CPE Atlas](https://quantarram.github.io/quant-regime-research/notebooks/infographic_2_atlas_v2.html) — maps the strongest tail co-movement channels into gold (crypto ETFs, silver, gold volatility, USD weakness). Most figures are fixed Paper 1 statistics, but the "currently firing ✓" / "currently X% away" annotations reflect a mid-June 2026 snapshot, not today's signal status — check the CPE Atlas Explorer dashboard above for live firing status.
 - [The Outliers Matter (Poster)](notebooks/final_poster_v12.png) — the fullest version of the "why CPE sees what standard tools miss" argument: correlation, ARIMA, GARCH, and ML are second-order, mean-seeking methods that minimize average error, while markets are disproportionately decided by rare extreme cases. Backs this with three same-data, two-views demonstrations — a simulated tail-shock example, the El Niño/sugar-price analysis (Paper 9), and the hurricane landfall/RenaissanceRe event study (Paper 10) — each shown once as an ordinary scatter/regression (which sees nothing) and once as CPE's conditional view (which finds a 2–2.6× effect). Companion piece to the ["Outliers Matter"](https://arunramanathans.substack.com/p/the-outliers-matter-and-most-of-your) Substack post.
 - [Fresh-vs-Stale Training Schematic (Paper 13)](notebooks/predictor_v1/schematic_fresh_vs_stale_design.png) — a timeline diagram of Paper 13's training-window prescription: fit a model on the instrument's own predictability-limit window and apply it to the immediately following window (fresh) versus an equally-sized window from more than twice that limit in the past (stale), both tested against the same real outcome.
+- [Architecture Bake-off, Before and After the Limit (Paper 14)](notebooks/predictor_v1/67_window_sweep_highlight_EURUSDX.png) — EURUSD=X, five architecturally distinct models all trained on the same fair budget: tracking the real exchange rate closely at half the predictability limit, a persistent overshoot appearing by twice the limit, and a gap that keeps widening — not just growing noisier — by eight times the limit.
 
 ---
 
 ## Research Papers
 
+- [Paper 14: The Ceiling Holds: Testing AI/ML Architecture, Depth, and Training-Window Size Against an Empirically Measured Predictability Limit](https://zenodo.org/records/21696948)
 - [Paper 13: Predictability Limits as Regime Detectors: A Practical Rule for How Much History an AI/ML Model Should Train On](https://zenodo.org/records/21482869)
 - [Paper 12: A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](https://zenodo.org/records/21454884)
 - [Paper 11: Empirical Predictability Limits of Financial Markets via Correlated–Decorrelated Structure Function Decomposition: A Departure from Atmospheric Turbulence Theory](https://zenodo.org/records/21373459)
@@ -295,6 +309,13 @@ Rule for How Much History an AI/ML Model Should Train On. Zenodo.
 https://doi.org/10.5281/zenodo.21482869
 ```
 
+**Paper 14 — The Ceiling Holds**
+```
+RAMANATHAN S, A. (2026). The Ceiling Holds: Testing AI/ML Architecture, Depth,
+and Training-Window Size Against an Empirically Measured Predictability Limit.
+Zenodo. https://doi.org/10.5281/zenodo.21696948
+```
+
 ---
 
 ## LinkedIn
@@ -323,11 +344,15 @@ https://doi.org/10.5281/zenodo.21482869
 │   ├── predictor_v1/                # Paper 12 forecasting pipeline (features, model
 │   │                                 # selection, trading strategies, post-processing,
 │   │                                 # live-deployment modules) + Paper 13's regime-
-│   │                                 # detector scripts (59-64_*.py) in the same dir
+│   │                                 # detector scripts (59-64_*.py) + Paper 14's
+│   │                                 # architecture/depth/window-sweep scripts
+│   │                                 # (65-70_*.py) in the same dir
 │   ├── predictor_v1_paper_draft.md  # Paper 12 preprint (published: zenodo.org/records/21454884)
 │   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF, as submitted to Zenodo
 │   ├── regime_detector_paper_draft.md  # Paper 13 preprint (published: zenodo.org/records/21482869)
 │   ├── regime_detector_paper_draft.pdf # Paper 13 PDF, as submitted to Zenodo
+│   ├── architecture_ceiling_paper_draft.md  # Paper 14 preprint (published: zenodo.org/records/21696948)
+│   ├── architecture_ceiling_paper_draft.pdf # Paper 14 PDF, as submitted to Zenodo
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
