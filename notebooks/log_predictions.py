@@ -41,9 +41,15 @@ GOLD_CSV   = os.path.join(BASE_DIR, "gold_predictions.csv")
 PORT_CSV   = os.path.join(BASE_DIR, "portfolio_predictions.csv")
 METALS_CSV = os.path.join(BASE_DIR, "metals_predictions.csv")
 
-# Metal name -> ticker used for both history stats and outcome-price resolution.
-# Must match build_metals_dashboard.py's METALS[name]["hist"].
-METALS_TICKERS = {"Silver": "SI=F", "Platinum": "PPLT"}
+# Metal name -> ticker used for outcome-price resolution. Must be oz-equivalent
+# spot-scale, matching the "spot_price_usd_oz" entry price logged by log_metals()
+# (build_metals_dashboard.py's calibrated D["metals"][name]["spot_usd_oz"]).
+# Silver: SI=F futures already trade at spot scale. Platinum: PPLT is a raw ETF
+# share price (~$15, NOT oz-equivalent) — must use PL=F futures instead, which
+# is what build_metals_dashboard.py's calibrate_ratio() actually calibrates
+# spot_usd_oz against. Using PPLT here previously produced a bogus ~-99% "return"
+# by diffing two different price scales (fixed 2026-08-03).
+METALS_TICKERS = {"Silver": "SI=F", "Platinum": "PL=F"}
 
 TODAY = date.today()
 NOW   = datetime.now().strftime("%Y-%m-%d %H:%M")
