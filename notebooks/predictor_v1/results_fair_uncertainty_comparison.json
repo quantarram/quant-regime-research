@@ -1,0 +1,446 @@
+{
+  "GLD": {
+    "n_folds": 130,
+    "mean_price": 132.9335997763169,
+    "horizon": 189,
+    "window": 22,
+    "climatology": {
+      "mae_pct": 5.434143186198086,
+      "crps_certain_pct": 5.434143186198086,
+      "crps_own_pct": 4.3390990183813445
+    },
+    "overfit tree": {
+      "mae_pct": 6.124099032328747,
+      "crps_certain_pct": 6.124099032328747,
+      "crps_own_pct": 6.124099032328747,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 5.42637984248495,
+      "crps_certain_pct": 5.42637984248495,
+      "crps_own_pct": 5.390755136344986
+    },
+    "conditional GAN": {
+      "mae_pct": 5.433366132839531,
+      "crps_certain_pct": 5.433366132839531,
+      "crps_own_pct": 5.276678853673542
+    },
+    "conditional VAE": {
+      "mae_pct": 7.760006403467731,
+      "crps_certain_pct": 7.760006403467731,
+      "crps_own_pct": 7.74997199922951
+    },
+    "generative downscaler": {
+      "mae_pct": 5.434143186198086,
+      "crps_certain_pct": 5.434143186198086,
+      "crps_own_pct": 4.612935612935795
+    }
+  },
+  "JPM": {
+    "n_folds": 123,
+    "mean_price": 36.1466547278181,
+    "horizon": 252,
+    "window": 23,
+    "climatology": {
+      "mae_pct": 27.73790781863083,
+      "crps_certain_pct": 27.73790781863083,
+      "crps_own_pct": 22.227220195095384
+    },
+    "overfit tree": {
+      "mae_pct": 30.138142991112193,
+      "crps_certain_pct": 30.138142991112193,
+      "crps_own_pct": 30.138142991112193,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 27.783794202258505,
+      "crps_certain_pct": 27.783794202258505,
+      "crps_own_pct": 27.623530424289033
+    },
+    "conditional GAN": {
+      "mae_pct": 27.728727107900752,
+      "crps_certain_pct": 27.728727107900752,
+      "crps_own_pct": 27.257030964432605
+    },
+    "conditional VAE": {
+      "mae_pct": 35.3869462756712,
+      "crps_certain_pct": 35.3869462756712,
+      "crps_own_pct": 35.34890263852944
+    },
+    "generative downscaler": {
+      "mae_pct": 27.73790781863083,
+      "crps_certain_pct": 27.73790781863083,
+      "crps_own_pct": 25.749437583267255
+    }
+  },
+  "AAPL": {
+    "n_folds": 122,
+    "mean_price": 25.13215761434334,
+    "horizon": 252,
+    "window": 22,
+    "climatology": {
+      "mae_pct": 39.10382679245433,
+      "crps_certain_pct": 39.10382679245433,
+      "crps_own_pct": 31.118300826743106
+    },
+    "overfit tree": {
+      "mae_pct": 43.980837468434466,
+      "crps_certain_pct": 43.980837468434466,
+      "crps_own_pct": 43.980837468434466,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 39.014875400887156,
+      "crps_certain_pct": 39.014875400887156,
+      "crps_own_pct": 38.7571607152869
+    },
+    "conditional GAN": {
+      "mae_pct": 39.09430964864147,
+      "crps_certain_pct": 39.09430964864147,
+      "crps_own_pct": 38.4004742365627
+    },
+    "conditional VAE": {
+      "mae_pct": 50.88716152248961,
+      "crps_certain_pct": 50.88716152248961,
+      "crps_own_pct": 50.80547990078228
+    },
+    "generative downscaler": {
+      "mae_pct": 39.10382679245433,
+      "crps_certain_pct": 39.10382679245433,
+      "crps_own_pct": 37.214928078151154
+    }
+  },
+  "XLK": {
+    "n_folds": 129,
+    "mean_price": 28.25348551259474,
+    "horizon": 189,
+    "window": 22,
+    "climatology": {
+      "mae_pct": 16.666875316720823,
+      "crps_certain_pct": 16.666875316720823,
+      "crps_own_pct": 13.254204037361491
+    },
+    "overfit tree": {
+      "mae_pct": 18.12376655525376,
+      "crps_certain_pct": 18.12376655525376,
+      "crps_own_pct": 18.12376655525376,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 16.63161765559234,
+      "crps_certain_pct": 16.63161765559234,
+      "crps_own_pct": 16.531294886363682
+    },
+    "conditional GAN": {
+      "mae_pct": 16.66661379112257,
+      "crps_certain_pct": 16.66661379112257,
+      "crps_own_pct": 16.3614389596793
+    },
+    "conditional VAE": {
+      "mae_pct": 20.974226098200752,
+      "crps_certain_pct": 20.974226098200752,
+      "crps_own_pct": 20.95357933576359
+    },
+    "generative downscaler": {
+      "mae_pct": 16.666875316720823,
+      "crps_certain_pct": 16.666875316720823,
+      "crps_own_pct": 12.672199820509839
+    }
+  },
+  "EURUSD=X": {
+    "n_folds": 70,
+    "mean_price": 1.2257519250748852,
+    "horizon": 189,
+    "window": 43,
+    "climatology": {
+      "mae_pct": 1.9168224256988509,
+      "crps_certain_pct": 1.9168224256988509,
+      "crps_own_pct": 1.5263447467337374
+    },
+    "overfit tree": {
+      "mae_pct": 2.1382877414627925,
+      "crps_certain_pct": 2.1382877414627925,
+      "crps_own_pct": 2.1382877414627925,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 1.9132999594032676,
+      "crps_certain_pct": 1.9132999594032676,
+      "crps_own_pct": 1.9020551437574955
+    },
+    "conditional GAN": {
+      "mae_pct": 1.9190853947712354,
+      "crps_certain_pct": 1.9190853947712354,
+      "crps_own_pct": 1.8333487043033527
+    },
+    "conditional VAE": {
+      "mae_pct": 2.08657095903354,
+      "crps_certain_pct": 2.08657095903354,
+      "crps_own_pct": 2.0735537899762444
+    },
+    "generative downscaler": {
+      "mae_pct": 1.9168224256988509,
+      "crps_certain_pct": 1.9168224256988509,
+      "crps_own_pct": 1.6788922741218393
+    }
+  },
+  "IWM": {
+    "n_folds": 143,
+    "mean_price": 101.42596974063078,
+    "horizon": 21,
+    "window": 23,
+    "climatology": {
+      "mae_pct": 8.94229760557851,
+      "crps_certain_pct": 8.94229760557851,
+      "crps_own_pct": 7.080202702195343
+    },
+    "overfit tree": {
+      "mae_pct": 9.613029664974555,
+      "crps_certain_pct": 9.613029664974555,
+      "crps_own_pct": 9.613029664974555,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 8.932046823342317,
+      "crps_certain_pct": 8.932046823342317,
+      "crps_own_pct": 8.877444441373644
+    },
+    "conditional GAN": {
+      "mae_pct": 8.945932742273556,
+      "crps_certain_pct": 8.945932742273556,
+      "crps_own_pct": 8.767188981238746
+    },
+    "conditional VAE": {
+      "mae_pct": 10.969987934402734,
+      "crps_certain_pct": 10.969987934402734,
+      "crps_own_pct": 10.956814501308592
+    },
+    "generative downscaler": {
+      "mae_pct": 8.94229760557851,
+      "crps_certain_pct": 8.94229760557851,
+      "crps_own_pct": 6.439482102601005
+    }
+  },
+  "MSFT": {
+    "n_folds": 45,
+    "mean_price": 62.43714969222216,
+    "horizon": 189,
+    "window": 63,
+    "climatology": {
+      "mae_pct": 46.51778748799245,
+      "crps_certain_pct": 46.51778748799245,
+      "crps_own_pct": 35.7542698479733
+    },
+    "overfit tree": {
+      "mae_pct": 48.45795287165913,
+      "crps_certain_pct": 48.45795287165913,
+      "crps_own_pct": 48.45795287165913,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 46.49752556661625,
+      "crps_certain_pct": 46.49752556661625,
+      "crps_own_pct": 46.20778469435559
+    },
+    "conditional GAN": {
+      "mae_pct": 46.490411640243764,
+      "crps_certain_pct": 46.490411640243764,
+      "crps_own_pct": 45.95299876136462
+    },
+    "conditional VAE": {
+      "mae_pct": 47.94315446712007,
+      "crps_certain_pct": 47.94315446712007,
+      "crps_own_pct": 47.691389280323214
+    },
+    "generative downscaler": {
+      "mae_pct": 46.51778748799245,
+      "crps_certain_pct": 46.51778748799245,
+      "crps_own_pct": 36.387653702149606
+    }
+  },
+  "QQQ": {
+    "n_folds": 143,
+    "mean_price": 141.05834704078978,
+    "horizon": 21,
+    "window": 22,
+    "climatology": {
+      "mae_pct": 11.183053719335334,
+      "crps_certain_pct": 11.183053719335334,
+      "crps_own_pct": 8.939424992309352
+    },
+    "overfit tree": {
+      "mae_pct": 12.173972146980947,
+      "crps_certain_pct": 12.173972146980947,
+      "crps_own_pct": 12.173972146980947,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 11.157673883577775,
+      "crps_certain_pct": 11.157673883577775,
+      "crps_own_pct": 11.089598473288362
+    },
+    "conditional GAN": {
+      "mae_pct": 11.187548641615491,
+      "crps_certain_pct": 11.187548641615491,
+      "crps_own_pct": 10.936598988414008
+    },
+    "conditional VAE": {
+      "mae_pct": 13.629630249495408,
+      "crps_certain_pct": 13.629630249495408,
+      "crps_own_pct": 13.61305901480723
+    },
+    "generative downscaler": {
+      "mae_pct": 11.183053719335334,
+      "crps_certain_pct": 11.183053719335334,
+      "crps_own_pct": 8.42138219952124
+    }
+  },
+  "SPY": {
+    "n_folds": 128,
+    "mean_price": 159.470203020889,
+    "horizon": 189,
+    "window": 22,
+    "climatology": {
+      "mae_pct": 10.13426135433823,
+      "crps_certain_pct": 10.13426135433823,
+      "crps_own_pct": 8.159914537143802
+    },
+    "overfit tree": {
+      "mae_pct": 11.084637378105626,
+      "crps_certain_pct": 11.084637378105626,
+      "crps_own_pct": 11.084637378105626,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 10.121631803029844,
+      "crps_certain_pct": 10.121631803029844,
+      "crps_own_pct": 10.062122511380823
+    },
+    "conditional GAN": {
+      "mae_pct": 10.135715905361034,
+      "crps_certain_pct": 10.135715905361034,
+      "crps_own_pct": 9.858403315107196
+    },
+    "conditional VAE": {
+      "mae_pct": 12.530830623264983,
+      "crps_certain_pct": 12.530830623264983,
+      "crps_own_pct": 12.518855028019537
+    },
+    "generative downscaler": {
+      "mae_pct": 10.13426135433823,
+      "crps_certain_pct": 10.13426135433823,
+      "crps_own_pct": 7.614586005943186
+    }
+  },
+  "XLE": {
+    "n_folds": 103,
+    "mean_price": 19.893153196501444,
+    "horizon": 252,
+    "window": 27,
+    "climatology": {
+      "mae_pct": 11.689180758830199,
+      "crps_certain_pct": 11.689180758830199,
+      "crps_own_pct": 9.384342366947386
+    },
+    "overfit tree": {
+      "mae_pct": 12.286923829722566,
+      "crps_certain_pct": 12.286923829722566,
+      "crps_own_pct": 12.286923829722566,
+      "degenerate_ensemble_frac": 0.9962658700522778
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 11.67655014078347,
+      "crps_certain_pct": 11.67655014078347,
+      "crps_own_pct": 11.606996302827394
+    },
+    "conditional GAN": {
+      "mae_pct": 11.687210245893953,
+      "crps_certain_pct": 11.687210245893953,
+      "crps_own_pct": 11.511704784954036
+    },
+    "conditional VAE": {
+      "mae_pct": 14.750246615152735,
+      "crps_certain_pct": 14.750246615152735,
+      "crps_own_pct": 14.700382512439447
+    },
+    "generative downscaler": {
+      "mae_pct": 11.689180758830199,
+      "crps_certain_pct": 11.689180758830199,
+      "crps_own_pct": 9.589514609923647
+    }
+  },
+  "XLF": {
+    "n_folds": 88,
+    "mean_price": 18.892541468436907,
+    "horizon": 189,
+    "window": 33,
+    "climatology": {
+      "mae_pct": 9.98468076676867,
+      "crps_certain_pct": 9.98468076676867,
+      "crps_own_pct": 7.920220793748986
+    },
+    "overfit tree": {
+      "mae_pct": 10.40748931226682,
+      "crps_certain_pct": 10.40748931226682,
+      "crps_own_pct": 10.40748931226682,
+      "degenerate_ensemble_frac": 0.9992897727272727
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 9.949100189665176,
+      "crps_certain_pct": 9.949100189665176,
+      "crps_own_pct": 9.887973514278958
+    },
+    "conditional GAN": {
+      "mae_pct": 9.993457814928313,
+      "crps_certain_pct": 9.993457814928313,
+      "crps_own_pct": 9.803800383795597
+    },
+    "conditional VAE": {
+      "mae_pct": 10.992967678730817,
+      "crps_certain_pct": 10.992967678730817,
+      "crps_own_pct": 10.949044956189365
+    },
+    "generative downscaler": {
+      "mae_pct": 9.98468076676867,
+      "crps_certain_pct": 9.98468076676867,
+      "crps_own_pct": 8.023436628381182
+    }
+  },
+  "XOM": {
+    "n_folds": 118,
+    "mean_price": 21.742731444561645,
+    "horizon": 63,
+    "window": 27,
+    "climatology": {
+      "mae_pct": 23.420120641253376,
+      "crps_certain_pct": 23.420120641253376,
+      "crps_own_pct": 18.564921483803587
+    },
+    "overfit tree": {
+      "mae_pct": 23.78778926734737,
+      "crps_certain_pct": 23.78778926734737,
+      "crps_own_pct": 23.78778926734737,
+      "degenerate_ensemble_frac": 1.0
+    },
+    "RL (policy gradient)": {
+      "mae_pct": 23.380380504618685,
+      "crps_certain_pct": 23.380380504618685,
+      "crps_own_pct": 23.243098927623848
+    },
+    "conditional GAN": {
+      "mae_pct": 23.420128125988214,
+      "crps_certain_pct": 23.420128125988214,
+      "crps_own_pct": 23.048801325883137
+    },
+    "conditional VAE": {
+      "mae_pct": 27.93324113880881,
+      "crps_certain_pct": 27.93324113880881,
+      "crps_own_pct": 27.848461832229653
+    },
+    "generative downscaler": {
+      "mae_pct": 23.420120641253376,
+      "crps_certain_pct": 23.420120641253376,
+      "crps_own_pct": 16.270294564882924
+    }
+  }
+}
