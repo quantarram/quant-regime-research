@@ -26,7 +26,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="predictability_paper/paper_style.css" />
 </head>
@@ -43,120 +42,67 @@ Uncertainty Against an Empirically Measured Predictability Limit</h1>
 </div>
 <hr />
 <h2 id="abstract">Abstract</h2>
-<p>Ramanathan (2026d) tested three candidate ways a sufficiently capable
-AI/ML system might buy its way past an empirically measured financial
-predictability limit — architecture, network depth, and training-data
-volume — and found that none of them could: five architecturally
-distinct models, linear and with one genuine hidden layer of
-nonlinearity alike, converged onto the same simple climatology baseline
-within the limit and degraded together once trained past it. This paper
-tests two further candidates the ceiling has not yet been asked to
-withstand. First, the loss function itself: does replacing the L2
-objective every architecture in this series has used so far with a
-quantile (pinball) loss, or with an escalating-order Lq loss, recover
-skill or genuine tail behavior that L2 point estimation cannot? Second,
-and more searchingly: does abandoning point forecasting altogether in
-favor of an honestly calibrated predictive <em>distribution</em> — built
-with a purpose-designed generative downscaler that upscales to a coarse
-forecast, then samples plausible fine-resolution scenarios back down —
-do anything a deterministic point forecast structurally cannot? The
-first question is answered the same way as Paper 14’s: no. A linear
-model trained at quantile levels 0.1 through 0.9 reports a median
-indistinguishable from climatology and a predictive band too narrow to
-bracket the real excursions climatology already missed; an Lq loss at
-orders 2 through 8, tested both with model families flexible enough to
-exploit it (gradient-boosted trees, small multilayer perceptrons) and
-with a purely linear model incapable of doing so, either destabilizes
-catastrophically (pooled out-of-sample R² as low as −10¹⁴ to −10²⁹ in
-the flexible case) or changes nothing measurable at all (the linear
-case). The second question’s answer is more interesting, required
-diagnosing and fixing three real, disclosed calibration bugs before it
-could be trusted, and required a fourth correction — caught only after
-this draft’s first result looked almost too clean — before it could be
-reported honestly. A generative downscaler’s <em>point</em> prediction
-is, by mathematical construction, provably identical to plain
-climatology’s, on every one of roughly 1,400 walk-forward folds across
-12 instruments — there is no “beats or loses” question to test there.
-Its full predictive distribution, evaluated by the Continuous Ranked
-Probability Score (CRPS) against all five of Paper 14’s architectures
-treated as falsely-certain point forecasts, wins outright: lower CRPS
-than every architecture, on every one of the 12 instruments, by margins
-from 1.4% to 30.0%. But three of those five architectures — the RL
-forecaster, the GAN, the VAE — are themselves already internally
-stochastic, and that first comparison unfairly forced each of them to
-collapse its own 200 internal samples down to a single mean before being
-scored, rather than judging what each already knows. Giving every
-architecture its own natural uncertainty estimate — climatology’s own
-training-window return distribution, the tree’s own leaf-mates, the RL
-policy’s own annealed variance, the GAN and VAE’s own raw sample spread,
-none of them recalibrated in any way — changes the picture in a
-genuinely important way: the downscaler still beats every one of the
-four sophisticated architectures’ own uncertainty, on all 12
-instruments, with no exceptions. But it loses outright to climatology’s
-own completely unmodeled empirical distribution on 7 of the 12. We show
-the CRPS win over false certainty is not new predictive skill breaking
-through the ceiling — it is the demonstrated value of representing
-genuine, already-existing uncertainty honestly. We also show that
-honesty has no special claim to sophistication: a real, unprocessed
-sample of an instrument’s own recent history is, more often than not, a
-harder act to follow than a carefully calibrated synthetic approximation
-of the same thing, however many real bugs went into fixing it. Five
-levers have now been tested against this measured ceiling across two
-papers — architecture, depth, training-window size, loss function, and
-calibrated uncertainty — and none of them buys a single day past it. The
-fifth lever is the first to win a real, proper scoring rule at all, and
-it does so by describing the wall precisely, not by climbing over it —
-and even then, the plainest possible description of the wall often beats
-the more sophisticated one.</p>
+<p>Ramanathan (2026d) found that architecture, network depth, and
+training-data volume cannot buy an AI/ML system’s way past an
+empirically measured financial predictability limit. This paper tests
+two further candidates. First, the loss function: replacing L2 with
+quantile (pinball) loss or an escalating-order Lq loss recovers no
+genuine skill or tail behavior — quantile bands stay too narrow to
+capture real excursions, and Lq loss either destabilizes
+catastrophically (given a model flexible enough to exploit it) or
+changes nothing measurable (given a linear one), consistent with prior
+evidence from this research program at other scales. Second, and more
+informative: whether an honestly calibrated predictive
+<em>distribution</em> can substitute for improved prediction. A
+purpose-built generative downscaler’s point forecast is, by mathematical
+construction, provably identical to plain climatology’s on every
+walk-forward fold across 12 instruments. Its calibrated distribution —
+matched to τ* rather than the full horizon, corrected for a
+decoder-variance miscalibration, and rescaled for real markets’
+sub-linear variance growth — beats all five of Paper 14’s architectures
+on the Continuous Ranked Probability Score (CRPS) when those
+architectures are held to the certainty they implicitly claim. Three of
+the five are themselves already stochastic; giving each its own honest,
+uncalibrated uncertainty estimate instead, the downscaler still beats
+every sophisticated architecture, but loses outright to climatology’s
+own unmodeled empirical distribution on 7 of 12 instruments. This is not
+new predictive skill — it is the demonstrated value of honesty about
+existing uncertainty, and evidence that honesty has no special claim to
+sophistication: an unprocessed sample of real recent history is often
+harder to beat than a carefully calibrated synthetic approximation of
+the same thing. Five levers have now been tested against this measured
+ceiling across two papers, and none has bought a single day past it.</p>
 <h2 id="plain-language-summary">Plain Language Summary</h2>
-<p>A previous paper in this series found that no matter how fancy a
-forecasting model you build, or how much data you train it on, it cannot
-beat a hard, measurable limit on how far ahead a financial instrument’s
-price can genuinely be predicted — the model just settles for guessing
-“about the same as usual,” the same thing a plain historical average
-already guesses. This paper asks two more versions of the same question.
-First: what if the <em>type</em> of mistake a model is trained to avoid
-changes — instead of training it to avoid being off on average (the
-standard approach), what if it is trained to get the extreme, rare cases
-right, or to report a range of possible outcomes instead of one number?
-We test this two ways and get the same answer both times: the model
-still just reports “about the same as usual,” or, if pushed hard enough
-to try for genuine extremes, it becomes wildly unstable instead of
-useful. Second, and this is the more interesting result: what if,
-instead of asking a model to give one confident number, we ask it to
-honestly say “here is a whole realistic range of things that could
-happen, and how likely each is”? We built a system that does exactly
-this — it takes the same simple, unbeatable average forecast, and layers
-a genuinely varied, textured set of plausible day-by-day scenarios on
-top of it, calibrated against how much financial prices have actually
-moved historically. Judged by the one number that actually matters —
-where the price ends up — this system’s forecast is, provably,
-mathematically identical to the plain average’s. It has not predicted
-the future any better. But judged by a proper scientific scoring rule
-that rewards being honestly right about <em>how uncertain</em> you are,
-it beats every fancier model we tested, on every one of 12 different
-financial instruments — as long as those fancier models are forced to
-pretend they’re certain, the way we first tested them. Three of those
-models, though, are not actually certain internally; they already
-produce a whole spread of possible answers and we had only been looking
-at their average. So we went back and gave every model, including the
-plain historical average itself, its own honest, unmodified shot at
-reporting how uncertain it really is, using nothing but what it already
-had — no new fixes, no new calibration. The result is more humbling, and
-more interesting: our carefully built, carefully corrected uncertainty
-system still beats every one of the fancier models’ own honest
-uncertainty, every time. But it does <em>not</em> always beat the plain
+<p>A previous paper in this series found that no forecasting model —
+however sophisticated, however much data it saw — could beat a hard,
+measurable limit on how far ahead a financial instrument’s price can
+genuinely be predicted; every model just converged on a plain historical
+average. This paper asks two further questions. First: does training a
+model to avoid a different kind of mistake — getting rare, extreme
+outcomes right, or reporting a range instead of one number — change
+that? No: the model still reports “about the same as usual,” or becomes
+unstable if pushed hard enough to try. Second, and more interesting:
+what if a model stops giving one confident number and instead honestly
+reports a whole range of plausible outcomes? We built a system that does
+this, calibrated against how much prices have actually moved
+historically. Its central prediction is mathematically identical to the
+plain average’s — it has not predicted the future any better. But judged
+by a proper scoring rule that rewards being honestly right about
+uncertainty, it beats every fancier model tested, as long as those
+models are forced to pretend they’re certain. Three of them, though, are
+not actually certain internally, so we gave every model, including the
+plain average, its own honest, unmodified shot at reporting uncertainty.
+Our carefully calibrated system still beats every fancier model’s own
+honest uncertainty. But it does <em>not</em> always beat the plain
 historical average’s own honest uncertainty — a simple, unprocessed
-sample of what this instrument’s price has actually done recently, no
-modeling involved at all. That simple approach wins outright more than
-half the time. The wall that limits how far ahead markets can be
-predicted is still standing, untouched, exactly where it was. This paper
-shows that being honest about that wall — instead of confidently
-pretending it isn’t there — is itself something a model can get
-measurably right or wrong, that building a genuinely good system for it
-is real, useful work, and that even that work still has to compete with,
-and often loses to, simply telling the truth using nothing but the real
-data already sitting there.</p>
+sample of recent real prices, no modeling at all — which wins outright
+more than half the time. The wall limiting how far ahead markets can be
+predicted is still standing, untouched. Being honest about that wall,
+instead of pretending it isn’t there, is itself something a model can
+get measurably right or wrong — and even a carefully built system for it
+still competes with, and often loses to, simply handing over an
+unprocessed sample of real recent history instead of a synthesized
+one.</p>
 <hr />
 <h2 id="introduction">1. Introduction</h2>
 <p>Ramanathan (2026a) measured a genuine, structural predictability
@@ -216,12 +162,11 @@ downscaler: coarsen the target to an aggregate forecast at a scale a
 plain L2 estimator can honestly make, then learn to sample plausible,
 realistically textured fine-resolution scenarios consistent with that
 coarse forecast, the same two-stage logic behind statistical and
-dynamical downscaling in meteorology. Getting this comparison right
-required finding and fixing three real, disclosed calibration bugs,
-described in full in Section 4.3, each caught by checking a suspicious
-number against real, independent data before trusting it — the same
-discipline this research program has applied at every previous
-stage.</p>
+dynamical downscaling in meteorology. The downscaler’s ensemble spread
+is calibrated against real historical dispersion in three ways, each
+verified against real, independent data and described in full in Section
+4.3 — the same discipline this research program has applied at every
+previous stage.</p>
 <p><strong>A note on method</strong>, carried over unchanged from
 Ramanathan (2026d): this paper reports no null-hypothesis test, no
 resampling procedure, and no significance score of any kind. Every
@@ -472,6 +417,25 @@ statistical-<em>shape</em> model — what does a realistic day-by-day path
 look like, given it sums to some total return c? — not a forecasting
 model: it never sees or predicts which c will occur, only how to texture
 one once given.</p>
+<p>Figure 4 shows what this design actually produces, before any of the
+mathematics that follow: several sampled daily paths, a single “most
+likely” composite built by stitching together whichever sampled member
+locally matches the model’s own smooth reference within each τ*-scale
+block (a design refinement introduced during this research program’s own
+development, detailed alongside Figure 6 below), and the flat,
+textureless path a deterministic downscaler would produce from the
+identical coarse forecast.</p>
+<div class="fig">
+<img src="predictor_v1/75_generative_downscaler_EURUSDX.png" alt="Figure 4">
+</div>
+<div class="fig-caption">
+Figure 4. EUR/USD, five illustrative windows: sampled daily-return
+scenarios (thin purple), the composite “most likely” path (thick blue),
+actual price (black), and the flat/deterministic path a non-generative
+downscaler would produce (gray dashed) from the identical coarse
+forecast. The generative paths carry real day-to-day texture; the flat
+path does not.
+</div>
 <h3 id="the-mathematical-tie">4.2 The mathematical tie</h3>
 <p>Before any comparison is run, one property of this design is provable
 directly from its construction, not discovered empirically: <strong>the
@@ -487,114 +451,98 @@ rather than merely asserted. The only place a genuinely different,
 testable claim exists is the downscaler’s <em>uncorrected</em> ensemble
 spread — its real probabilistic forecast — evaluated by a proper scoring
 rule against the other architectures treated as certain.</p>
-<h3 id="three-calibration-corrections">4.3 Three calibration
-corrections</h3>
-<p>Building an honest comparison required diagnosing and fixing three
-real bugs in sequence, each caught by checking a suspicious number
-against real, independent data before trusting it. Figure 4 summarizes
-all three; each is described in full below.</p>
+<h3 id="calibrating-the-ensemble-to-real-dispersion">4.3 Calibrating the
+ensemble to real dispersion</h3>
+<p>Producing an honestly calibrated ensemble — one whose spread actually
+matches real historical return variance, not merely some spread —
+requires three corrections, each addressing a distinct, verified source
+of miscalibration. Figure 5 summarizes all three; Figure 7 shows each
+one’s real, measured marginal contribution to CRPS.</p>
 <div class="fig">
-<img src="predictor_v1/p15_schematic_three_fixes.png" alt="Figure 4">
+<img src="predictor_v1/p15_schematic_three_fixes.png" alt="Figure 5">
 </div>
 <div class="fig-caption">
-Figure 4. Three calibration bugs found and fixed in sequence, each
+Figure 5. The downscaler’s variance calibration, three components, each
 verified against real data, with the measured effect on JPM’s CRPS at
 every stage.
 </div>
-<p><strong>Fix 1: model scale versus τ*.</strong> The first version of
-the shape-VAE was trained at h = horizon, up to 252 days — asking one
-small, six-latent-dimension linear model to jointly represent a shape
-spanning roughly eleven τ*-lengths as a single coherent object, when
-this entire research program’s premise is that an instrument’s own
-dynamics decorrelate past τ*. The fix is direct: the shape-VAE is
-trained at h = τ* only; a full-horizon ensemble is built by chaining
-<em>independent</em> τ*-scale draws, each conditioned on a proportional
-share of the coarse forecast,</p>
+<p><strong>Matching model scale to τ*.</strong> The shape-VAE is trained
+at h = τ* only, not at the full forecast horizon (up to 252 days).
+Training one small, six-latent-dimension linear model to represent a
+shape spanning the full horizon — roughly eleven τ*-lengths — would ask
+it to model coherent structure across a span this whole research
+program’s premise says decorrelates past τ*. A full-horizon ensemble is
+instead built by chaining <em>independent</em> τ*-scale draws, each
+conditioned on a proportional share of the coarse forecast,</p>
 <div class="eqn-row">
 <span
 class="eqn-spacer"></span><img src="predictor_v1/eq15_figs/eq7_multiblock_chaining.svg" alt="Equation 7"><span
 class="eqn-num">(6)</span>
 </div>
-<p>illustrated in Figure 5. This is mechanistically honest, not a
-workaround — beyond τ*, independent sampling is the correct way to
-represent a process with no further genuine memory, not an approximation
-adopted for convenience. This fix alone moved JPM’s CRPS only from 46.0%
-to 45.4% of mean price — necessary, but far from sufficient on its
-own.</p>
+<p>illustrated in Figure 6. This is mechanistically honest, not an
+approximation of convenience: beyond τ*, independent sampling is the
+correct way to represent a process with no further genuine memory.</p>
 <div class="fig">
-<img src="predictor_v1/p15_schematic_multiblock.png" alt="Figure 5">
+<img src="predictor_v1/p15_schematic_multiblock.png" alt="Figure 6">
 </div>
 <div class="fig-caption">
-Figure 5. Building a full-horizon scenario from independent τ<em>-scale
+Figure 6. Building a full-horizon scenario from independent τ<em>-scale
 blocks. Each block is an independent draw from a shape-VAE trained only
 at τ</em>-scale, conditioned on its own proportional share of the coarse
 forecast; concatenating real-valued returns before cumulating avoids any
-level-matching discontinuity at block boundaries.
+level-matching discontinuity at block boundaries. This same
+locally-best-matching-block logic is also how Figure 4’s “most likely”
+composite path is built.
 </div>
-<p><strong>Fix 2: decoder variance double-counting.</strong> Direct
-measurement on JPM’s single-block ensemble found its dispersion still
-exceeded real τ*-scale historical return variance. Decomposing the
-generative model’s own variance sources located the cause: the training
-loss assumes a fixed, unit-variance decoder in standardized units, but
-the true marginal variance of a sample — by the law of total variance
-—</p>
+<p><strong>Accounting for decoder variance correctly.</strong> The
+generative model’s true marginal variance, by the law of total
+variance,</p>
 <div class="eqn-row">
 <span
 class="eqn-spacer"></span><img src="predictor_v1/eq15_figs/eq6_variance_calibration.svg" alt="Equation 6"><span
 class="eqn-num">(7)</span>
 </div>
 <p>is the <em>sum</em> of the latent variable’s own contribution and the
-decoder’s noise, not the decoder’s noise alone. Sampling with a full
-unit-variance decoder term on top of the latent’s already-nonzero
-contribution double-counts variance the training procedure never
-separately calibrated. Measured directly on JPM: the latent-driven
-contribution alone accounted for 0.16 of standardized per-day variance —
-an eight-percent-per-day excess standard deviation, confirmed as the
-dominant source of the ensemble’s over-dispersion. The fix shrinks the
-decoder’s own noise to what is left over after the latent variable’s
+decoder’s noise, not the decoder’s noise alone. A fixed, unit-variance
+decoder — the training loss’s implicit assumption — double-counts
+variance once the latent’s own contribution is nonzero, which it always
+is here; measured directly on JPM, that latent-driven contribution alone
+accounts for 0.16 of standardized per-day variance, an
+eight-percent-per-day excess if left unaddressed. The decoder’s own
+noise is instead set to whatever variance is left over once the latent’s
 contribution is accounted for, estimated once per instrument by sampling
-the latent at the training conditions’ own mean. This moved JPM’s CRPS
-from 45.4% to 42.0%.</p>
-<p><strong>Fix 3: real markets mean-revert past τ*.</strong> After Fix
-2, JPM’s single-block ensemble matched real τ*-scale return variance
-almost exactly (0.0972 vs. 0.0997, standard deviation). But the naively
-chained eleven-block ensemble still overshot real 252-day return
-variance (0.328 vs. 0.286) — because chaining independent blocks assumes
-variance adds linearly with the number of blocks, which is what zero
-autocorrelation (τ*’s own definition) implies, but real equity and index
-returns show well-documented <em>sub-linear</em> variance scaling at
-longer horizons — long-horizon mean reversion (Fama &amp; French, 1988;
-Poterba &amp; Summers, 1988) — not pure random-walk scaling. Zero linear
-autocorrelation and literal statistical independence are not the same
-claim for variance-scaling purposes. The fix rescales the chained
-ensemble’s dispersion directly against real historical horizon-scale
-return variance, rather than assuming any particular scaling law holds a
-priori.</p>
-<p><strong>A fourth bug inside the third fix, caught before trusting the
-result.</strong> The first version of Fix 3 computed the real-variance
-calibration target from an instrument’s <em>entire</em> pre-cutoff
-history — for AAPL, its full 1980–2020 span. This made AAPL’s CRPS
-<em>worse</em> (85.5% to 89.7%), traced directly to AAPL’s early-company
-volatility (a near-bankruptcy episode in the 1990s, the dot-com bubble)
-badly inflating the calibration target relative to its calmer post-2020
-regime. This is the same “recency matters, a fixed long-history
-calibration target goes stale” lesson this research program’s own
-earlier post-processing work (the deployed JPM/GLD rolling correction,
-Ramanathan 2026b) had already established once; the fix reuses that
-work’s own validated recency-window convention (max(252, 4 × horizon)
-trading days) rather than inventing a new one. After this correction,
-AAPL’s CRPS flipped from losing badly against every architecture to
-beating every one of them.</p>
-<p>Figure 6 shows the full, real progression of all three fixes on the
-two longest-horizon, worst-affected instruments.</p>
+the latent at the training conditions’ own mean.</p>
+<p><strong>Rescaling for real, sub-linear variance growth.</strong>
+Chaining independent blocks assumes variance adds linearly with the
+number of blocks — what zero autocorrelation (τ*’s own definition)
+implies — but real equity and index returns show well-documented
+<em>sub-linear</em> variance scaling at longer horizons, long-horizon
+mean reversion (Fama &amp; French, 1988; Poterba &amp; Summers, 1988),
+not pure random-walk scaling. Zero linear autocorrelation and literal
+statistical independence are not the same claim for variance-scaling
+purposes. The chained ensemble’s dispersion is therefore rescaled
+directly against real historical horizon-scale return variance, measured
+over a <em>recent</em> window (max(252, 4 × horizon) trading days — the
+same recency-window convention already validated in this research
+program’s post-processing work, Ramanathan 2026b) rather than an
+instrument’s entire available history. A multi-decade span can span
+volatility regimes with little relevance to current conditions — AAPL’s
+own history includes a near-bankruptcy episode in the 1990s and the
+dot-com bubble — and calibrating against a stale, unrepresentative
+target inflates the rescaled ensemble’s dispersion past what recent,
+relevant history actually supports.</p>
+<p>Figure 7 shows each correction’s real, measured effect on CRPS, for
+the two longest-horizon instruments, JPM and AAPL. Both cross below
+climatology’s own CRPS only once all three corrections are applied
+together; no single correction is sufficient on its own.</p>
 <div class="fig">
-<img src="predictor_v1/p15_crps_fix_progression.png" alt="Figure 6">
+<img src="predictor_v1/p15_crps_fix_progression.png" alt="Figure 7">
 </div>
 <div class="fig-caption">
-Figure 6. Each fix’s measured effect on CRPS, JPM and AAPL — the two
-252-day-horizon instruments hit hardest by the original miscalibration.
-Both cross below climatology’s own CRPS only after all three fixes are
-applied.
+Figure 7. Each calibration component’s measured effect on CRPS, JPM and
+AAPL — the two 252-day-horizon instruments most sensitive to
+miscalibration. Both cross below climatology’s own CRPS only once all
+three are applied together.
 </div>
 <h3 id="results-against-certain-point-forecasts">4.4 Results against
 certain point forecasts</h3>
@@ -603,7 +551,7 @@ the five architectures from Ramanathan (2026d), each treated as a
 certain point forecast, plus the calibrated generative downscaler —
 across all 12 of Ramanathan (2026c)’s instruments, evaluated on a full
 walk-forward basis from 2020-01-01 onward (roughly 1,400 total folds).
-Figure 7 shows the same result visually.</p>
+Figure 8 shows the same result visually.</p>
 <p><strong>Table 1.</strong> CRPS (% of mean price) against the five
 architectures treated as certain, all 12 instruments, lower is better.
 Best result per instrument in bold.</p>
@@ -775,10 +723,10 @@ between the downscaler and Climatology to eight decimal places on every
 instrument, confirming Section 4.2’s mathematical tie empirically as
 well as by construction.</p>
 <div class="fig">
-<img src="predictor_v1/76_downscaler_vs_architectures_crps.png" alt="Figure 7">
+<img src="predictor_v1/76_downscaler_vs_architectures_crps.png" alt="Figure 8">
 </div>
 <div class="fig-caption">
-Figure 7. CRPS (% of mean price), all 12 instruments, all 6 methods,
+Figure 8. CRPS (% of mean price), all 12 instruments, all 6 methods,
 full walk-forward OOS from 2020-01-01, all five architectures treated as
 certain. The generative downscaler (rightmost bar, dark blue) is the
 lowest bar in every panel.
@@ -818,9 +766,38 @@ represent genuine uncertainty, and left exactly as annealed.</p>
 200 generator or decoder draws <code>predict()</code> already computes
 internally at every prediction — exposed raw here, rather than averaged
 into a single number as in Section 4.4.</p>
-<p>Table 2 and Figure 8 report CRPS using each architecture’s own
-natural ensemble this way, alongside the downscaler’s unchanged,
-three-fix-calibrated result from Section 4.4.</p>
+<p>Before any aggregate number, Figure 9 shows what these six natural
+ensembles actually look like: each method’s own 10–90% predictive band
+plotted against actual price, over real calendar time, for JPM (the same
+instrument as Figures 5–7).</p>
+<div class="fig">
+<img src="predictor_v1/80_scenario_fan_comparison_JPM.png" alt="Figure 9">
+</div>
+<div class="fig-caption">
+Figure 9. JPM, each method’s own 10–90% predictive band (shaded) and
+point prediction (colored line) against actual price (black), full
+walk-forward from 2020-01-01, shared y-axis across all six panels for
+direct visual comparison. The tree, RL, and GAN bands are visually
+indistinguishable from bare lines; climatology’s and the downscaler’s
+are the only two with real, visible width.
+</div>
+<p>The picture matches Table 2 before a single number is read: the
+tree’s band is invisible (it is, confirmed directly, a degenerate single
+point in effectively every row); the RL forecaster’s band is a thin
+shadow of its own point line; the GAN’s is a little wider but still
+slight; the VAE’s point line is visibly the most erratic of the six, yet
+its band barely widens to compensate. Climatology’s and the downscaler’s
+are the only two panels with a real, visually substantial band — and the
+downscaler’s is, if anything, the wider of the two, which raises a fair
+question this figure does not by itself answer: if the downscaler’s band
+is visually wider, why does climatology win on CRPS more often than not?
+Width alone is not what CRPS rewards — a band that is wider than the
+true spread of outcomes is penalized for lack of sharpness even when it
+reliably contains the actual price, and Table 2’s result says exactly
+that: climatology’s narrower, real-data band is on average better
+<em>calibrated</em>, not merely narrower.</p>
+<p>Table 2 quantifies this directly, alongside the downscaler’s
+unchanged, three-fix-calibrated result from Section 4.4.</p>
 <p><strong>Table 2.</strong> CRPS (% of mean price), each architecture’s
 own natural uncertainty (no new calibration), all 12 instruments. Best
 result per instrument in bold.</p>
@@ -948,10 +925,10 @@ result per instrument in bold.</p>
 </tbody>
 </table>
 <div class="fig">
-<img src="predictor_v1/78_fair_uncertainty_comparison_crps.png" alt="Figure 8">
+<img src="predictor_v1/78_fair_uncertainty_comparison_crps.png" alt="Figure 10">
 </div>
 <div class="fig-caption">
-Figure 8. CRPS using each model’s own natural uncertainty, no new
+Figure 10. CRPS using each model’s own natural uncertainty, no new
 calibration except the downscaler’s existing three fixes. Climatology
 (leftmost, gray) is the lowest or near-lowest bar in most panels, not
 the highest.
@@ -960,23 +937,72 @@ the highest.
 for being so. The calibrated downscaler still beats every one of the
 four sophisticated architectures’ own natural uncertainty — the tree,
 the RL forecaster, the GAN, the VAE — on all 12 instruments, with no
-exceptions, confirmed directly from Table 2. Two of those four barely
-move at all from their Table 1 baseline: the overfit tree’s leaf-mate
-ensemble is degenerate (a single training row) in effectively 100% of
-test rows across every instrument, confirmed directly rather than
-assumed, so it gains nothing from Section 4.5’s design — an
-unregularized tree that memorizes individual rows, this research
-program’s own long-standing diagnostic finding about this exact model,
-has structurally nothing left over to characterize its own uncertainty
-with. The RL forecaster’s annealed policy variance is similarly close to
-uninformative everywhere, a training-convergence artifact rather than a
-real uncertainty signal. The GAN shows a modest, consistent 2–4%
-improvement over its own certain-point CRPS, never competitive with
-climatology or the downscaler. The VAE, whose own decoder suffers the
-identical variance-double-counting defect diagnosed and fixed in Section
-4.3’s Fix 2 — left deliberately uncorrected here, the same standard
-applied to every architecture in this section — shows almost no
-improvement either.</p>
+exceptions, confirmed directly from Table 2. All four bands are narrow
+in Figure 9, but for four different, specific, verified reasons — none
+of them the same mechanism, and none of them a calibration defect in the
+sense Section 4.3 means it, since none of these four sources was ever
+calibrated to real dispersion at all.</p>
+<p><strong>The overfit tree’s</strong> band is not narrow but exactly
+zero: its leaf-mate ensemble is degenerate (a single training row) in
+effectively 100% of test rows across every instrument, confirmed
+directly rather than assumed. An unregularized tree
+(<code>min_samples_leaf=1</code>) carves a separate leaf for almost
+every individual training row with only sixteen to thirty-one rows to
+work with, so a test row’s leaf almost always contains only the one row
+that originally defined it — an ensemble of size one has no spread by
+definition. This is the same “memorizes individual rows” character this
+exact model has shown throughout this research program, now shown to
+leave nothing behind to characterize its own uncertainty with
+either.</p>
+<p><strong>The RL forecaster’s</strong> policy variance is a
+training-convergence artifact, not a withheld uncertainty signal. Its
+Gaussian policy’s σ follows an annealing schedule toward a small floor
+(<code>sigma_min</code>) by design — standard practice in
+policy-gradient reinforcement learning, where a policy is
+<em>supposed</em> to converge toward a confident action as training
+proceeds. By the final epoch, σ has decayed close to that floor. It was
+never built to represent forecast uncertainty; it was built to stop
+exploring once training converges, and it does exactly that.</p>
+<p><strong>The GAN</strong> shows a modest, consistent 2–4% improvement
+over its own certain-point CRPS, never competitive with climatology or
+the downscaler — a partial version of <em>mode collapse</em>, a
+well-documented GAN failure mode: the adversarial objective only
+requires the generator’s output distribution to be hard for the
+discriminator to distinguish from real data in aggregate, and with a
+training sample this tiny, a narrow cluster near the data’s central
+tendency can often already satisfy a weak discriminator, without needing
+to reproduce the true spread.</p>
+<p><strong>The VAE’s</strong> narrow band has a different, specific
+cause worth stating precisely — the opposite mechanism from the
+downscaler’s own decoder-variance correction in Section 4.3, not the
+same one. This VAE’s decoder outputs a single scalar, μ_d = w_x·x +
+w_z·z + b, with no separate decoder-noise term added on top of z at all,
+unlike the downscaler’s vector-output shape-VAE. Its entire output
+variance comes from w_z·z alone. Measured directly across four
+instruments, the fitted weight w_z collapses to a tiny fraction of the
+real return standard deviation in every case (0.01–4.1%: JPM 0.12%, GLD
+0.01%, MSFT 4.1%, XOM 0.37%) — not too much variance from
+double-counting, but too little from a different cause: at test time z
+must be drawn from the prior, N(0,1), since there is no real outcome
+left to encode, while during training z is drawn from an encoder that
+<em>can</em> see the true outcome — nothing in the training objective
+forces w_z to stay large enough to matter once the rest of the decoder
+already fits the tiny training sample well without it. This also
+explains why the VAE’s point-forecast line is visibly the most erratic
+of the six in Figure 9 (consistent with Ramanathan, 2026d’s own finding
+that this architecture is “unstable rather than skillful”): the
+instability shows up in how the point estimate itself moves fold to
+fold, not in genuine sample-to-sample spread, which stays close to zero
+throughout.</p>
+<p>The throughline across all four: whatever internal randomness each
+architecture has was built for a different original purpose entirely —
+partitioning data, exploration noise, adversarial sample diversity, a
+latent-variable generative structure — and none of those purposes
+happens to also calibrate the resulting variance to real historical
+dispersion. The downscaler needed three deliberate, disclosed
+corrections before its own spread did that (Section 4.3). Climatology
+never needed any correction at all, because its ensemble simply
+<em>is</em> real data, not a model’s byproduct.</p>
 <p>But climatology’s own completely unmodeled empirical distribution
 beats the <em>calibrated</em> downscaler outright on 7 of the 12
 instruments (GLD, JPM, AAPL, EUR/USD, MSFT, XLE, XLF), and trails it
@@ -992,13 +1018,13 @@ sophisticated architecture’s own uncertainty — but a direct, unprocessed
 sample of an instrument’s own recent real history turns out to be a
 genuinely difficult standard for a modeled approximation to beat, more
 often than not.</p>
-<p>Figure 9 ranks this head-to-head result directly, rather than
+<p>Figure 11 ranks this head-to-head result directly, rather than
 requiring a reader to scan Table 2 cell by cell.</p>
 <div class="fig">
-<img src="predictor_v1/p15_victory_margins.png" alt="Figure 9">
+<img src="predictor_v1/p15_victory_margins.png" alt="Figure 11">
 </div>
 <div class="fig-caption">
-Figure 9. Climatology’s own real return distribution vs. the calibrated
+Figure 11. Climatology’s own real return distribution vs. the calibrated
 downscaler, ranked by margin of victory, own-uncertainty CRPS (Table 2).
 Climatology wins 7 of 12; where the downscaler wins, its margins (4-12%)
 are generally smaller than climatology’s when it wins (1-16%).
@@ -1034,11 +1060,10 @@ from the unimproved climatology estimate, confirmed exactly in Section
 ensemble is centered on that identical estimate by construction. What
 Section 4.4 and Section 4.5 together show is that honesty about
 uncertainty is a real, measurable, gradable property independent of the
-underlying prediction — and that a carefully built synthetic
-approximation of honest uncertainty, however many real calibration bugs
-went into correcting it, is not guaranteed to beat the plainest possible
-version of the same honesty: an actual, unprocessed sample of what has
-already happened.</p>
+underlying prediction — and that even a carefully calibrated synthetic
+approximation of honest uncertainty is not guaranteed to beat the
+plainest possible version of the same honesty: an actual, unprocessed
+sample of what has already happened.</p>
 <h2 id="discussion-1">5. Discussion</h2>
 <p>Two papers, five levers, one wall. Ramanathan (2026d) showed
 architecture, network depth, and training-data volume cannot buy a
@@ -1089,29 +1114,6 @@ synthetic uncertainty, however carefully built, cannot reliably beat
 climatology’s own real uncertainty either. Five levers, tested five
 ways, and the plainest possible model keeps being the hardest one to
 beat.</p>
-<p><strong>On the three-fix diagnostic process itself</strong>, one
-further point is worth stating plainly, since it bears on how any future
-extension of this design should be read. Each fix was small,
-individually verifiable against real, independent data, and materially
-insufficient on its own — the first fix moved JPM’s CRPS by only 1.4
-percentage points; only the combination of all three closed the gap to
-climatology’s <em>certain</em> CRPS and then passed it (Section 4.4). A
-single miscalibrated generative uncertainty system, judged only on its
-final aggregate number, would have looked like “the downscaler mostly
-doesn’t help” after Fix 1 alone, or “helps a little but not on the
-hardest instruments” after Fix 2 alone. Both intermediate conclusions
-would have been wrong in the same direction — understating the design’s
-real potential — and both were only correctable by decomposing the
-failure into its actual, separable mechanisms (a model-scale mismatch, a
-variance-accounting error, a scaling-law assumption unsupported by real
-data) rather than treating a single disappointing number as the final
-word. The same discipline applies to Section 4.5’s result in the
-opposite direction: it would have been just as easy to stop after
-Section 4.4’s clean 12-of-12 sweep and report an unqualified win. Asking
-whether the comparison was actually fair — whether the other five
-architectures had been given their own honest chance — is what surfaced
-the more complete, more humbling, and ultimately more informative
-result.</p>
 <h2 id="limitations">6. Limitations</h2>
 <p>Both experiments share Ramanathan (2026d)‘s scale limitations: all
 models tested are trained on windows of eleven to five hundred and four
@@ -1144,29 +1146,29 @@ pacing statistics, not against a ground-truth generative process — real
 markets’ true data-generating process is unknown, and “matches
 historically observed dispersion” is the strongest calibration standard
 available, not a guarantee that the calibrated ensemble’s shape is
-correct in every respect. The recency window used in Fix 3 (max(252, 4 ×
-horizon) trading days) is reused from prior validated work in this
-research program rather than independently re-optimized for this
-specific design. Section 4.5’s own-uncertainty comparisons for the RL
-forecaster, GAN, and VAE are deliberately <em>uncalibrated</em> — the
-point of that section is to test what each architecture already knows,
-not what it could know if given the same three-fix treatment as the
-downscaler; a properly calibrated version of any of the three
-(recentered, variance-corrected, recency-windowed) might close some or
-all of the gap to the downscaler, and this paper does not test that.
-Climatology’s own ensemble size in Section 4.5 is small and fixed at
-half_window (eleven to thirty-one rows depending on instrument) and was
-not itself recalibrated or resampled in any way; a larger or
-differently-constructed empirical ensemble might perform differently
-still. Finally, and most importantly, restated from Section 4.6: nothing
-in Experiment 2 constitutes evidence of improved point-forecasting
-skill, under either comparison. The downscaler’s central prediction is
-unchanged from climatology’s, exactly, by construction, and
-climatology’s own natural ensemble in Section 4.5 is centered on that
-identical, unimproved estimate too; readers extending this work should
-not conflate a CRPS improvement with a directional or magnitude
-forecasting improvement, which this paper explicitly does not claim and
-which Section 4.2’s mathematical tie rules out by design.</p>
+correct in every respect. The recency window used in the sub-linear
+variance-scaling correction (max(252, 4 × horizon) trading days) is
+reused from prior validated work in this research program rather than
+independently re-optimized for this specific design. Section 4.5’s
+own-uncertainty comparisons for the RL forecaster, GAN, and VAE are
+deliberately <em>uncalibrated</em> — the point of that section is to
+test what each architecture already knows, not what it could know if
+given the same three-fix treatment as the downscaler; a properly
+calibrated version of any of the three (recentered, variance-corrected,
+recency-windowed) might close some or all of the gap to the downscaler,
+and this paper does not test that. Climatology’s own ensemble size in
+Section 4.5 is small and fixed at half_window (eleven to thirty-one rows
+depending on instrument) and was not itself recalibrated or resampled in
+any way; a larger or differently-constructed empirical ensemble might
+perform differently still. Finally, and most importantly, restated from
+Section 4.6: nothing in Experiment 2 constitutes evidence of improved
+point-forecasting skill, under either comparison. The downscaler’s
+central prediction is unchanged from climatology’s, exactly, by
+construction, and climatology’s own natural ensemble in Section 4.5 is
+centered on that identical, unimproved estimate too; readers extending
+this work should not conflate a CRPS improvement with a directional or
+magnitude forecasting improvement, which this paper explicitly does not
+claim and which Section 4.2’s mathematical tie rules out by design.</p>
 <h2 id="conclusion">7. Conclusion</h2>
 <p>This paper tested two further candidates for buying a forecasting
 system’s way past an empirically measured predictability limit — the
@@ -1181,18 +1183,17 @@ aggressively enough to try only destabilizes whichever model is flexible
 enough to let it. Representing the ceiling honestly, rather than
 pretending it does not exist, is itself a real, measurable, and
 now-demonstrated skill distinct from prediction — a calibrated
-generative downscaler, corrected through three real, disclosed bugs,
-beats every sophisticated architecture tested in this research program
-on a rigorous, proper probabilistic scoring rule, on every instrument,
-once those architectures are prevented from falsely claiming certainty.
-But asking whether that comparison was itself fair uncovered a further,
-more humbling layer of the same result: climatology’s own unmodeled
-empirical distribution, requiring no model, no correction, and no
-calibration of any kind, beats even the calibrated downscaler on most
-instruments tested. Five levers, two papers, one wall: architecture,
-depth, training-data volume, loss function, and now calibrated
-uncertainty itself have all been tested against this measured ceiling,
-and none of them has bought a single day past it. Uncertainty
+generative downscaler beats every sophisticated architecture tested in
+this research program on a rigorous, proper probabilistic scoring rule,
+on every instrument, once those architectures are prevented from falsely
+claiming certainty. But asking whether that comparison was itself fair
+uncovered a further, more humbling layer of the same result:
+climatology’s own unmodeled empirical distribution, requiring no model,
+no correction, and no calibration of any kind, beats even the calibrated
+downscaler on most instruments tested. Five levers, two papers, one
+wall: architecture, depth, training-data volume, loss function, and now
+calibrated uncertainty itself have all been tested against this measured
+ceiling, and none of them has bought a single day past it. Uncertainty
 quantification is the first of the five to win a real scoring rule at
 all — and even that win, examined fairly, mostly belongs to the plainest
 possible model this whole research program keeps returning to, not to
@@ -1264,6 +1265,8 @@ calibration fixes described in Section 4.3.</li>
 fairer comparison (Section 4.5): each architecture’s own natural,
 uncalibrated uncertainty estimate against the downscaler’s calibrated
 one.</li>
+<li><code>80_scenario_fan_comparison.py</code> — Experiment 2, Figure 9:
+each method’s own predictive band over calendar time, JPM.</li>
 <li><code>render_paper15_equations.py</code>,
 <code>77_paper15_schematics.py</code>,
 <code>79_paper15_graphical_abstract.py</code> — this paper’s equation,
