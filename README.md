@@ -16,6 +16,7 @@ The work here spans three methodologically distinct threads, all documented as n
 4. **Regime-conditioned price forecasting** (Paper 12) — a fully independent, ML-based (LightGBM quantile regression) forecasting system for 22 instruments, reusing Paper 11's multifractal features and two causally-validated market-regime signals. Its central finding: real, holdout-honest statistical skill for roughly half the panel does not translate into demonstrated tradeable alpha for *any* instrument, under five independently designed trading-strategy tests — a result treated as the paper's main contribution rather than suppressed, and now deployed as an honest, forecast-only (no buy/sell signal) live dashboard.
 5. **Predictability limits as AI/ML regime detectors** (Paper 13) — repurposes Paper 11's empirical predictability limit as a practical, instrument-specific rule for how much history any AI/ML model should train on, and when its training data should be considered stale. Demonstrated across 12 instruments via direct predicted-vs-actual curve comparison (deliberately no significance testing), and framed explicitly as a general concept-drift/training-window rule applicable to any non-stationary AI/ML pipeline, not just financial markets.
 6. **Does sophistication beat the limit? Testing AI/ML architecture, depth, and training-window size** (Paper 14) — asks the natural next question after Paper 13: can real architectural sophistication buy its way past the measured predictability limit anyway? Five architecturally distinct models — climatology, an unregularized tree, a reinforcement-learning forecaster, a conditional GAN, and a conditional VAE — given an identical fair training budget show no separation in skill; a follow-up giving three of them a genuine, hand-built hidden layer of nonlinearity at the same budget changes nothing; and sweeping training-window size from inside the limit out to 8x beyond it shows error climbing, not falling, as more data is added — the opposite of what a small-sample explanation would predict. Modeled explicitly on how Lorenz's atmospheric predictability limit was itself confirmed decades after being proposed, not by argument but by real, increasingly sophisticated weather models running into the same wall.
+7. **Loss functions and calibrated uncertainty against the same limit** (Paper 15) — tests two further candidates for buying past Paper 14's ceiling. Alternative loss functions (quantile/pinball loss, escalating-order Lq loss) recover no genuine skill or tail behavior. A purpose-built generative downscaler is more informative: its point forecast is, by mathematical construction, provably identical to plain climatology's, but its calibrated predictive *distribution* — matched to each instrument's own predictability limit, corrected for decoder-variance miscalibration, and rescaled for real markets' sub-linear variance growth — beats all five Paper 14 architectures on the Continuous Ranked Probability Score when those architectures are held to the certainty they implicitly claim. Once each architecture instead gets its own honest, uncalibrated uncertainty estimate, the downscaler still beats every sophisticated architecture, but loses outright to climatology's own unmodeled empirical distribution on 7 of 12 instruments — evidence that honesty about uncertainty, not sophistication, is what's being rewarded, and that an unprocessed sample of real recent history is often harder to beat than a carefully calibrated synthetic approximation of the same thing.
 
 ### The CPE framework
 
@@ -105,6 +106,11 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Method:** three tests against the same measured limit — (1) five architecturally distinct models (climatology, an unregularized tree, RL policy-gradient, conditional GAN, conditional VAE) given an identical fair training budget, on the 3 instruments with the largest measured predictability limits; (2) a direct follow-up giving three of those models a genuine one-hidden-layer nonlinearity, hand-implemented with manually derived backpropagation and validated on synthetic data before use; (3) a training-window-size sweep from 0.5x to 8x the predictability limit across all 12 instruments, with fixed test segmentation throughout so only training-data amount and staleness vary
 - Full pipeline documented in `notebooks/predictor_v1/` (scripts 65–70) and `notebooks/architecture_ceiling_paper_draft.md` (PDF also available, published: zenodo.org/records/21696948)
 
+**Loss functions and calibrated uncertainty against the same limit (Paper 15):**
+- **Data:** yfinance daily adjusted close, reusing Paper 12's 22-instrument universe and Paper 11's already-published predictability-limit results directly (no new estimation performed)
+- **Method:** two further tests against the same measured limit — (1) quantile (pinball) loss at 5 quantile levels with monotone rearrangement, and escalating-order Lq loss (q = 2, 4, 6, 8), each on the largest-limit instruments; (2) a two-stage generative downscaler — climatology for the point forecast, plus a conditional VAE trained at each instrument's own predictability-limit scale (rather than the forecast horizon) to generate a calibrated distribution — with independent τ\*-scale blocks chained into full-horizon ensembles, decoder variance accounted for via the law of total variance, and ensemble dispersion rescaled against each instrument's real recent-window historical variance to reflect markets' sub-linear variance growth beyond the limit. Scored against all five Paper 14 architectures via the Continuous Ranked Probability Score (CRPS, an unbiased ensemble energy-score estimator), first holding those architectures to a single point forecast, then giving each its own natural uncertainty source (leaf-mate ensembles for the tree, the annealed policy variance for the RL forecaster, raw internal samples for the GAN/VAE) for a fair comparison
+- Full pipeline documented in `notebooks/predictor_v1/` (scripts 73–80) and `notebooks/loss_uncertainty_ceiling_paper_draft.md` (PDF also available, published: zenodo.org/records/21802729)
+
 ---
 
 ## Limitations
@@ -149,6 +155,12 @@ This repository is intended for research purposes. Honest limitations reported a
 - **IWM and QQQ's flat/reversing error curves are explained, not just reported.** Their 21-day forecast horizon leaves them with only 6–17% fresh-trained skill over a naive no-change baseline, versus 57–76% for the other ten instruments — a dose-response relationship along horizon length, not an unexplained anomaly.
 - **No metrics, by design, not by omission.** As in Paper 13, no significance test or skill score is reported for the architecture comparisons; the window-size degradation is quantified directly as mean absolute error (expressed as % of price), a descriptive summary rather than an inferential test.
 
+**Loss functions and calibrated uncertainty against the same limit (Paper 15):**
+- **The downscaler's point forecast is not new predictive skill.** It is, by mathematical construction, provably identical to plain climatology's — the entire contribution is a better-calibrated *distribution* around the same central prediction, and the paper is explicit that this is what CRPS is rewarding, not improved accuracy.
+- **The generative downscaler loses to climatology's own empirical distribution on 7 of 12 instruments** once every architecture is given a fair, uncalibrated uncertainty estimate rather than being forced into a single point forecast — the headline result is nuanced, not a clean win, and is reported as such.
+- **Escalating-order Lq loss is untested on flexible models at this paper's scale beyond the earlier instability already documented in Paper 14's own development history** — the linear-model result (no measurable change at any q) rules out loss-order as the mechanism, but does not itself demonstrate a flexible model's stability under high-order Lq loss.
+- **Quantile and Lq loss results are confined to the largest-limit instruments**, not swept across the full 12/22-instrument panels used elsewhere in the series.
+
 The outputs should be interpreted as evidence of statistical structure and a research prototype that has cleared a first significance threshold — not a deployable trading strategy.
 
 ---
@@ -173,11 +185,13 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 - [The Outliers Matter (Poster)](notebooks/final_poster_v12.png) — the fullest version of the "why CPE sees what standard tools miss" argument: correlation, ARIMA, GARCH, and ML are second-order, mean-seeking methods that minimize average error, while markets are disproportionately decided by rare extreme cases. Backs this with three same-data, two-views demonstrations — a simulated tail-shock example, the El Niño/sugar-price analysis (Paper 9), and the hurricane landfall/RenaissanceRe event study (Paper 10) — each shown once as an ordinary scatter/regression (which sees nothing) and once as CPE's conditional view (which finds a 2–2.6× effect). Companion piece to the ["Outliers Matter"](https://arunramanathans.substack.com/p/the-outliers-matter-and-most-of-your) Substack post.
 - [Fresh-vs-Stale Training Schematic (Paper 13)](notebooks/predictor_v1/schematic_fresh_vs_stale_design.png) — a timeline diagram of Paper 13's training-window prescription: fit a model on the instrument's own predictability-limit window and apply it to the immediately following window (fresh) versus an equally-sized window from more than twice that limit in the past (stale), both tested against the same real outcome.
 - [Architecture Bake-off, Before and After the Limit (Paper 14)](notebooks/predictor_v1/67_window_sweep_highlight_EURUSDX.png) — EURUSD=X, five architecturally distinct models all trained on the same fair budget: tracking the real exchange rate closely at half the predictability limit, a persistent overshoot appearing by twice the limit, and a gap that keeps widening — not just growing noisier — by eight times the limit.
+- [Five Levers Against the Ceiling (Paper 15)](notebooks/predictor_v1/p15_graphical_abstract.png) — a graphical summary of every lever tested against the measured predictability limit across Papers 14 and 15 (architecture, depth, training-window size, loss function, calibrated uncertainty), and the one result that reshapes the headline: climatology's own honest, unmodeled uncertainty beats a carefully calibrated synthetic alternative on more than half the panel.
 
 ---
 
 ## Research Papers
 
+- [Paper 15: The Ceiling Holds, and So Does Climatology: Loss Functions and Calibrated Uncertainty Against an Empirically Measured Predictability Limit](https://zenodo.org/records/21802729)
 - [Paper 14: The Ceiling Holds: Testing AI/ML Architecture, Depth, and Training-Window Size Against an Empirically Measured Predictability Limit](https://zenodo.org/records/21696948)
 - [Paper 13: Predictability Limits as Regime Detectors: A Practical Rule for How Much History an AI/ML Model Should Train On](https://zenodo.org/records/21482869)
 - [Paper 12: A Master-Model Framework for Regime-Conditioned Price Forecasting: Real Statistical Skill, and Why It Mostly Isn't Alpha](https://zenodo.org/records/21454884)
@@ -328,6 +342,13 @@ and Training-Window Size Against an Empirically Measured Predictability Limit.
 Zenodo. https://doi.org/10.5281/zenodo.21696948
 ```
 
+**Paper 15 — The Ceiling Holds, and So Does Climatology**
+```
+RAMANATHAN S, A. (2026). The Ceiling Holds, and So Does Climatology: Loss
+Functions and Calibrated Uncertainty Against an Empirically Measured
+Predictability Limit. Zenodo. https://doi.org/10.5281/zenodo.21802729
+```
+
 ---
 
 ## LinkedIn
@@ -358,13 +379,17 @@ Zenodo. https://doi.org/10.5281/zenodo.21696948
 │   │                                 # live-deployment modules) + Paper 13's regime-
 │   │                                 # detector scripts (59-64_*.py) + Paper 14's
 │   │                                 # architecture/depth/window-sweep scripts
-│   │                                 # (65-70_*.py) in the same dir
+│   │                                 # (65-70_*.py) + Paper 15's loss-function/
+│   │                                 # generative-downscaler scripts (73-80_*.py)
+│   │                                 # in the same dir
 │   ├── predictor_v1_paper_draft.md  # Paper 12 preprint (published: zenodo.org/records/21454884)
 │   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF, as submitted to Zenodo
 │   ├── regime_detector_paper_draft.md  # Paper 13 preprint (published: zenodo.org/records/21482869)
 │   ├── regime_detector_paper_draft.pdf # Paper 13 PDF, as submitted to Zenodo
 │   ├── architecture_ceiling_paper_draft.md  # Paper 14 preprint (published: zenodo.org/records/21696948)
 │   ├── architecture_ceiling_paper_draft.pdf # Paper 14 PDF, as submitted to Zenodo
+│   ├── loss_uncertainty_ceiling_paper_draft.md  # Paper 15 preprint (published: zenodo.org/records/21802729)
+│   ├── loss_uncertainty_ceiling_paper_draft.pdf # Paper 15 PDF, as submitted to Zenodo
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
