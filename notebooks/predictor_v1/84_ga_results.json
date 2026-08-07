@@ -1,0 +1,68 @@
+{
+  "per_instrument": {
+    "SPY": {
+      "alpha_vs_own_pct": -14.111298067771935,
+      "strategy_sharpe": -0.7566513795249303,
+      "buy_hold_sharpe": 0.579890535818487
+    },
+    "QQQ": {
+      "alpha_vs_own_pct": -5.3322082891330504,
+      "strategy_sharpe": 0.19334586684405417,
+      "buy_hold_sharpe": 0.4889077472745614
+    },
+    "IWM": {
+      "alpha_vs_own_pct": 0.3072594695864712,
+      "strategy_sharpe": 0.22648483257367802,
+      "buy_hold_sharpe": 0.2631293021284346
+    },
+    "XLK": {
+      "alpha_vs_own_pct": -9.560475006471272,
+      "strategy_sharpe": 0.546192611151215,
+      "buy_hold_sharpe": 0.6482461078649383
+    },
+    "XLF": {
+      "alpha_vs_own_pct": -8.462356503952329,
+      "strategy_sharpe": 0.4416848776076074,
+      "buy_hold_sharpe": 0.44240321493415974
+    },
+    "XLE": {
+      "alpha_vs_own_pct": -3.6501284534268423,
+      "strategy_sharpe": 1.169464347256095,
+      "buy_hold_sharpe": 0.840652581712544
+    },
+    "AAPL": {
+      "alpha_vs_own_pct": -17.494296805821794,
+      "strategy_sharpe": 0.6207508968055421,
+      "buy_hold_sharpe": 0.6212829911146089
+    },
+    "MSFT": {
+      "alpha_vs_own_pct": -19.556832847661806,
+      "strategy_sharpe": -0.3972277857698393,
+      "buy_hold_sharpe": 0.326807847194744
+    },
+    "JPM": {
+      "alpha_vs_own_pct": -15.456499440943578,
+      "strategy_sharpe": 0.6021150658167072,
+      "buy_hold_sharpe": 0.6026355864912998
+    },
+    "XOM": {
+      "alpha_vs_own_pct": -23.123450368158856,
+      "strategy_sharpe": 0.8716630241091637,
+      "buy_hold_sharpe": 0.8721490060705938
+    },
+    "GLD": {
+      "alpha_vs_own_pct": 0.22430867108918853,
+      "strategy_sharpe": 0.6596089719730691,
+      "buy_hold_sharpe": 1.0430669538710844
+    },
+    "EURUSD=X": {
+      "alpha_vs_own_pct": -1.1159207731697758,
+      "strategy_sharpe": 0.23054408048124084,
+      "buy_hold_sharpe": 0.3811473498031295
+    }
+  },
+  "n_positive": 2,
+  "n_total": 12,
+  "overall_alpha_pct": -9.72565016641946,
+  "overall_strategy_sharpe": 0.21272848176495188
+}

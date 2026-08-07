@@ -1,0 +1,134 @@
+{
+  "JPM": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -10.986550163669818,
+    "Kelly-sized": 11.64,
+    "Master model": 2.78
+  },
+  "GLD": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -8.320589962546963,
+    "Kelly-sized": 6.84,
+    "Master model": 2.08
+  },
+  "XLE": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -17.462369747732527,
+    "Kelly-sized": 6.55,
+    "Master model": 2.88
+  },
+  "XLB": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -9.643602633949756,
+    "Kelly-sized": 2.53,
+    "Master model": 1.49
+  },
+  "XLU": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -5.057138650140726,
+    "Kelly-sized": 1.16,
+    "Master model": 0.91
+  },
+  "MSFT": {
+    "group": "convergent_positive",
+    "tsmom_alpha_pct": -9.898268822925239,
+    "Kelly-sized": 0.48,
+    "Master model": 0.12
+  },
+  "QQQ": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -7.226585488620942,
+    "Kelly-sized": 3.09,
+    "Master model": -3.56
+  },
+  "XLK": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -14.326442002674142,
+    "Kelly-sized": 2.74,
+    "Master model": -1.62
+  },
+  "DIA": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -2.987757785485991,
+    "Kelly-sized": 1.38,
+    "Master model": -0.83
+  },
+  "XLY": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -3.4875489506484056,
+    "Kelly-sized": 0.33,
+    "Master model": -0.84
+  },
+  "VTI": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -4.308097665351236,
+    "Kelly-sized": 0.05,
+    "Master model": -0.18
+  },
+  "SPY": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -4.583178767483472,
+    "Kelly-sized": -0.06,
+    "Master model": -0.17
+  },
+  "XLP": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -4.0196117717675195,
+    "Kelly-sized": -0.32,
+    "Master model": -0.01
+  },
+  "XLF": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -0.6290444168748228,
+    "Kelly-sized": -0.43,
+    "Master model": -0.85
+  },
+  "VOX": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -2.3202880571202753,
+    "Kelly-sized": -0.63,
+    "Master model": -1.5
+  },
+  "EURUSD=X": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -4.70983306120837,
+    "Kelly-sized": -2.83,
+    "Master model": -1.35
+  },
+  "IWM": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -5.349474169290052,
+    "Kelly-sized": -3.4,
+    "Master model": -7.13
+  },
+  "XOM": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -19.107955527595255,
+    "Kelly-sized": -5.65,
+    "Master model": 0.25
+  },
+  "AAPL": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -14.062931127333403,
+    "Kelly-sized": -6.0,
+    "Master model": -3.8
+  },
+  "XLV": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -10.287498179374893,
+    "Kelly-sized": -7.56,
+    "Master model": -2.34
+  },
+  "XLI": {
+    "group": "other_16",
+    "tsmom_alpha_pct": -7.5864293694797,
+    "Kelly-sized": -7.7,
+    "Master model": -2.86
+  },
+  "IYR": {
+    "group": "other_16",
+    "tsmom_alpha_pct": 2.8341421411823844,
+    "Kelly-sized": -7.73,
+    "Master model": null
+  }
+}

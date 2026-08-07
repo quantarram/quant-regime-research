@@ -1,0 +1,54 @@
+Loading all three signal types (identical pipeline to 82_ga_decision_layer_search.py)...
+
+Regime-diverse training sub-periods:
+  Sub-period 1: 2015-01-01 to 2016-10-01
+  Sub-period 2: 2016-10-01 to 2018-07-02
+  Sub-period 3: 2018-07-02 to 2020-04-01
+  Sub-period 4: 2020-04-01 to 2022-01-01
+    -> 1757 rows
+    -> 3824 rows
+    -> 4104 rows
+    -> 4193 rows
+
+Running GA: population=800, generations=1500, 4 sub-periods/individual/generation (1,200,000 total distinct policies evaluated)...
+  gen     0  best_fitness(worst-subperiod P&L %/yr)=+7.17%  mean=-11.72%  per-sub=['7.2', '11.6', '10.6', '24.1']  elapsed=4.4s
+  gen   100  best_fitness(worst-subperiod P&L %/yr)=+15.41%  mean=+5.75%  per-sub=['15.7', '15.4', '16.0', '22.8']  elapsed=104.2s
+  gen   200  best_fitness(worst-subperiod P&L %/yr)=+18.58%  mean=+5.11%  per-sub=['20.1', '18.6', '21.8', '20.7']  elapsed=203.5s
+  gen   300  best_fitness(worst-subperiod P&L %/yr)=+19.80%  mean=+6.17%  per-sub=['20.0', '19.8', '20.6', '24.5']  elapsed=301.3s
+  gen   400  best_fitness(worst-subperiod P&L %/yr)=+19.80%  mean=+6.46%  per-sub=['20.0', '19.8', '20.6', '24.5']  elapsed=398.6s
+  gen   500  best_fitness(worst-subperiod P&L %/yr)=+20.18%  mean=+7.82%  per-sub=['25.6', '20.2', '21.4', '21.2']  elapsed=495.8s
+  gen   600  best_fitness(worst-subperiod P&L %/yr)=+20.34%  mean=+7.59%  per-sub=['20.8', '20.3', '20.6', '22.1']  elapsed=593.0s
+  gen   700  best_fitness(worst-subperiod P&L %/yr)=+21.52%  mean=+8.11%  per-sub=['26.4', '21.5', '25.8', '24.4']  elapsed=690.4s
+  gen   800  best_fitness(worst-subperiod P&L %/yr)=+23.92%  mean=+8.53%  per-sub=['37.6', '23.9', '25.4', '28.3']  elapsed=787.4s
+  gen   900  best_fitness(worst-subperiod P&L %/yr)=+26.63%  mean=+8.88%  per-sub=['33.6', '26.6', '27.2', '31.9']  elapsed=884.9s
+  gen  1000  best_fitness(worst-subperiod P&L %/yr)=+27.31%  mean=+10.22%  per-sub=['35.0', '27.3', '28.4', '30.8']  elapsed=982.9s
+  gen  1100  best_fitness(worst-subperiod P&L %/yr)=+27.53%  mean=+11.29%  per-sub=['38.2', '27.5', '32.0', '32.8']  elapsed=1081.0s
+  gen  1200  best_fitness(worst-subperiod P&L %/yr)=+28.78%  mean=+13.20%  per-sub=['31.4', '28.8', '34.9', '33.5']  elapsed=1180.3s
+  gen  1300  best_fitness(worst-subperiod P&L %/yr)=+30.06%  mean=+15.61%  per-sub=['34.5', '30.1', '30.5', '33.8']  elapsed=1277.6s
+  gen  1400  best_fitness(worst-subperiod P&L %/yr)=+31.50%  mean=+18.38%  per-sub=['31.8', '31.5', '33.8', '36.4']  elapsed=1374.8s
+  gen  1499  best_fitness(worst-subperiod P&L %/yr)=+32.21%  mean=+22.73%  per-sub=['33.2', '32.2', '32.4', '34.9']  elapsed=1471.0s
+
+Best evolved policy (worst-subperiod train P&L): +32.21%/yr (per-subperiod: [33.24, 32.21, 32.42, 34.93]), total elapsed 1471.9s, 1,200,000 policies evaluated
+
+==========================================================================================
+Best evolved policy (regime-diverse fitness), OOS 2022+ holdout, real point estimates only
+==========================================================================================
+  SPY        alpha vs own buy-hold= -13.63%/yr   strategy Sharpe=-1.129   buy-hold Sharpe=+0.580
+  QQQ        alpha vs own buy-hold= -14.11%/yr   strategy Sharpe=-0.540   buy-hold Sharpe=+0.489
+  IWM        alpha vs own buy-hold=  -6.15%/yr   strategy Sharpe=+0.015   buy-hold Sharpe=+0.263
+  XLK        alpha vs own buy-hold= -12.53%/yr   strategy Sharpe=+0.441   buy-hold Sharpe=+0.648
+  XLF        alpha vs own buy-hold= -13.13%/yr   strategy Sharpe=-0.629   buy-hold Sharpe=+0.442
+  XLE        alpha vs own buy-hold=  -5.78%/yr   strategy Sharpe=+1.069   buy-hold Sharpe=+0.841
+  AAPL       alpha vs own buy-hold= -36.50%/yr   strategy Sharpe=-0.717   buy-hold Sharpe=+0.621
+  MSFT       alpha vs own buy-hold=  +2.97%/yr   strategy Sharpe=+0.234   buy-hold Sharpe=+0.327
+  JPM        alpha vs own buy-hold= -17.41%/yr   strategy Sharpe=-0.345   buy-hold Sharpe=+0.603
+  XOM        alpha vs own buy-hold= -23.43%/yr   strategy Sharpe=-0.081   buy-hold Sharpe=+0.872
+  GLD        alpha vs own buy-hold= -12.52%/yr   strategy Sharpe=+0.491   buy-hold Sharpe=+1.043
+  EURUSD=X   alpha vs own buy-hold=  -3.13%/yr   strategy Sharpe=-0.523   buy-hold Sharpe=+0.381
+
+Positive alpha on 1/12 instruments
+Pooled across all instruments: alpha=-12.90%/yr, strategy Sharpe=+0.038, pooled buy-hold Sharpe=+0.582
+
+Comparison to 82's pooled-fitness result: alpha -10.86%/yr, strategy Sharpe +0.178, 1/12 instruments positive
+
+Saved: 83_ga_results.json, 83_ga_fitness_history.png, 83_ga_decision_layer_equity.png

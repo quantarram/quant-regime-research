@@ -1,0 +1,192 @@
+{
+  "crisis_threshold": -0.1,
+  "full_sample_split": {
+    "crisis": {
+      "label": "crisis",
+      "n_days": 1578,
+      "tsmom_ann_ret_pct": -0.8959230976412,
+      "passive_ann_ret_pct": -12.086475687796874,
+      "tsmom_sharpe": -0.1624626657895362,
+      "passive_sharpe": -0.5726118327560626,
+      "corr_tsmom_passive": -0.3661214677697234
+    },
+    "calm": {
+      "label": "calm",
+      "n_days": 7986,
+      "tsmom_ann_ret_pct": 4.326833575500546,
+      "passive_ann_ret_pct": 10.944571456139045,
+      "tsmom_sharpe": 0.8539426972470168,
+      "passive_sharpe": 1.1113494420407355,
+      "corr_tsmom_passive": 0.6344291360435151
+    }
+  },
+  "robustness": {
+    "-5%": {
+      "crisis": {
+        "label": "crisis@-5%",
+        "n_days": 3148,
+        "tsmom_ann_ret_pct": -3.720638952643514,
+        "passive_ann_ret_pct": -9.152241676704948,
+        "tsmom_sharpe": -0.7118162608632418,
+        "passive_sharpe": -0.5190745627134361,
+        "corr_tsmom_passive": -0.1047088037819606
+      },
+      "calm": {
+        "label": "calm@-5%",
+        "n_days": 6416,
+        "tsmom_ann_ret_pct": 6.990788296258001,
+        "passive_ann_ret_pct": 15.140608761167412,
+        "tsmom_sharpe": 1.3735954656679137,
+        "passive_sharpe": 1.7210105746912936,
+        "corr_tsmom_passive": 0.7464265090396908
+      }
+    },
+    "-10%": {
+      "crisis": {
+        "label": "crisis@-10%",
+        "n_days": 1578,
+        "tsmom_ann_ret_pct": -0.8959230976412,
+        "passive_ann_ret_pct": -12.086475687796874,
+        "tsmom_sharpe": -0.1624626657895362,
+        "passive_sharpe": -0.5726118327560626,
+        "corr_tsmom_passive": -0.3661214677697234
+      },
+      "calm": {
+        "label": "calm@-10%",
+        "n_days": 7986,
+        "tsmom_ann_ret_pct": 4.326833575500546,
+        "passive_ann_ret_pct": 10.944571456139045,
+        "tsmom_sharpe": 0.8539426972470168,
+        "passive_sharpe": 1.1113494420407355,
+        "corr_tsmom_passive": 0.6344291360435151
+      }
+    },
+    "-15%": {
+      "crisis": {
+        "label": "crisis@-15%",
+        "n_days": 808,
+        "tsmom_ann_ret_pct": -2.7085913925522846,
+        "passive_ann_ret_pct": -23.719108641774238,
+        "tsmom_sharpe": -0.4382845319369629,
+        "passive_sharpe": -0.9736321700505475,
+        "corr_tsmom_passive": -0.4992173078889807
+      },
+      "calm": {
+        "label": "calm@-15%",
+        "n_days": 8756,
+        "tsmom_ann_ret_pct": 4.034818196785268,
+        "passive_ann_ret_pct": 9.992682594328064,
+        "tsmom_sharpe": 0.800996086176574,
+        "passive_sharpe": 0.93616212115015,
+        "corr_tsmom_passive": 0.5229873791226624
+      }
+    }
+  },
+  "episodes": [
+    {
+      "start": "1997-10-24",
+      "end": "1998-01-30",
+      "n_days": 71,
+      "passive_max_drawdown_pct": -19.13864501701572,
+      "passive_cum_ret_pct": -1.8127313563149339,
+      "tsmom_cum_ret_pct": 1.0858530688173218
+    },
+    {
+      "start": "1998-04-27",
+      "end": "1998-11-18",
+      "n_days": 148,
+      "passive_max_drawdown_pct": -23.973332903900413,
+      "passive_cum_ret_pct": -1.4941085436101065,
+      "tsmom_cum_ret_pct": -2.620625822844469
+    },
+    {
+      "start": "2000-11-22",
+      "end": "2001-01-19",
+      "n_days": 43,
+      "passive_max_drawdown_pct": -15.005478645461768,
+      "passive_cum_ret_pct": -0.5629589023338877,
+      "tsmom_cum_ret_pct": -1.71252146447185
+    },
+    {
+      "start": "2001-02-09",
+      "end": "2001-05-15",
+      "n_days": 68,
+      "passive_max_drawdown_pct": -22.367910983978046,
+      "passive_cum_ret_pct": -1.8671788848840576,
+      "tsmom_cum_ret_pct": -1.6090506840396257
+    },
+    {
+      "start": "2001-06-11",
+      "end": "2002-02-28",
+      "n_days": 189,
+      "passive_max_drawdown_pct": -25.302060982121343,
+      "passive_cum_ret_pct": -1.6603447417262163,
+      "tsmom_cum_ret_pct": -0.6562921172371006
+    },
+    {
+      "start": "2002-06-06",
+      "end": "2003-08-15",
+      "n_days": 312,
+      "passive_max_drawdown_pct": -24.627472529266203,
+      "passive_cum_ret_pct": -2.063666175813117,
+      "tsmom_cum_ret_pct": 0.7784639126967807
+    },
+    {
+      "start": "2008-09-04",
+      "end": "2010-10-04",
+      "n_days": 543,
+      "passive_max_drawdown_pct": -40.61724911093185,
+      "passive_cum_ret_pct": -2.293943727087966,
+      "tsmom_cum_ret_pct": -0.710628907976707
+    },
+    {
+      "start": "2011-08-04",
+      "end": "2011-08-26",
+      "n_days": 17,
+      "passive_max_drawdown_pct": -14.563958990484826,
+      "passive_cum_ret_pct": -3.7134107144029427,
+      "tsmom_cum_ret_pct": -1.4917385727782007
+    },
+    {
+      "start": "2011-09-09",
+      "end": "2012-01-20",
+      "n_days": 96,
+      "passive_max_drawdown_pct": -17.90036702192873,
+      "passive_cum_ret_pct": -1.6775456393053778,
+      "tsmom_cum_ret_pct": -2.551054856564705
+    },
+    {
+      "start": "2012-05-14",
+      "end": "2012-06-28",
+      "n_days": 34,
+      "passive_max_drawdown_pct": -13.712292423742001,
+      "passive_cum_ret_pct": -1.4050458395486243,
+      "tsmom_cum_ret_pct": 0.8119605649193451
+    },
+    {
+      "start": "2020-03-12",
+      "end": "2020-04-06",
+      "n_days": 26,
+      "passive_max_drawdown_pct": -17.053745600917335,
+      "passive_cum_ret_pct": -0.34958273177478905,
+      "tsmom_cum_ret_pct": 1.2593483658332572
+    },
+    {
+      "start": "2022-06-22",
+      "end": "2022-07-18",
+      "n_days": 27,
+      "passive_max_drawdown_pct": -11.460261954432482,
+      "passive_cum_ret_pct": -1.3826461491822983,
+      "tsmom_cum_ret_pct": -0.12622268380378943
+    },
+    {
+      "start": "2022-09-21",
+      "end": "2022-11-22",
+      "n_days": 63,
+      "passive_max_drawdown_pct": -15.315729233396835,
+      "passive_cum_ret_pct": -0.5925001387757978,
+      "tsmom_cum_ret_pct": -1.388523704624145
+    }
+  ],
+  "n_tsmom_won": 9
+}

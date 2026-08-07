@@ -1,0 +1,146 @@
+Loading all three signal types (identical pipeline to 82_ga_decision_layer_search.py)...
+Training instruments: ['SPY', 'QQQ', 'IWM', 'XLK', 'XLF', 'XLE', 'AAPL', 'MSFT', 'JPM', 'XOM', 'GLD', 'EURUSD=X'], episode lengths: [985, 985, 985, 985, 985, 1382, 1382, 985, 1382, 1382, 985, 1455]
+
+Training PPO: 3000 epochs, 12 sequential episodes/epoch on device=cpu...
+  epoch    0  mean reward (annualized P&L %/yr)= -30.15%  elapsed=3.5s
+  epoch   25  mean reward (annualized P&L %/yr)= -29.14%  elapsed=6.2s
+  epoch   50  mean reward (annualized P&L %/yr)= -20.89%  elapsed=9.0s
+  epoch   75  mean reward (annualized P&L %/yr)=  -9.24%  elapsed=11.9s
+  epoch  100  mean reward (annualized P&L %/yr)= -12.60%  elapsed=14.6s
+  epoch  125  mean reward (annualized P&L %/yr)= -13.38%  elapsed=17.3s
+  epoch  150  mean reward (annualized P&L %/yr)= -10.18%  elapsed=20.2s
+  epoch  175  mean reward (annualized P&L %/yr)=  -9.54%  elapsed=22.9s
+  epoch  200  mean reward (annualized P&L %/yr)=  -9.75%  elapsed=25.6s
+  epoch  225  mean reward (annualized P&L %/yr)= -14.46%  elapsed=28.4s
+  epoch  250  mean reward (annualized P&L %/yr)= -16.72%  elapsed=31.2s
+  epoch  275  mean reward (annualized P&L %/yr)= -17.07%  elapsed=34.0s
+  epoch  300  mean reward (annualized P&L %/yr)= -14.07%  elapsed=36.8s
+  epoch  325  mean reward (annualized P&L %/yr)= -13.86%  elapsed=39.5s
+  epoch  350  mean reward (annualized P&L %/yr)= -20.77%  elapsed=42.3s
+  epoch  375  mean reward (annualized P&L %/yr)= -13.81%  elapsed=45.1s
+  epoch  400  mean reward (annualized P&L %/yr)= -10.04%  elapsed=47.8s
+  epoch  425  mean reward (annualized P&L %/yr)= -14.54%  elapsed=50.6s
+  epoch  450  mean reward (annualized P&L %/yr)= -10.82%  elapsed=53.3s
+  epoch  475  mean reward (annualized P&L %/yr)= -15.91%  elapsed=56.1s
+  epoch  500  mean reward (annualized P&L %/yr)= -12.99%  elapsed=58.9s
+  epoch  525  mean reward (annualized P&L %/yr)= -19.82%  elapsed=61.6s
+  epoch  550  mean reward (annualized P&L %/yr)= -17.37%  elapsed=64.5s
+  epoch  575  mean reward (annualized P&L %/yr)= -24.28%  elapsed=67.3s
+  epoch  600  mean reward (annualized P&L %/yr)= -24.96%  elapsed=70.4s
+  epoch  625  mean reward (annualized P&L %/yr)= -27.52%  elapsed=73.3s
+  epoch  650  mean reward (annualized P&L %/yr)= -21.88%  elapsed=76.4s
+  epoch  675  mean reward (annualized P&L %/yr)= -22.96%  elapsed=79.4s
+  epoch  700  mean reward (annualized P&L %/yr)= -27.45%  elapsed=82.4s
+  epoch  725  mean reward (annualized P&L %/yr)= -20.34%  elapsed=85.3s
+  epoch  750  mean reward (annualized P&L %/yr)= -25.26%  elapsed=88.1s
+  epoch  775  mean reward (annualized P&L %/yr)= -25.92%  elapsed=91.1s
+  epoch  800  mean reward (annualized P&L %/yr)= -24.53%  elapsed=93.9s
+  epoch  825  mean reward (annualized P&L %/yr)= -30.53%  elapsed=96.7s
+  epoch  850  mean reward (annualized P&L %/yr)= -29.76%  elapsed=99.5s
+  epoch  875  mean reward (annualized P&L %/yr)= -23.35%  elapsed=102.3s
+  epoch  900  mean reward (annualized P&L %/yr)= -28.91%  elapsed=105.1s
+  epoch  925  mean reward (annualized P&L %/yr)= -26.03%  elapsed=107.9s
+  epoch  950  mean reward (annualized P&L %/yr)= -24.25%  elapsed=110.7s
+  epoch  975  mean reward (annualized P&L %/yr)= -29.56%  elapsed=113.5s
+  epoch 1000  mean reward (annualized P&L %/yr)= -23.99%  elapsed=116.3s
+  epoch 1025  mean reward (annualized P&L %/yr)= -28.21%  elapsed=119.1s
+  epoch 1050  mean reward (annualized P&L %/yr)= -32.72%  elapsed=121.9s
+  epoch 1075  mean reward (annualized P&L %/yr)= -21.55%  elapsed=124.7s
+  epoch 1100  mean reward (annualized P&L %/yr)= -28.28%  elapsed=127.7s
+  epoch 1125  mean reward (annualized P&L %/yr)= -35.43%  elapsed=130.7s
+  epoch 1150  mean reward (annualized P&L %/yr)= -19.94%  elapsed=133.4s
+  epoch 1175  mean reward (annualized P&L %/yr)= -31.81%  elapsed=136.2s
+  epoch 1200  mean reward (annualized P&L %/yr)= -37.61%  elapsed=139.1s
+  epoch 1225  mean reward (annualized P&L %/yr)= -26.43%  elapsed=141.9s
+  epoch 1250  mean reward (annualized P&L %/yr)= -35.35%  elapsed=144.7s
+  epoch 1275  mean reward (annualized P&L %/yr)= -40.67%  elapsed=147.5s
+  epoch 1300  mean reward (annualized P&L %/yr)= -29.79%  elapsed=150.4s
+  epoch 1325  mean reward (annualized P&L %/yr)= -37.95%  elapsed=153.2s
+  epoch 1350  mean reward (annualized P&L %/yr)= -34.76%  elapsed=156.0s
+  epoch 1375  mean reward (annualized P&L %/yr)= -28.83%  elapsed=158.8s
+  epoch 1400  mean reward (annualized P&L %/yr)= -33.45%  elapsed=161.6s
+  epoch 1425  mean reward (annualized P&L %/yr)= -16.31%  elapsed=164.4s
+  epoch 1450  mean reward (annualized P&L %/yr)= -31.67%  elapsed=167.2s
+  epoch 1475  mean reward (annualized P&L %/yr)= -32.48%  elapsed=170.0s
+  epoch 1500  mean reward (annualized P&L %/yr)= -31.45%  elapsed=172.8s
+  epoch 1525  mean reward (annualized P&L %/yr)= -33.95%  elapsed=175.6s
+  epoch 1550  mean reward (annualized P&L %/yr)= -39.78%  elapsed=178.4s
+  epoch 1575  mean reward (annualized P&L %/yr)= -31.39%  elapsed=181.3s
+  epoch 1600  mean reward (annualized P&L %/yr)= -33.99%  elapsed=184.1s
+  epoch 1625  mean reward (annualized P&L %/yr)= -41.46%  elapsed=186.9s
+  epoch 1650  mean reward (annualized P&L %/yr)= -24.62%  elapsed=189.8s
+  epoch 1675  mean reward (annualized P&L %/yr)= -36.37%  elapsed=192.6s
+  epoch 1700  mean reward (annualized P&L %/yr)= -39.12%  elapsed=195.4s
+  epoch 1725  mean reward (annualized P&L %/yr)= -23.38%  elapsed=198.2s
+  epoch 1750  mean reward (annualized P&L %/yr)= -25.71%  elapsed=201.0s
+  epoch 1775  mean reward (annualized P&L %/yr)= -35.47%  elapsed=203.8s
+  epoch 1800  mean reward (annualized P&L %/yr)= -24.48%  elapsed=206.6s
+  epoch 1825  mean reward (annualized P&L %/yr)= -37.00%  elapsed=209.4s
+  epoch 1850  mean reward (annualized P&L %/yr)= -29.56%  elapsed=212.2s
+  epoch 1875  mean reward (annualized P&L %/yr)= -34.16%  elapsed=215.0s
+  epoch 1900  mean reward (annualized P&L %/yr)= -29.98%  elapsed=217.8s
+  epoch 1925  mean reward (annualized P&L %/yr)= -23.01%  elapsed=220.7s
+  epoch 1950  mean reward (annualized P&L %/yr)= -31.20%  elapsed=223.5s
+  epoch 1975  mean reward (annualized P&L %/yr)= -40.02%  elapsed=226.3s
+  epoch 2000  mean reward (annualized P&L %/yr)= -36.76%  elapsed=229.1s
+  epoch 2025  mean reward (annualized P&L %/yr)= -38.71%  elapsed=231.9s
+  epoch 2050  mean reward (annualized P&L %/yr)= -38.87%  elapsed=234.6s
+  epoch 2075  mean reward (annualized P&L %/yr)= -42.94%  elapsed=237.4s
+  epoch 2100  mean reward (annualized P&L %/yr)= -24.08%  elapsed=240.2s
+  epoch 2125  mean reward (annualized P&L %/yr)= -35.91%  elapsed=243.0s
+  epoch 2150  mean reward (annualized P&L %/yr)= -39.50%  elapsed=245.8s
+  epoch 2175  mean reward (annualized P&L %/yr)= -36.85%  elapsed=248.5s
+  epoch 2200  mean reward (annualized P&L %/yr)= -39.85%  elapsed=251.4s
+  epoch 2225  mean reward (annualized P&L %/yr)= -42.54%  elapsed=254.3s
+  epoch 2250  mean reward (annualized P&L %/yr)= -26.62%  elapsed=257.1s
+  epoch 2275  mean reward (annualized P&L %/yr)= -36.68%  elapsed=259.9s
+  epoch 2300  mean reward (annualized P&L %/yr)= -32.60%  elapsed=262.7s
+  epoch 2325  mean reward (annualized P&L %/yr)= -38.32%  elapsed=265.5s
+  epoch 2350  mean reward (annualized P&L %/yr)= -46.15%  elapsed=268.3s
+  epoch 2375  mean reward (annualized P&L %/yr)= -31.04%  elapsed=271.1s
+  epoch 2400  mean reward (annualized P&L %/yr)= -36.34%  elapsed=273.9s
+  epoch 2425  mean reward (annualized P&L %/yr)= -36.95%  elapsed=276.7s
+  epoch 2450  mean reward (annualized P&L %/yr)= -45.48%  elapsed=279.5s
+  epoch 2475  mean reward (annualized P&L %/yr)= -40.94%  elapsed=282.3s
+  epoch 2500  mean reward (annualized P&L %/yr)= -38.00%  elapsed=285.0s
+  epoch 2525  mean reward (annualized P&L %/yr)= -35.00%  elapsed=287.9s
+  epoch 2550  mean reward (annualized P&L %/yr)= -33.57%  elapsed=290.7s
+  epoch 2575  mean reward (annualized P&L %/yr)= -41.48%  elapsed=293.5s
+  epoch 2600  mean reward (annualized P&L %/yr)= -36.91%  elapsed=296.3s
+  epoch 2625  mean reward (annualized P&L %/yr)= -48.60%  elapsed=299.1s
+  epoch 2650  mean reward (annualized P&L %/yr)= -26.54%  elapsed=301.8s
+  epoch 2675  mean reward (annualized P&L %/yr)= -29.65%  elapsed=304.6s
+  epoch 2700  mean reward (annualized P&L %/yr)= -42.38%  elapsed=307.4s
+  epoch 2725  mean reward (annualized P&L %/yr)= -38.45%  elapsed=310.2s
+  epoch 2750  mean reward (annualized P&L %/yr)= -36.56%  elapsed=313.0s
+  epoch 2775  mean reward (annualized P&L %/yr)= -27.03%  elapsed=315.8s
+  epoch 2800  mean reward (annualized P&L %/yr)= -17.69%  elapsed=318.6s
+  epoch 2825  mean reward (annualized P&L %/yr)= -41.66%  elapsed=321.5s
+  epoch 2850  mean reward (annualized P&L %/yr)= -39.98%  elapsed=324.2s
+  epoch 2875  mean reward (annualized P&L %/yr)= -41.41%  elapsed=327.0s
+  epoch 2900  mean reward (annualized P&L %/yr)= -39.84%  elapsed=329.8s
+  epoch 2925  mean reward (annualized P&L %/yr)= -34.60%  elapsed=332.6s
+  epoch 2950  mean reward (annualized P&L %/yr)= -37.38%  elapsed=335.4s
+  epoch 2975  mean reward (annualized P&L %/yr)= -39.37%  elapsed=338.2s
+  epoch 2999  mean reward (annualized P&L %/yr)= -32.80%  elapsed=340.9s
+
+Training done, 340.9s elapsed. Evaluating once on 2022+ holdout...
+  SPY        alpha=  +5.51%/yr  strat_sharpe=+0.579  bh_sharpe=+0.580  mean_pos=+1.523  std_pos=0.000
+  QQQ        alpha=  +5.92%/yr  strat_sharpe=+0.484  bh_sharpe=+0.489  mean_pos=+1.520  std_pos=0.041
+  IWM        alpha=  +3.22%/yr  strat_sharpe=+0.263  bh_sharpe=+0.263  mean_pos=+1.523  std_pos=0.000
+  XLK        alpha=  +8.91%/yr  strat_sharpe=+0.646  bh_sharpe=+0.648  mean_pos=+1.523  std_pos=0.002
+  XLF        alpha=  +3.10%/yr  strat_sharpe=+0.397  bh_sharpe=+0.442  mean_pos=+1.519  std_pos=0.087
+  XLE        alpha= +11.26%/yr  strat_sharpe=+0.843  bh_sharpe=+0.841  mean_pos=+1.521  std_pos=0.010
+  AAPL       alpha=  +9.16%/yr  strat_sharpe=+0.621  bh_sharpe=+0.621  mean_pos=+1.523  std_pos=0.000
+  MSFT       alpha=  +4.88%/yr  strat_sharpe=+0.326  bh_sharpe=+0.327  mean_pos=+1.523  std_pos=0.000
+  JPM        alpha= +11.31%/yr  strat_sharpe=+0.686  bh_sharpe=+0.603  mean_pos=+1.380  std_pos=0.641
+  XOM        alpha=  +3.83%/yr  strat_sharpe=+0.670  bh_sharpe=+0.872  mean_pos=+0.647  std_pos=1.366
+  GLD        alpha= +10.17%/yr  strat_sharpe=+1.042  bh_sharpe=+1.043  mean_pos=+1.523  std_pos=0.000
+  EURUSD=X   alpha=  +3.31%/yr  strat_sharpe=+0.530  bh_sharpe=+0.381  mean_pos=+1.401  std_pos=0.590
+
+Positive on 12/12. Pooled alpha=+6.70%/yr, strategy Sharpe=+0.571, pooled buy-hold Sharpe=+0.582
+vs GA pooled-fitness (82): 1/12, -10.86%/yr, Sharpe +0.178
+vs GA regime-diverse (83): 1/12, -12.90%/yr, Sharpe +0.038
+vs GA GFC-inclusive (84):  2/12, -9.73%/yr, Sharpe +0.213
+
+Saved: 85_ppo_results.json, 85_ppo_training_curve.png, 85_ppo_equity.png

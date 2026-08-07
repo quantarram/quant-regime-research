@@ -1,0 +1,34 @@
+{
+  "full_sample": {
+    "tsmom_cum_ret_pct": 272.5094843804192,
+    "passive_cum_ret_pct": 1405.248682094468,
+    "tsmom_sharpe": 0.67354342287809,
+    "passive_sharpe": 0.5743477153662794,
+    "alpha_annualized_pct": -3.6794816737257845,
+    "n_days": 9564
+  },
+  "since_2010": {
+    "tsmom_cum_ret_pct": 30.700146211059277,
+    "passive_cum_ret_pct": 267.750404641055,
+    "tsmom_sharpe": 0.3454257409491018,
+    "passive_sharpe": 0.6278400513466945,
+    "alpha_annualized_pct": -4.726993246845318,
+    "n_days": 5515
+  },
+  "since_2020": {
+    "tsmom_cum_ret_pct": 6.4986464738187255,
+    "passive_cum_ret_pct": 73.94284330963896,
+    "tsmom_sharpe": 0.22750992675506992,
+    "passive_sharpe": 0.5795729808172757,
+    "alpha_annualized_pct": -5.249673444617968,
+    "n_days": 2355
+  },
+  "2025_only": {
+    "tsmom_cum_ret_pct": -1.0874436314656455,
+    "passive_cum_ret_pct": 7.176816490500393,
+    "tsmom_sharpe": -0.2970031359667209,
+    "passive_sharpe": 0.517403160865008,
+    "alpha_annualized_pct": -5.540117843282544,
+    "n_days": 365
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "blocks": [
+    {
+      "block_start": "2006-03-31",
+      "block_end": "2010-04-15",
+      "baseline_pct": 2.7387696702065596,
+      "pocket_pct": 3.5914348881827562,
+      "combined_pct": 2.8731479105462054
+    },
+    {
+      "block_start": "2010-04-15",
+      "block_end": "2014-04-30",
+      "baseline_pct": 2.3555412704561056,
+      "pocket_pct": 2.938671784643624,
+      "combined_pct": 2.3509374277148987
+    },
+    {
+      "block_start": "2014-04-30",
+      "block_end": "2018-05-16",
+      "baseline_pct": 1.5562180100174172,
+      "pocket_pct": 2.3759482250897928,
+      "combined_pct": 1.9007585800718343
+    },
+    {
+      "block_start": "2018-05-16",
+      "block_end": "2022-05-31",
+      "baseline_pct": 1.1151694561344694,
+      "pocket_pct": 1.0394029353504854,
+      "combined_pct": 1.9770083746638325
+    },
+    {
+      "block_start": "2022-05-31",
+      "block_end": "2026-06-16",
+      "baseline_pct": 0.30035919742304457,
+      "pocket_pct": 0.18370412243098863,
+      "combined_pct": 0.1469632979447908
+    }
+  ],
+  "n_pocket_beats_baseline": 3.0,
+  "n_combined_beats_pocket": 1.0
+}

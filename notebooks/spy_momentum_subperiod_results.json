@@ -1,0 +1,59 @@
+{
+  "full_sample": {
+    "momentum_sharpe": 0.7064115898519762,
+    "buyhold_sharpe": 0.5596548538487325
+  },
+  "blocks": [
+    {
+      "block_start": "1994-06-01",
+      "block_end": "2000-10-24",
+      "n_days": 1618,
+      "momentum_sharpe": 1.2004080286100776,
+      "momentum_ann_ret_pct": 13.110178887906521,
+      "buyhold_sharpe": 1.0825250628277039,
+      "buyhold_ann_ret_pct": 19.057251739207647,
+      "excess_over_buyhold_pct": -5.947072851301129
+    },
+    {
+      "block_start": "2000-10-24",
+      "block_end": "2007-03-20",
+      "n_days": 1606,
+      "momentum_sharpe": 0.6414487957956414,
+      "momentum_ann_ret_pct": 6.763501682904841,
+      "buyhold_sharpe": 0.10463512568485835,
+      "buyhold_ann_ret_pct": 1.823617646134099,
+      "excess_over_buyhold_pct": 4.93988403677074
+    },
+    {
+      "block_start": "2007-03-20",
+      "block_end": "2013-08-13",
+      "n_days": 1612,
+      "momentum_sharpe": 0.5460901967139675,
+      "momentum_ann_ret_pct": 6.243460208226173,
+      "buyhold_sharpe": 0.2059051169451393,
+      "buyhold_ann_ret_pct": 4.968128533526705,
+      "excess_over_buyhold_pct": 1.2753316746994676
+    },
+    {
+      "block_start": "2013-08-13",
+      "block_end": "2020-01-07",
+      "n_days": 1611,
+      "momentum_sharpe": 0.6899483666166009,
+      "momentum_ann_ret_pct": 8.107362654432466,
+      "buyhold_sharpe": 0.9322412527178231,
+      "buyhold_ann_ret_pct": 12.06729988040646,
+      "excess_over_buyhold_pct": -3.959937225973996
+    },
+    {
+      "block_start": "2020-01-07",
+      "block_end": "2026-06-02",
+      "n_days": 1608,
+      "momentum_sharpe": 0.4995791603104824,
+      "momentum_ann_ret_pct": 6.3585412566677215,
+      "buyhold_sharpe": 0.7264590848401773,
+      "buyhold_ann_ret_pct": 14.825465437382618,
+      "excess_over_buyhold_pct": -8.466924180714896
+    }
+  ],
+  "n_blocks_positive_excess": 2
+}

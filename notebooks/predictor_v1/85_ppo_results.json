@@ -1,0 +1,94 @@
+{
+  "per_instrument": {
+    "SPY": {
+      "alpha_vs_own_pct": 5.512136936187744,
+      "strategy_sharpe": 0.5790875326464676,
+      "buy_hold_sharpe": 0.5798904377340204,
+      "mean_position": 1.5231876342901625,
+      "std_position": 2.1424337481354336e-07
+    },
+    "QQQ": {
+      "alpha_vs_own_pct": 5.924592018127441,
+      "strategy_sharpe": 0.48371917954098215,
+      "buy_hold_sharpe": 0.4889077548206245,
+      "mean_position": 1.5198972100868977,
+      "std_position": 0.041477088275961756
+    },
+    "IWM": {
+      "alpha_vs_own_pct": 3.217292308807373,
+      "strategy_sharpe": 0.2625060838643414,
+      "buy_hold_sharpe": 0.26312930072117097,
+      "mean_position": 1.5231857084316285,
+      "std_position": 2.175981486098199e-06
+    },
+    "XLK": {
+      "alpha_vs_own_pct": 8.905007362365723,
+      "strategy_sharpe": 0.646167511704591,
+      "buy_hold_sharpe": 0.6482461233951258,
+      "mean_position": 1.5230317009420826,
+      "std_position": 0.0021130935225781577
+    },
+    "XLF": {
+      "alpha_vs_own_pct": 3.1002044677734375,
+      "strategy_sharpe": 0.3972059345928598,
+      "buy_hold_sharpe": 0.4424032461390243,
+      "mean_position": 1.5194392021948326,
+      "std_position": 0.08748056491136637
+    },
+    "XLE": {
+      "alpha_vs_own_pct": 11.263739585876465,
+      "strategy_sharpe": 0.8427160987577589,
+      "buy_hold_sharpe": 0.8406526261776618,
+      "mean_position": 1.5206155260357908,
+      "std_position": 0.010374711141359124
+    },
+    "AAPL": {
+      "alpha_vs_own_pct": 9.16421890258789,
+      "strategy_sharpe": 0.6207438003475244,
+      "buy_hold_sharpe": 0.6212830720197196,
+      "mean_position": 1.5231813989398377,
+      "std_position": 2.4420181866985688e-05
+    },
+    "MSFT": {
+      "alpha_vs_own_pct": 4.882704257965088,
+      "strategy_sharpe": 0.3262882797444888,
+      "buy_hold_sharpe": 0.3268078883142599,
+      "mean_position": 1.5231876856758586,
+      "std_position": 4.866820668353675e-07
+    },
+    "JPM": {
+      "alpha_vs_own_pct": 11.30721378326416,
+      "strategy_sharpe": 0.6863635057570553,
+      "buy_hold_sharpe": 0.6026356501494557,
+      "mean_position": 1.380267657659007,
+      "std_position": 0.6406232958442761
+    },
+    "XOM": {
+      "alpha_vs_own_pct": 3.8311846256256104,
+      "strategy_sharpe": 0.6704502308867114,
+      "buy_hold_sharpe": 0.872149013209076,
+      "mean_position": 0.6472180633183012,
+      "std_position": 1.3660751213601816
+    },
+    "GLD": {
+      "alpha_vs_own_pct": 10.167634963989258,
+      "strategy_sharpe": 1.0423208937305504,
+      "buy_hold_sharpe": 1.0430670862911116,
+      "mean_position": 1.5231869690470132,
+      "std_position": 7.715149959414116e-07
+    },
+    "EURUSD=X": {
+      "alpha_vs_own_pct": 3.3084909915924072,
+      "strategy_sharpe": 0.5296376390646205,
+      "buy_hold_sharpe": 0.38114730060745333,
+      "mean_position": 1.4007785303978744,
+      "std_position": 0.589848435044467
+    }
+  },
+  "n_positive": 12,
+  "n_total": 12,
+  "overall_alpha_pct": 6.702004432678223,
+  "overall_strategy_sharpe": 0.5709399117848943,
+  "overall_buy_hold_sharpe": 0.5818000354494336,
+  "n_epochs": 3000
+}

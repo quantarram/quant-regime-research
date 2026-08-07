@@ -1,0 +1,28 @@
+Rows: 56163 (45746 train 2005-01-01+ incl. 2008 GFC, 10417 holdout)
+  gen     0  best=+20.74%  mean=+0.47%  elapsed=5.2s
+  gen   200  best=+27.68%  mean=+7.47%  elapsed=463.8s
+  gen   400  best=+28.67%  mean=+8.70%  elapsed=921.6s
+  gen   600  best=+28.67%  mean=+9.64%  elapsed=1379.0s
+  gen   800  best=+28.67%  mean=+10.54%  elapsed=1836.3s
+  gen  1000  best=+28.87%  mean=+12.00%  elapsed=2294.2s
+  gen  1200  best=+29.42%  mean=+14.85%  elapsed=2750.3s
+  gen  1400  best=+29.46%  mean=+18.34%  elapsed=3780.6s
+  gen  1499  best=+29.52%  mean=+21.28%  elapsed=4006.4s
+Best train fitness: +29.52%/yr, elapsed 4008.7s
+  SPY        alpha= -14.11%/yr  strat_sharpe=-0.757  bh_sharpe=+0.580
+  QQQ        alpha=  -5.33%/yr  strat_sharpe=+0.193  bh_sharpe=+0.489
+  IWM        alpha=  +0.31%/yr  strat_sharpe=+0.226  bh_sharpe=+0.263
+  XLK        alpha=  -9.56%/yr  strat_sharpe=+0.546  bh_sharpe=+0.648
+  XLF        alpha=  -8.46%/yr  strat_sharpe=+0.442  bh_sharpe=+0.442
+  XLE        alpha=  -3.65%/yr  strat_sharpe=+1.169  bh_sharpe=+0.841
+  AAPL       alpha= -17.49%/yr  strat_sharpe=+0.621  bh_sharpe=+0.621
+  MSFT       alpha= -19.56%/yr  strat_sharpe=-0.397  bh_sharpe=+0.327
+  JPM        alpha= -15.46%/yr  strat_sharpe=+0.602  bh_sharpe=+0.603
+  XOM        alpha= -23.12%/yr  strat_sharpe=+0.872  bh_sharpe=+0.872
+  GLD        alpha=  +0.22%/yr  strat_sharpe=+0.660  bh_sharpe=+1.043
+  EURUSD=X   alpha=  -1.12%/yr  strat_sharpe=+0.231  bh_sharpe=+0.381
+
+Positive on 2/12. Pooled alpha=-9.73%/yr, Sharpe=+0.213
+vs 82 (pooled fitness, 2015+, w/ forecasts): 1/12, -10.86%/yr, Sharpe +0.178
+vs 83 (regime-diverse, 2015+, w/ forecasts):  1/12, -12.90%/yr, Sharpe +0.038
+Saved 84_ga_results.json, 84_ga_fitness_history.png, 84_ga_decision_layer_equity.png

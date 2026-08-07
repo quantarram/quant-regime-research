@@ -1,0 +1,350 @@
+{
+  "SPY": {
+    "fresh": {
+      "n_blocks_oos": 100,
+      "strategy_cum_ret_pct": 34.60314485798206,
+      "buyhold_cum_ret_pct": 73.33426095502458,
+      "alpha_per_block_pct": 0.26478360799955397,
+      "alpha_annualized_pct": 6.065951746898873,
+      "t_alpha": 0.8686073236255346,
+      "beta_vs_own": 0.05886171808084431,
+      "significant_95": false,
+      "mean_abs_position": 0.874057891134506
+    },
+    "stale": {
+      "n_blocks_oos": 100,
+      "strategy_cum_ret_pct": 23.10394249649912,
+      "buyhold_cum_ret_pct": 73.33426095502458,
+      "alpha_per_block_pct": 0.06826617839113042,
+      "alpha_annualized_pct": 1.5639160867786241,
+      "t_alpha": 0.3231837021459315,
+      "beta_vs_own": 0.2537810499966786,
+      "significant_95": false,
+      "mean_abs_position": 0.6334745681274014
+    },
+    "tau_star": 22,
+    "half_window": 11,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": -0.061225576825980316,
+    "kelly_beats_buy_hold_net": true
+  },
+  "QQQ": {
+    "fresh": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 11.061522510249254,
+      "buyhold_cum_ret_pct": 92.57913096298083,
+      "alpha_per_block_pct": -0.0029314877416918386,
+      "alpha_annualized_pct": -0.06715771917330395,
+      "t_alpha": -0.7191941684817766,
+      "beta_vs_own": 0.16460985561740726,
+      "significant_95": false,
+      "mean_abs_position": 0.16035085102913813
+    },
+    "stale": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 24.45330436368609,
+      "buyhold_cum_ret_pct": 92.57913096298083,
+      "alpha_per_block_pct": 0.17197181636979614,
+      "alpha_annualized_pct": 3.9397179750171487,
+      "t_alpha": 0.6741021405622937,
+      "beta_vs_own": 0.06877204078881094,
+      "significant_95": false,
+      "mean_abs_position": 0.5355376787793117
+    },
+    "tau_star": 22,
+    "half_window": 11,
+    "horizon": 21,
+    "kelly_alpha_vs_own_pct": 3.0877449968225443,
+    "kelly_beats_buy_hold_net": true
+  },
+  "IWM": {
+    "fresh": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 14.161489742914245,
+      "buyhold_cum_ret_pct": 38.360215915779136,
+      "alpha_per_block_pct": 0.0838560143580929,
+      "alpha_annualized_pct": 1.9210650562035827,
+      "t_alpha": 1.0599774711312149,
+      "beta_vs_own": 0.1470609179844414,
+      "significant_95": false,
+      "mean_abs_position": 0.17511765641256338
+    },
+    "stale": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 2.7033972229184355,
+      "buyhold_cum_ret_pct": 38.360215915779136,
+      "alpha_per_block_pct": -0.018755021044029555,
+      "alpha_annualized_pct": -0.4296604820995861,
+      "t_alpha": -0.40967557033656593,
+      "beta_vs_own": 0.14049564311647836,
+      "significant_95": false,
+      "mean_abs_position": 0.1281392287728587
+    },
+    "tau_star": 23,
+    "half_window": 11,
+    "horizon": 21,
+    "kelly_alpha_vs_own_pct": -3.404181492028413,
+    "kelly_beats_buy_hold_net": false
+  },
+  "XLK": {
+    "fresh": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 92.84039598633633,
+      "buyhold_cum_ret_pct": 143.34360667849828,
+      "alpha_per_block_pct": 0.39744885116141304,
+      "alpha_annualized_pct": 9.105191862970553,
+      "t_alpha": 0.8160670488491885,
+      "beta_vs_own": 0.28704388777310824,
+      "significant_95": false,
+      "mean_abs_position": 0.9560779340856007
+    },
+    "stale": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 43.201686924768,
+      "buyhold_cum_ret_pct": 143.34360667849828,
+      "alpha_per_block_pct": -0.13273645740315593,
+      "alpha_annualized_pct": -3.040871569599572,
+      "t_alpha": -0.41357022687160633,
+      "beta_vs_own": 0.5545319897201741,
+      "significant_95": false,
+      "mean_abs_position": 0.7709344260605165
+    },
+    "tau_star": 22,
+    "half_window": 11,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": 2.739069670698065,
+    "kelly_beats_buy_hold_net": true
+  },
+  "XLF": {
+    "fresh": {
+      "n_blocks_oos": 69,
+      "strategy_cum_ret_pct": -14.163972372044963,
+      "buyhold_cum_ret_pct": 45.07052840896859,
+      "alpha_per_block_pct": -0.4305256432727401,
+      "alpha_annualized_pct": -6.7807788815456576,
+      "t_alpha": -1.0438545346846715,
+      "beta_vs_own": 0.38793546656662065,
+      "significant_95": false,
+      "mean_abs_position": 0.8086012344415373
+    },
+    "stale": {
+      "n_blocks_oos": 69,
+      "strategy_cum_ret_pct": 15.18046152773076,
+      "buyhold_cum_ret_pct": 45.07052840896859,
+      "alpha_per_block_pct": 0.09757734249563454,
+      "alpha_annualized_pct": 1.536843144306244,
+      "t_alpha": 0.7237742592894317,
+      "beta_vs_own": 0.19890232065358043,
+      "significant_95": false,
+      "mean_abs_position": 0.29252434235566477
+    },
+    "tau_star": 33,
+    "half_window": 16,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": -0.429536726221837,
+    "kelly_beats_buy_hold_net": true
+  },
+  "XLE": {
+    "fresh": {
+      "n_blocks_oos": 85,
+      "strategy_cum_ret_pct": 19.53100209081424,
+      "buyhold_cum_ret_pct": 122.53463531547757,
+      "alpha_per_block_pct": -0.5903304983664277,
+      "alpha_annualized_pct": -11.44332966064152,
+      "t_alpha": -2.880815669478056,
+      "beta_vs_own": 0.850326066140955,
+      "significant_95": true,
+      "mean_abs_position": 0.745117711012494
+    },
+    "stale": {
+      "n_blocks_oos": 85,
+      "strategy_cum_ret_pct": 15.68736622344915,
+      "buyhold_cum_ret_pct": 122.53463531547757,
+      "alpha_per_block_pct": -0.07135067034471172,
+      "alpha_annualized_pct": -1.3831053020667194,
+      "t_alpha": -0.9387847855784351,
+      "beta_vs_own": 0.25798984298136696,
+      "significant_95": false,
+      "mean_abs_position": 0.2320122415811184
+    },
+    "tau_star": 27,
+    "half_window": 13,
+    "horizon": 252,
+    "kelly_alpha_vs_own_pct": 6.548012768081084,
+    "kelly_beats_buy_hold_net": true
+  },
+  "AAPL": {
+    "fresh": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 14.13115854496998,
+      "buyhold_cum_ret_pct": 81.5678582682492,
+      "alpha_per_block_pct": -0.26708912179529254,
+      "alpha_annualized_pct": -6.1187689720376115,
+      "t_alpha": -0.7500085589373529,
+      "beta_vs_own": 0.6738735503045002,
+      "significant_95": false,
+      "mean_abs_position": 0.9627265179901564
+    },
+    "stale": {
+      "n_blocks_oos": 101,
+      "strategy_cum_ret_pct": 21.939647229709024,
+      "buyhold_cum_ret_pct": 81.5678582682492,
+      "alpha_per_block_pct": 0.023962077311792656,
+      "alpha_annualized_pct": 0.5489494075065227,
+      "t_alpha": 2.2258419596412113,
+      "beta_vs_own": 0.2919802766432169,
+      "significant_95": true,
+      "mean_abs_position": 0.29467701011076364
+    },
+    "tau_star": 22,
+    "half_window": 11,
+    "horizon": 252,
+    "kelly_alpha_vs_own_pct": -5.995832701042253,
+    "kelly_beats_buy_hold_net": false
+  },
+  "MSFT": {
+    "fresh": {
+      "n_blocks_oos": 35,
+      "strategy_cum_ret_pct": -19.308283050109022,
+      "buyhold_cum_ret_pct": 47.208141050130756,
+      "alpha_per_block_pct": -0.7578660669030941,
+      "alpha_annualized_pct": -6.160717705147733,
+      "t_alpha": -0.6583353741329881,
+      "beta_vs_own": 0.13116586919840592,
+      "significant_95": false,
+      "mean_abs_position": 0.8107364368433595
+    },
+    "stale": {
+      "n_blocks_oos": 35,
+      "strategy_cum_ret_pct": -20.171115827203813,
+      "buyhold_cum_ret_pct": 47.208141050130756,
+      "alpha_per_block_pct": -1.3468373021592122,
+      "alpha_annualized_pct": -10.948483875616821,
+      "t_alpha": -1.5122507570379453,
+      "beta_vs_own": 0.6364693505031973,
+      "significant_95": false,
+      "mean_abs_position": 0.8354045039782209
+    },
+    "tau_star": 63,
+    "half_window": 31,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": 0.4838401110325682,
+    "kelly_beats_buy_hold_net": true
+  },
+  "JPM": {
+    "fresh": {
+      "n_blocks_oos": 100,
+      "strategy_cum_ret_pct": 21.94486489607186,
+      "buyhold_cum_ret_pct": 112.48522875512803,
+      "alpha_per_block_pct": 0.005762669438897083,
+      "alpha_annualized_pct": 0.1320175180547332,
+      "t_alpha": 0.5150062690244087,
+      "beta_vs_own": 0.25558654005161136,
+      "significant_95": false,
+      "mean_abs_position": 0.25721302037514177
+    },
+    "stale": {
+      "n_blocks_oos": 100,
+      "strategy_cum_ret_pct": -36.11135773171671,
+      "buyhold_cum_ret_pct": 112.48522875512803,
+      "alpha_per_block_pct": -0.11983306370905306,
+      "alpha_annualized_pct": -2.745266550425579,
+      "t_alpha": -0.2921422524150427,
+      "beta_vs_own": -0.4354445038891485,
+      "significant_95": false,
+      "mean_abs_position": 0.9056230028424754
+    },
+    "tau_star": 23,
+    "half_window": 11,
+    "horizon": 252,
+    "kelly_alpha_vs_own_pct": 11.64358047019845,
+    "kelly_beats_buy_hold_net": true
+  },
+  "XOM": {
+    "fresh": {
+      "n_blocks_oos": 85,
+      "strategy_cum_ret_pct": 53.837867704890606,
+      "buyhold_cum_ret_pct": 165.0037719836082,
+      "alpha_per_block_pct": -0.1263740946630727,
+      "alpha_annualized_pct": -2.44971321962264,
+      "t_alpha": -0.6221967429204944,
+      "beta_vs_own": 0.5521870118378739,
+      "significant_95": false,
+      "mean_abs_position": 0.5841475332614052
+    },
+    "stale": {
+      "n_blocks_oos": 85,
+      "strategy_cum_ret_pct": 85.17282480663135,
+      "buyhold_cum_ret_pct": 165.0037719836082,
+      "alpha_per_block_pct": 0.06035021332660332,
+      "alpha_annualized_pct": 1.169865673715695,
+      "t_alpha": 0.17008246854760123,
+      "beta_vs_own": 0.5795576148821633,
+      "significant_95": false,
+      "mean_abs_position": 0.6842303815761022
+    },
+    "tau_star": 27,
+    "half_window": 13,
+    "horizon": 63,
+    "kelly_alpha_vs_own_pct": -5.64916671864496,
+    "kelly_beats_buy_hold_net": false
+  },
+  "GLD": {
+    "fresh": {
+      "n_blocks_oos": 102,
+      "strategy_cum_ret_pct": 29.33610545602374,
+      "buyhold_cum_ret_pct": 135.20052681001607,
+      "alpha_per_block_pct": -0.08431533273605563,
+      "alpha_annualized_pct": -1.9315876226805473,
+      "t_alpha": -0.778105170293898,
+      "beta_vs_own": 0.4013313134108121,
+      "significant_95": false,
+      "mean_abs_position": 0.42988104063649074
+    },
+    "stale": {
+      "n_blocks_oos": 102,
+      "strategy_cum_ret_pct": 65.52399708979696,
+      "buyhold_cum_ret_pct": 135.20052681001607,
+      "alpha_per_block_pct": -0.10103916927428197,
+      "alpha_annualized_pct": -2.3147155142835505,
+      "t_alpha": -0.4215023944664758,
+      "beta_vs_own": 0.7097257900023342,
+      "significant_95": false,
+      "mean_abs_position": 0.8531298081006088
+    },
+    "tau_star": 22,
+    "half_window": 11,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": 6.843221101559349,
+    "kelly_beats_buy_hold_net": true
+  },
+  "EURUSD=X": {
+    "fresh": {
+      "n_blocks_oos": 54,
+      "strategy_cum_ret_pct": 0.08969762901098743,
+      "buyhold_cum_ret_pct": 2.436668550253618,
+      "alpha_per_block_pct": 0.0010453810205302634,
+      "alpha_annualized_pct": 0.012544572246363161,
+      "t_alpha": 0.15080228046874364,
+      "beta_vs_own": 0.013793339579501138,
+      "significant_95": false,
+      "mean_abs_position": 0.02008579784511632
+    },
+    "stale": {
+      "n_blocks_oos": 54,
+      "strategy_cum_ret_pct": -3.304198185383278,
+      "buyhold_cum_ret_pct": 2.436668550253618,
+      "alpha_per_block_pct": -0.07332074538482986,
+      "alpha_annualized_pct": -0.8798489446179583,
+      "t_alpha": -0.43669062644879836,
+      "beta_vs_own": 0.24893518466262285,
+      "significant_95": false,
+      "mean_abs_position": 0.5154479405400499
+    },
+    "tau_star": 43,
+    "half_window": 21,
+    "horizon": 189,
+    "kelly_alpha_vs_own_pct": -2.83276199492304,
+    "kelly_beats_buy_hold_net": false
+  }
+}

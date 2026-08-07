@@ -1,0 +1,30 @@
+{
+  "tsmom": {
+    "label": "TSMOM",
+    "n_days": 9564,
+    "threshold_pct": 0.30097127588758277,
+    "n_exceedances": 957,
+    "exceedance_rate": 0.10006273525721456,
+    "gpd_shape_xi": 0.15325431408430396,
+    "gpd_scale": 0.002460374807440865,
+    "1_in_10_exceedances_loss_pct": 0.980323716240111,
+    "1_in_50_exceedances_loss_pct": 1.619455238098135,
+    "1_in_100_exceedances_loss_pct": 1.9471522382948419,
+    "n_exceedances_in_crisis": 214,
+    "pct_exceedances_in_crisis": 22.361546499477534
+  },
+  "passive": {
+    "label": "Passive equal-weight",
+    "n_days": 9564,
+    "threshold_pct": 0.7711194185805033,
+    "n_exceedances": 957,
+    "exceedance_rate": 0.10006273525721456,
+    "gpd_shape_xi": 0.10638957827886117,
+    "gpd_scale": 0.006017062409603836,
+    "1_in_10_exceedances_loss_pct": 2.3410497612810657,
+    "1_in_50_exceedances_loss_pct": 3.6905106320213625,
+    "1_in_100_exceedances_loss_pct": 4.3467681750038345,
+    "n_exceedances_in_crisis": 345,
+    "pct_exceedances_in_crisis": 36.05015673981191
+  }
+}

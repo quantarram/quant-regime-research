@@ -1,0 +1,56 @@
+Loading all three signal types: price forecasts, tau*/pocket structure, CPE exceedance probability...
+  SPY        pocket_flag=1  pocket_strength=80.449  has_cpe_config=yes
+  QQQ        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  IWM        pocket_flag=1  pocket_strength=47.026  has_cpe_config=yes
+  XLK        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  XLF        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  XLE        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  AAPL       pocket_flag=1  pocket_strength=31.210  has_cpe_config=yes
+  MSFT       pocket_flag=1  pocket_strength=717.599  has_cpe_config=yes
+  JPM        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  XOM        pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+  GLD        pocket_flag=1  pocket_strength=237.539  has_cpe_config=yes
+  EURUSD=X   pocket_flag=0  pocket_strength=0.000  has_cpe_config=yes
+
+Total rows: 24295 (13878 train pre-2022-01-01, 10417 holdout)
+
+Running GA: population=800, generations=1500 (1,200,000 total distinct policies evaluated)...
+  gen     0  best_fitness(P&L %/yr)=+23.75%  mean=-3.04%  elapsed=4.3s
+  gen   100  best_fitness(P&L %/yr)=+26.47%  mean=+10.15%  elapsed=101.7s
+  gen   200  best_fitness(P&L %/yr)=+27.46%  mean=+11.84%  elapsed=200.0s
+  gen   300  best_fitness(P&L %/yr)=+32.75%  mean=+12.26%  elapsed=296.7s
+  gen   400  best_fitness(P&L %/yr)=+33.07%  mean=+12.71%  elapsed=392.7s
+  gen   500  best_fitness(P&L %/yr)=+35.88%  mean=+13.86%  elapsed=488.7s
+  gen   600  best_fitness(P&L %/yr)=+40.52%  mean=+13.96%  elapsed=584.6s
+  gen   700  best_fitness(P&L %/yr)=+41.61%  mean=+13.89%  elapsed=680.3s
+  gen   800  best_fitness(P&L %/yr)=+41.96%  mean=+15.26%  elapsed=776.2s
+  gen   900  best_fitness(P&L %/yr)=+42.56%  mean=+16.71%  elapsed=872.1s
+  gen  1000  best_fitness(P&L %/yr)=+45.40%  mean=+17.63%  elapsed=968.1s
+  gen  1100  best_fitness(P&L %/yr)=+48.68%  mean=+20.29%  elapsed=1063.9s
+  gen  1200  best_fitness(P&L %/yr)=+48.68%  mean=+22.78%  elapsed=1159.8s
+  gen  1300  best_fitness(P&L %/yr)=+48.68%  mean=+24.92%  elapsed=1255.7s
+  gen  1400  best_fitness(P&L %/yr)=+49.29%  mean=+29.08%  elapsed=1351.8s
+  gen  1499  best_fitness(P&L %/yr)=+50.89%  mean=+35.66%  elapsed=1446.6s
+
+Best evolved policy (train P&L per unit exposure): +50.89%/yr, total elapsed 1447.6s, 1,200,000 policies evaluated
+
+==========================================================================================
+Best evolved policy, OOS 2022+ holdout, real point estimates only
+==========================================================================================
+  SPY        alpha vs own buy-hold= -11.15%/yr   strategy Sharpe=-0.910   buy-hold Sharpe=+0.580
+  QQQ        alpha vs own buy-hold= -11.72%/yr   strategy Sharpe=+0.032   buy-hold Sharpe=+0.489
+  IWM        alpha vs own buy-hold=  -6.29%/yr   strategy Sharpe=-0.371   buy-hold Sharpe=+0.263
+  XLK        alpha vs own buy-hold= -15.98%/yr   strategy Sharpe=+0.565   buy-hold Sharpe=+0.648
+  XLF        alpha vs own buy-hold=  -8.55%/yr   strategy Sharpe=-0.840   buy-hold Sharpe=+0.442
+  XLE        alpha vs own buy-hold=  -6.03%/yr   strategy Sharpe=+1.237   buy-hold Sharpe=+0.841
+  AAPL       alpha vs own buy-hold= -17.62%/yr   strategy Sharpe=-0.526   buy-hold Sharpe=+0.621
+  MSFT       alpha vs own buy-hold=  +3.24%/yr   strategy Sharpe=+0.249   buy-hold Sharpe=+0.327
+  JPM        alpha vs own buy-hold= -15.54%/yr   strategy Sharpe=-0.729   buy-hold Sharpe=+0.603
+  XOM        alpha vs own buy-hold= -23.07%/yr   strategy Sharpe=+0.615   buy-hold Sharpe=+0.872
+  GLD        alpha vs own buy-hold= -14.95%/yr   strategy Sharpe=+0.391   buy-hold Sharpe=+1.043
+  EURUSD=X   alpha vs own buy-hold=  -3.01%/yr   strategy Sharpe=-0.180   buy-hold Sharpe=+0.381
+
+Positive alpha on 1/12 instruments
+Pooled across all instruments: alpha=-10.86%/yr, strategy Sharpe=+0.178, pooled buy-hold Sharpe=+0.582
+
+Saved: 82_ga_decision_layer_results.json, 82_ga_fitness_history.png, 82_ga_decision_layer_equity.png

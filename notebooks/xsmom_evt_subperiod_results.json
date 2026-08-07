@@ -1,0 +1,56 @@
+{
+  "tail": {
+    "xsmom": {
+      "label": "XSMOM",
+      "n_exceedances": 959,
+      "gpd_shape_xi": 0.11510669997227645,
+      "gpd_scale": 0.006322306226117122,
+      "return_level_1_in_100_pct": 4.61525903520625
+    },
+    "passive": {
+      "label": "Passive (equity universe)",
+      "n_exceedances": 959,
+      "gpd_shape_xi": 0.1341868428656593,
+      "gpd_scale": 0.007806534151790714,
+      "return_level_1_in_100_pct": 5.825655586510401
+    }
+  },
+  "blocks": [
+    {
+      "block_start": "1994-04-29",
+      "block_end": "2000-10-01",
+      "xsmom_ann_ret_pct": -0.6481430165692186,
+      "passive_ann_ret_pct": 1.1647970885129233,
+      "excess_pct": -1.8129401050821417
+    },
+    {
+      "block_start": "2000-10-01",
+      "block_end": "2007-03-06",
+      "xsmom_ann_ret_pct": -4.721127163578609,
+      "passive_ann_ret_pct": 5.757341350734545,
+      "excess_pct": -10.478468514313153
+    },
+    {
+      "block_start": "2007-03-06",
+      "block_end": "2013-08-08",
+      "xsmom_ann_ret_pct": -1.686051314727617,
+      "passive_ann_ret_pct": 4.255643100991932,
+      "excess_pct": -5.941694415719549
+    },
+    {
+      "block_start": "2013-08-08",
+      "block_end": "2020-01-11",
+      "xsmom_ann_ret_pct": -6.827779605575718,
+      "passive_ann_ret_pct": 7.7152820937551185,
+      "excess_pct": -14.543061699330833
+    },
+    {
+      "block_start": "2020-01-11",
+      "block_end": "2026-06-16",
+      "xsmom_ann_ret_pct": -3.1677935988268207,
+      "passive_ann_ret_pct": 6.838508122136119,
+      "excess_pct": -10.006301720962938
+    }
+  ],
+  "n_blocks_positive": 0
+}
