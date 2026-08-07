@@ -374,6 +374,12 @@ Functions and Calibrated Uncertainty Against an Empirically Measured
 Predictability Limit. Zenodo. https://doi.org/10.5281/zenodo.21802729
 ```
 
+**Paper 16 — Predictability-Informed TSMOM Beats the Standard Momentum Trading Strategy**
+```
+RAMANATHAN S, A. (2026). Predictability-Informed TSMOM Beats the Standard
+Momentum Trading Strategy. Zenodo. https://doi.org/10.5281/zenodo.21842311
+```
+
 ---
 
 ## LinkedIn
@@ -406,7 +412,9 @@ Predictability Limit. Zenodo. https://doi.org/10.5281/zenodo.21802729
 │   │                                 # architecture/depth/window-sweep scripts
 │   │                                 # (65-70_*.py) + Paper 15's loss-function/
 │   │                                 # generative-downscaler scripts (73-80_*.py)
-│   │                                 # in the same dir
+│   │                                 # + Paper 16's decision-layer search scripts
+│   │                                 # (81-89_*.py: RL/GA sizing, PPO, equation
+│   │                                 # renders, schematics) in the same dir
 │   ├── predictor_v1_paper_draft.md  # Paper 12 preprint (published: zenodo.org/records/21454884)
 │   ├── predictor_v1_paper_draft.pdf # Paper 12 PDF, as submitted to Zenodo
 │   ├── regime_detector_paper_draft.md  # Paper 13 preprint (published: zenodo.org/records/21482869)
@@ -415,6 +423,11 @@ Predictability Limit. Zenodo. https://doi.org/10.5281/zenodo.21802729
 │   ├── architecture_ceiling_paper_draft.pdf # Paper 14 PDF, as submitted to Zenodo
 │   ├── loss_uncertainty_ceiling_paper_draft.md  # Paper 15 preprint (published: zenodo.org/records/21802729)
 │   ├── loss_uncertainty_ceiling_paper_draft.pdf # Paper 15 PDF, as submitted to Zenodo
+│   ├── decision_layer_ceiling_paper_draft.md  # Paper 16 preprint (published: zenodo.org/records/21842311)
+│   ├── decision_layer_ceiling_paper_draft.pdf # Paper 16 PDF, as submitted to Zenodo
+│   ├── paper16_graphical_abstract.py # Paper 16 graphical abstract generator
+│   ├── paper16_substack_post.md     # Paper 16 Substack post
+│   ├── paper16_linkedin_post.md     # Paper 16 LinkedIn post
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic
