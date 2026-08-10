@@ -1,0 +1,362 @@
+<title>Predictability-Informed TSMOM vs. Standard TSMOM</title>
+<style>
+  :root {
+    --bg: #F7F4EC;
+    --bg-panel: #FFFFFF;
+    --ink: #1D1B16;
+    --ink-soft: #55524A;
+    --ink-faint: #8B877C;
+    --rule: #DCD6C7;
+    --accent: #2E7D4F;
+    --accent-soft: #E4F0E7;
+    --accent-ink: #1B5C39;
+    --baseline: #83786A;
+    --baseline-soft: #EFEAE0;
+    --highlight: #B9862C;
+    --shadow: 0 1px 2px rgba(29,27,22,0.06), 0 8px 24px rgba(29,27,22,0.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #12130F;
+    --bg-panel: #1A1B15;
+    --ink: #ECE7D9;
+    --ink-soft: #B7B1A0;
+    --ink-faint: #837E6F;
+    --rule: #34362A;
+    --accent: #4CA972;
+    --accent-soft: #1E2E22;
+    --accent-ink: #8FD3AA;
+    --baseline: #9C9686;
+    --baseline-soft: #262620;
+    --highlight: #D9A94A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12130F;
+      --bg-panel: #1A1B15;
+      --ink: #ECE7D9;
+      --ink-soft: #B7B1A0;
+      --ink-faint: #837E6F;
+      --rule: #34362A;
+      --accent: #4CA972;
+      --accent-soft: #1E2E22;
+      --accent-ink: #8FD3AA;
+      --baseline: #9C9686;
+      --baseline-soft: #262620;
+      --highlight: #D9A94A;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .page {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+    padding: 0 0 64px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 56px 0 36px; border-bottom: 1px solid var(--rule); }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink); font-weight: 600; margin: 0 0 18px;
+  }
+  h1 {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-size: clamp(32px, 5vw, 48px); line-height: 1.08; letter-spacing: -0.01em;
+    margin: 0 0 18px; text-wrap: balance; font-weight: 400;
+  }
+  .dek {
+    font-size: 17px; color: var(--ink-soft); max-width: 640px; margin: 0 0 32px;
+  }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .stat { background: var(--bg-panel); padding: 20px 18px; }
+  .stat-value {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 27px; font-weight: 600; color: var(--accent-ink); letter-spacing: -0.01em;
+  }
+  .stat-label { font-size: 12.5px; color: var(--ink-soft); margin-top: 6px; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 44px 0; border-bottom: 1px solid var(--rule); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-weight: 400; font-size: 25px; margin: 0 0 6px; text-wrap: balance;
+  }
+  .section-sub { color: var(--ink-soft); font-size: 15px; max-width: 620px; margin: 0 0 28px; }
+  p { font-size: 15.5px; color: var(--ink); max-width: 640px; }
+  p.note { color: var(--ink-soft); font-size: 14px; }
+
+  /* ---------- Schematics ---------- */
+  figure { margin: 0; }
+  .diagram-frame {
+    background: var(--bg-panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 20px 18px 8px; box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .diagram-frame svg { display: block; width: 100%; height: auto; color: var(--ink); }
+  figcaption { font-size: 13px; color: var(--ink-soft); margin-top: 10px; max-width: 640px; }
+  .tag-grey { fill: var(--baseline-soft); stroke: var(--baseline); }
+  .tag-green { fill: var(--accent-soft); stroke: var(--accent); }
+  .txt { fill: var(--ink); font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+  .txt-soft { fill: var(--ink-soft); font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+  .txt-mono { fill: var(--ink); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  /* ---------- Results chart ---------- */
+  .chart-frame {
+    background: var(--bg-panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 22px 20px 10px; box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .chart-frame svg { display: block; width: 100%; height: auto; min-width: 560px; }
+  .legend { display: flex; gap: 22px; flex-wrap: wrap; margin: 4px 0 14px; font-size: 13.5px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; color: var(--ink-soft); }
+  .swatch { width: 20px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- Footer ---------- */
+  .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media (max-width: 620px) { .footer-grid { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } }
+  .cite-block {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; color: var(--ink-soft); background: var(--baseline-soft);
+    border-radius: 8px; padding: 14px 16px; line-height: 1.6; overflow-x: auto;
+  }
+  a { color: var(--accent-ink); }
+  .links { font-size: 14px; }
+  .links li { margin-bottom: 6px; }
+</style>
+
+<div class="page">
+  <div class="wrap">
+
+    <header class="hero">
+      <p class="eyebrow">CPE Research Program — Paper 16</p>
+      <h1>Beating a 30-Year-Old Strategy at Its Own Game</h1>
+      <p class="dek">Time-Series Momentum (TSMOM) is one of the most established, widely used trend-following strategies at systematic funds. Restricting it to only the instruments it can genuinely predict — and changing nothing else about how it trades — beats the standard, unfiltered version. The edge holds up no matter how the 20-year test is sliced.</p>
+      <div class="stats">
+        <div class="stat"><div class="stat-value">0.32 <span style="color:var(--ink-faint); font-size:16px;">vs 0.29</span></div><div class="stat-label">Full-sample Sharpe ratio, filtered vs. standard TSMOM</div></div>
+        <div class="stat"><div class="stat-value">+0.4%/yr</div><div class="stat-label">Average annual edge — essentially unchanged across every test</div></div>
+        <div class="stat"><div class="stat-value">10 of 10</div><div class="stat-label">Different historical splits tested — filtered version wins the average return in every one</div></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>What Time-Series Momentum actually does</h2>
+      <p class="section-sub">A real, published strategy (Moskowitz, Ooi &amp; Pedersen, 2012), implemented exactly as described — no tuning, no fitting to this program's own data.</p>
+      <figure>
+        <div class="diagram-frame">
+          <svg viewBox="0 0 900 190" role="img" aria-label="Time-Series Momentum looks back 252 trading days per instrument, checks whether the trend is up or down, sizes the position to a fixed volatility target, and rebalances monthly.">
+            <defs>
+              <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" />
+              </marker>
+            </defs>
+            <!-- 4 step flow -->
+            <g font-size="12.5">
+              <!-- step boxes -->
+              <rect x="16" y="46" width="184" height="76" rx="8" class="tag-grey" stroke-width="1.3"/>
+              <text x="108" y="72" text-anchor="middle" class="txt" font-weight="600">Look back 252 days</text>
+              <text x="108" y="90" text-anchor="middle" class="txt-soft">(~1 trading year) for</text>
+              <text x="108" y="105" text-anchor="middle" class="txt-soft">each instrument</text>
+
+              <rect x="236" y="46" width="184" height="76" rx="8" class="tag-grey" stroke-width="1.3"/>
+              <text x="328" y="72" text-anchor="middle" class="txt" font-weight="600">Trend up or down?</text>
+              <text x="328" y="90" text-anchor="middle" class="txt-soft">Go long if price rose,</text>
+              <text x="328" y="105" text-anchor="middle" class="txt-soft">short if it fell</text>
+
+              <rect x="456" y="46" width="196" height="76" rx="8" class="tag-grey" stroke-width="1.3"/>
+              <text x="554" y="65" text-anchor="middle" class="txt" font-weight="600">Size to a fixed</text>
+              <text x="554" y="80" text-anchor="middle" class="txt" font-weight="600">volatility target</text>
+              <text x="554" y="98" text-anchor="middle" class="txt-soft">Bigger position when calm,</text>
+              <text x="554" y="112" text-anchor="middle" class="txt-soft">smaller when turbulent</text>
+
+              <rect x="688" y="46" width="196" height="76" rx="8" class="tag-grey" stroke-width="1.3"/>
+              <text x="786" y="72" text-anchor="middle" class="txt" font-weight="600">Rebalance monthly</text>
+              <text x="786" y="90" text-anchor="middle" class="txt-soft">Repeat every month,</text>
+              <text x="786" y="105" text-anchor="middle" class="txt-soft">for every instrument</text>
+
+              <line x1="200" y1="84" x2="230" y2="84" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+              <line x1="420" y1="84" x2="450" y2="84" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+              <line x1="652" y1="84" x2="682" y2="84" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+            </g>
+          </svg>
+        </div>
+        <figcaption>Standard TSMOM's mechanism: same four steps, applied identically to every instrument in the universe.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>The one change Predictability-Informed TSMOM makes</h2>
+      <p class="section-sub">Not a different signal — the identical TSMOM engine above, pointed at a smaller, pre-screened universe.</p>
+      <figure>
+        <div class="diagram-frame">
+          <svg viewBox="0 0 900 340" role="img" aria-label="Both strategies start from the same 12-instrument universe and use the identical TSMOM engine. Standard TSMOM applies it to all 12 instruments with no filter. Predictability-Informed TSMOM first keeps only the 5 instruments with a genuine predictability pocket near the 252-day lookback, from Paper 11's measured predictability limits, then applies the same unchanged TSMOM engine to just those 5.">
+            <defs>
+              <marker id="arrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--baseline)" />
+              </marker>
+              <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--accent)" />
+              </marker>
+            </defs>
+
+            <!-- universe box -->
+            <rect x="16" y="128" width="150" height="84" rx="8" class="tag-grey" stroke-width="1.3"/>
+            <text x="91" y="152" text-anchor="middle" class="txt" font-weight="600" font-size="12.5">12-instrument</text>
+            <text x="91" y="167" text-anchor="middle" class="txt" font-weight="600" font-size="12.5">universe</text>
+            <text x="91" y="185" text-anchor="middle" class="txt-soft" font-size="10.5">SPY QQQ IWM XLK XLF</text>
+            <text x="91" y="198" text-anchor="middle" class="txt-soft" font-size="10.5">XLE AAPL MSFT JPM XOM</text>
+            <text x="91" y="211" text-anchor="middle" class="txt-soft" font-size="10.5">GLD EURUSD=X</text>
+
+            <!-- top lane: standard (grey), no filter -->
+            <line x1="166" y1="150" x2="206" y2="80" stroke="var(--baseline)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <text x="188" y="98" text-anchor="middle" class="txt-soft" font-size="11.5">no filter</text>
+
+            <rect x="206" y="30" width="180" height="70" rx="8" class="tag-grey" stroke-width="1.3"/>
+            <text x="296" y="55" text-anchor="middle" class="txt" font-weight="600" font-size="12.5">TSMOM engine</text>
+            <text x="296" y="72" text-anchor="middle" class="txt-soft" font-size="11">252d trend, vol-sized,</text>
+            <text x="296" y="86" text-anchor="middle" class="txt-soft" font-size="11">monthly rebalance</text>
+
+            <line x1="386" y1="65" x2="440" y2="65" stroke="var(--baseline)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <text x="413" y="55" text-anchor="middle" class="txt-soft" font-size="11">all 12</text>
+
+            <rect x="440" y="30" width="200" height="70" rx="8" class="tag-grey" stroke-width="1.6"/>
+            <text x="540" y="60" text-anchor="middle" class="txt" font-weight="700" font-size="13">Standard TSMOM</text>
+            <text x="540" y="80" text-anchor="middle" class="txt-soft" font-size="11">trades all 12 instruments</text>
+
+            <!-- bottom lane: predictability-informed (green), filter -->
+            <line x1="166" y1="180" x2="206" y2="248" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+            <text x="176" y="225" text-anchor="middle" class="txt-soft" font-size="11">predictability</text>
+            <text x="176" y="238" text-anchor="middle" class="txt-soft" font-size="11">filter (Paper 11)</text>
+
+            <rect x="206" y="228" width="180" height="70" rx="8" class="tag-green" stroke-width="1.5"/>
+            <text x="296" y="250" text-anchor="middle" class="txt" font-weight="600" font-size="12">Keep only instruments</text>
+            <text x="296" y="264" text-anchor="middle" class="txt" font-weight="600" font-size="12">with a real pocket near</text>
+            <text x="296" y="278" text-anchor="middle" class="txt" font-weight="600" font-size="12">the 252-day lookback</text>
+            <text x="296" y="293" text-anchor="middle" class="txt-mono" font-size="10.5" fill="var(--accent-ink)">SPY · IWM · AAPL · MSFT · GLD</text>
+
+            <line x1="386" y1="263" x2="440" y2="263" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+            <text x="413" y="253" text-anchor="middle" class="txt-soft" font-size="11">5 of 12</text>
+
+            <rect x="440" y="228" width="200" height="70" rx="8" class="tag-green" stroke-width="1.6"/>
+            <text x="540" y="252" text-anchor="middle" class="txt" font-weight="700" font-size="13" fill="var(--accent-ink)">Predictability-Informed</text>
+            <text x="540" y="270" text-anchor="middle" class="txt" font-weight="700" font-size="13" fill="var(--accent-ink)">TSMOM</text>
+            <text x="540" y="288" text-anchor="middle" class="txt-soft" font-size="11">same engine, trades only 5</text>
+
+            <!-- identical engine note -->
+            <line x1="296" y1="100" x2="296" y2="228" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 4"/>
+            <text x="308" y="167" text-anchor="start" class="txt-soft" font-size="10.5" font-style="italic">same unchanged engine, both lanes</text>
+
+            <!-- convergence to test -->
+            <line x1="640" y1="65" x2="700" y2="65" stroke="var(--baseline)" stroke-width="1.3"/>
+            <line x1="640" y1="263" x2="700" y2="263" stroke="var(--accent)" stroke-width="1.3"/>
+            <line x1="700" y1="65" x2="700" y2="263" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+            <line x1="700" y1="164" x2="760" y2="164" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)" marker-start="none"/>
+            <defs>
+              <marker id="arrowN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" />
+              </marker>
+            </defs>
+            <line x1="700" y1="164" x2="758" y2="164" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowN)"/>
+            <rect x="762" y="118" width="122" height="92" rx="8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 4"/>
+            <text x="823" y="140" text-anchor="middle" class="txt-soft" font-size="10.5">Compared</text>
+            <text x="823" y="154" text-anchor="middle" class="txt-soft" font-size="10.5">across 10</text>
+            <text x="823" y="168" text-anchor="middle" class="txt-soft" font-size="10.5">historical</text>
+            <text x="823" y="182" text-anchor="middle" class="txt-soft" font-size="10.5">splits</text>
+            <text x="823" y="196" text-anchor="middle" class="txt-soft" font-size="10.5">(3–20 blocks)</text>
+          </svg>
+        </div>
+        <figcaption>The only difference between the two strategies is which instruments reach the TSMOM engine — the engine itself (lookback, sizing, rebalance rule) is identical in both lanes.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>The edge doesn't depend on how you slice the test</h2>
+      <p class="section-sub">Same 2006–2026 history, same two strategies, re-run by splitting the period into different numbers of equal-length blocks — from 3 large blocks (~6.7 years each) down to 20 small ones (~1 year each). Each point is the average annualized return across that split's blocks.</p>
+      <div class="chart-frame">
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="background:var(--baseline);"></span>Standard TSMOM (12 instruments)</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--accent);"></span>Predictability-Informed TSMOM (5 instruments)</span>
+        </div>
+        <svg viewBox="0 0 920 430" role="img" aria-label="Line chart: Predictability-Informed TSMOM's average annualized return per block is higher than standard TSMOM's at every one of ten block counts tested, from 3 blocks to 20 blocks. The gap between the two lines stays roughly constant throughout.">
+          <!-- gridlines -->
+          <g stroke="currentColor" opacity="0.14">
+            <line x1="70" y1="360" x2="890" y2="360"/>
+            <line x1="70" y1="250" x2="890" y2="250"/>
+            <line x1="70" y1="140" x2="890" y2="140"/>
+            <line x1="70" y1="30" x2="890" y2="30"/>
+          </g>
+          <g class="txt-mono" font-size="11" text-anchor="end" fill="var(--ink-soft)">
+            <text x="62" y="364">1.0%</text>
+            <text x="62" y="254">1.4%</text>
+            <text x="62" y="144">1.8%</text>
+            <text x="62" y="34">2.2%</text>
+          </g>
+          <line x1="70" y1="30" x2="70" y2="360" stroke="currentColor" opacity="0.35"/>
+
+          <!-- shaded gap between lines -->
+          <polygon points="70,94.4 161.1,85.0 252.2,77.9 343.3,92.2 434.4,58.1 525.6,86.1 616.7,79.8 707.8,72.4 798.9,69.6 890,73.2 890,186.8 798.9,186.2 707.8,185.7 616.7,192.3 525.6,201.6 434.4,176.6 343.3,211.5 252.2,191.4 161.1,200.2 70,221.4" fill="var(--accent)" opacity="0.08"/>
+
+          <!-- baseline line (grey) -->
+          <polyline points="70,221.4 161.1,200.2 252.2,191.4 343.3,211.5 434.4,176.6 525.6,201.6 616.7,192.3 707.8,185.7 798.9,186.2 890,186.8" fill="none" stroke="var(--baseline)" stroke-width="2.4"/>
+          <!-- pit line (green) -->
+          <polyline points="70,94.4 161.1,85.0 252.2,77.9 343.3,92.2 434.4,58.1 525.6,86.1 616.7,79.8 707.8,72.4 798.9,69.6 890,73.2" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+
+          <!-- data points -->
+          <g fill="var(--baseline)">
+            <circle cx="70" cy="221.4" r="3.4"/><circle cx="161.1" cy="200.2" r="3.4"/><circle cx="252.2" cy="191.4" r="4.6" stroke="var(--bg-panel)" stroke-width="1.5"/><circle cx="343.3" cy="211.5" r="3.4"/><circle cx="434.4" cy="176.6" r="3.4"/><circle cx="525.6" cy="201.6" r="3.4"/><circle cx="616.7" cy="192.3" r="3.4"/><circle cx="707.8" cy="185.7" r="3.4"/><circle cx="798.9" cy="186.2" r="3.4"/><circle cx="890" cy="186.8" r="3.4"/>
+          </g>
+          <g fill="var(--accent)">
+            <circle cx="70" cy="94.4" r="3.4"/><circle cx="161.1" cy="85.0" r="3.4"/><circle cx="252.2" cy="77.9" r="4.6" stroke="var(--bg-panel)" stroke-width="1.5"/><circle cx="343.3" cy="92.2" r="3.4"/><circle cx="434.4" cy="58.1" r="3.4"/><circle cx="525.6" cy="86.1" r="3.4"/><circle cx="616.7" cy="79.8" r="3.4"/><circle cx="707.8" cy="72.4" r="3.4"/><circle cx="798.9" cy="69.6" r="3.4"/><circle cx="890" cy="73.2" r="3.4"/>
+          </g>
+
+          <!-- N=5 callout (paper's split) -->
+          <line x1="252.2" y1="30" x2="252.2" y2="360" stroke="var(--highlight)" stroke-width="1.1" stroke-dasharray="4 4" opacity="0.75"/>
+          <text x="252.2" y="18" text-anchor="middle" fill="var(--highlight)" font-size="11.5" font-weight="600">↓ paper's 5-block result</text>
+
+          <!-- x tick labels: N -->
+          <g class="txt" font-size="12" text-anchor="middle" font-weight="500">
+            <text x="70" y="378">3</text><text x="161.1" y="378">4</text><text x="252.2" y="378">5</text><text x="343.3" y="378">6</text><text x="434.4" y="378">7</text><text x="525.6" y="378">8</text><text x="616.7" y="378">10</text><text x="707.8" y="378">13</text><text x="798.9" y="378">16</text><text x="890" y="378">20</text>
+          </g>
+          <!-- x tick labels: block length -->
+          <g class="txt-soft" font-size="10" text-anchor="middle">
+            <text x="70" y="393">~6.7yr</text><text x="161.1" y="393">~5.1yr</text><text x="252.2" y="393">~4.0yr</text><text x="343.3" y="393">~3.4yr</text><text x="434.4" y="393">~2.9yr</text><text x="525.6" y="393">~2.5yr</text><text x="616.7" y="393">~2.0yr</text><text x="707.8" y="393">~1.6yr</text><text x="798.9" y="393">~1.3yr</text><text x="890" y="393">~1.0yr</text>
+          </g>
+
+          <text x="480" y="416" text-anchor="middle" class="txt-soft" font-size="12">Number of blocks the 2006–2026 history is split into (block length shown below)</text>
+          <text x="20" y="195" text-anchor="middle" class="txt-soft" font-size="12" transform="rotate(-90 20 195)">Average annualized return per block</text>
+        </svg>
+      </div>
+      <p class="note" style="margin-top:14px;">The green line sits above the grey line at every block count tested — the gap barely moves whether the 20-year history is cut into 3 pieces or 20. That consistency, not the size of the gap, is the real result: most backtested edges narrow or flip sign under this kind of stress test. This one didn't.</p>
+    </section>
+
+    <section>
+      <h2>Why this is a meaningful result</h2>
+      <p>TSMOM isn't a toy benchmark — it's a real strategy that systematic funds actually run, published in full detail (Moskowitz, Ooi &amp; Pedersen, 2012) and implemented here with no tuning and no fitting to this program's own data. Improving on it usually means a new signal, a new asset class, or added complexity. Here, nothing about the strategy itself changed — only which five instruments it's allowed to trade, chosen ahead of time using a separate, already-published measurement of each instrument's own predictability structure (Ramanathan, 2026a). The improvement survives being tested ten different ways, with the historical record cut into anywhere from 3 to 20 pieces.</p>
+      <p class="note">A narrower, secondary result in the same paper: two individual instruments (JPM, XLB) beat standard TSMOM under every real point estimate checked — using each strategy's real average-return difference rather than a regression-based alpha estimate that flips sign on over half the instruments in this program's panel. See the full preprint for that analysis and its caveats.</p>
+    </section>
+
+    <section>
+      <div class="footer-grid">
+        <div>
+          <h2 style="font-size:19px;">Read more</h2>
+          <ul class="links">
+            <li><a href="https://zenodo.org/records/21842311" target="_blank" rel="noopener">Full preprint — Zenodo (DOI 10.5281/zenodo.21842311)</a></li>
+            <li><a href="https://github.com/quantarram/quant-regime-research" target="_blank" rel="noopener">Code, all instruments, every figure — GitHub</a></li>
+            <li><a href="https://arunramanathans.substack.com/p/predictability-informed-momentum" target="_blank" rel="noopener">Substack write-up</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 style="font-size:19px;">Cite this work</h2>
+          <div class="cite-block">RAMANATHAN S, A. (2026). Predictability-Informed TSMOM<br>Beats the Standard Momentum Trading Strategy. Zenodo.<br>https://doi.org/10.5281/zenodo.21842311</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
