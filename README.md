@@ -235,6 +235,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [Beating a 30-Year-Old Strategy at Its Own Game](https://arunramanathans.substack.com/p/beating-a-30-year-old-strategy-at) (Paper 16 robustness follow-up)
 - [Predictability-Informed Momentum: How I Made a 30-Year-Old Trading Strategy Better](https://arunramanathans.substack.com/p/predictability-informed-momentum) (Paper 16)
 - [I Built a Model That Admits What It Doesn't Know](https://arunramanathans.substack.com/p/i-built-a-model-that-admits-what) (Paper 15)
 - [Can a Smarter Model Beat a Real Predictability Limit?](https://arunramanathans.substack.com/p/can-a-smarter-model-beat-a-real-predictability) (Paper 14)
