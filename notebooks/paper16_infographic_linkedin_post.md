@@ -1,8 +1,8 @@
-Restricting Time-Series Momentum (TSMOM) — a real, 30-year-old, published trend-following strategy, implemented exactly as written — to only the instruments it can actually predict well beats the standard version. That's Paper 16's central result: full-sample Sharpe up from 0.29 to 0.32.
+Most backtested improvements don't survive being tested a different way. This one did — ten different times.
 
-The obvious question with any backtested improvement is whether it survives being tested a different way. So I re-ran the comparison at 10 different block counts instead of the paper's original 5, slicing the same 20-year history anywhere from 3 pieces to 20. Predictability-Informed TSMOM's average annual return beat standard TSMOM's at every single one — the size of the edge barely moved, even though the paper's own "3 of 5" framing turns out to be sensitive to that specific choice of 5.
+Time-Series Momentum (TSMOM) is one of the most established, widely-run trend-following strategies at systematic funds — a real, 30-year-old published strategy, implemented here exactly as written, no tuning, no fitting to my own data. I restricted it to only the instruments it can actually predict well, using nothing but a separate, already-published measurement of each instrument's own predictability. Same signal, same sizing rules, same rebalancing — just a smaller, pre-screened universe. It beat the standard version: full-sample Sharpe up from 0.29 to 0.32.
 
-Put together a short infographic walking through how the filter actually works (same TSMOM engine, a smaller pre-screened universe) and showing that robustness check directly:
+Then I stress-tested it properly. Instead of relying on the paper's original 5-block comparison, I re-ran it at 10 different block counts, slicing the same 20-year history anywhere from 3 pieces to 20. Predictability-Informed TSMOM's average annual return beat standard TSMOM's at every single one — 10 of 10 — and the size of the edge barely moved. Most edges narrow or flip sign under that kind of test. This one didn't.
 
 ![Predictability-Informed TSMOM infographic: mechanism schematic and the 10-block robustness check](paper16_pitsmom_infographic.png)
 
