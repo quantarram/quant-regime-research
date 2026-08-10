@@ -1,0 +1,716 @@
+{
+  "3": {
+    "n_blocks": 3,
+    "n_pocket_wins": 2,
+    "win_fraction": 0.6666666666666666,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2012-12-24",
+        "baseline_pct": 1.580267578169109,
+        "pocket_pct": 2.93350347792142,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-12-24",
+        "end": "2019-09-20",
+        "baseline_pct": 1.6221388200984943,
+        "pocket_pct": 1.8845207291856805,
+        "pocket_wins": true
+      },
+      {
+        "start": "2019-09-20",
+        "end": "2026-06-16",
+        "baseline_pct": 1.3106301233595918,
+        "pocket_pct": 1.079592583817219,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "4": {
+    "n_blocks": 4,
+    "n_pocket_wins": 2,
+    "win_fraction": 0.5,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2011-04-19",
+        "baseline_pct": 2.478811820489961,
+        "pocket_pct": 4.1179980978471535,
+        "pocket_wins": true
+      },
+      {
+        "start": "2011-04-19",
+        "end": "2016-05-08",
+        "baseline_pct": 1.857533559053332,
+        "pocket_pct": 1.3661770012857102,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2021-05-27",
+        "baseline_pct": 0.9399225432778022,
+        "pocket_pct": 2.0332942486829926,
+        "pocket_wins": true
+      },
+      {
+        "start": "2021-05-27",
+        "end": "2026-06-16",
+        "baseline_pct": 1.0471273251114557,
+        "pocket_pct": 0.4832226609520117,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "5": {
+    "n_blocks": 5,
+    "n_pocket_wins": 3,
+    "win_fraction": 0.6,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2010-04-15",
+        "baseline_pct": 2.7387696702065596,
+        "pocket_pct": 3.5914348881827562,
+        "pocket_wins": true
+      },
+      {
+        "start": "2010-04-15",
+        "end": "2014-04-30",
+        "baseline_pct": 2.3555412704561056,
+        "pocket_pct": 2.938671784643624,
+        "pocket_wins": true
+      },
+      {
+        "start": "2014-04-30",
+        "end": "2018-05-16",
+        "baseline_pct": 1.5562180100174172,
+        "pocket_pct": 2.3759482250897928,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-05-16",
+        "end": "2022-05-31",
+        "baseline_pct": 1.1151694561344694,
+        "pocket_pct": 1.0394029353504854,
+        "pocket_wins": false
+      },
+      {
+        "start": "2022-05-31",
+        "end": "2026-06-16",
+        "baseline_pct": 0.30035919742304457,
+        "pocket_pct": 0.18370412243098863,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "6": {
+    "n_blocks": 6,
+    "n_pocket_wins": 3,
+    "win_fraction": 0.5,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2009-08-12",
+        "baseline_pct": 2.359540290317377,
+        "pocket_pct": 1.9836276162967519,
+        "pocket_wins": false
+      },
+      {
+        "start": "2009-08-12",
+        "end": "2012-12-24",
+        "baseline_pct": 0.8001073116789855,
+        "pocket_pct": 3.8844612027142262,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-12-24",
+        "end": "2016-05-08",
+        "baseline_pct": 3.1013441085648163,
+        "pocket_pct": 2.19770803539908,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2019-09-20",
+        "baseline_pct": 0.3604283790833537,
+        "pocket_pct": 1.617382896915925,
+        "pocket_wins": true
+      },
+      {
+        "start": "2019-09-20",
+        "end": "2023-02-01",
+        "baseline_pct": 1.7359890101819806,
+        "pocket_pct": 1.131173208184395,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-02-01",
+        "end": "2026-06-16",
+        "baseline_pct": 0.8842312392589085,
+        "pocket_pct": 1.0278858454540347,
+        "pocket_wins": true
+      }
+    ]
+  },
+  "7": {
+    "n_blocks": 7,
+    "n_pocket_wins": 3,
+    "win_fraction": 0.42857142857142855,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2009-02-17",
+        "baseline_pct": 4.778951818991204,
+        "pocket_pct": 4.578643431400045,
+        "pocket_wins": false
+      },
+      {
+        "start": "2009-02-17",
+        "end": "2012-01-08",
+        "baseline_pct": -1.0702586260970697,
+        "pocket_pct": 2.2843213699609053,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-01-08",
+        "end": "2014-11-27",
+        "baseline_pct": 5.295646679903741,
+        "pocket_pct": 4.668429570419338,
+        "pocket_wins": false
+      },
+      {
+        "start": "2014-11-27",
+        "end": "2017-10-17",
+        "baseline_pct": -0.1833695356317849,
+        "pocket_pct": -0.3449153131885124,
+        "pocket_wins": false
+      },
+      {
+        "start": "2017-10-17",
+        "end": "2020-09-05",
+        "baseline_pct": 0.5268848330686948,
+        "pocket_pct": 1.9255443874647973,
+        "pocket_wins": true
+      },
+      {
+        "start": "2020-09-05",
+        "end": "2023-07-27",
+        "baseline_pct": 0.9555138770026629,
+        "pocket_pct": 0.1665932943016142,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-07-27",
+        "end": "2026-06-16",
+        "baseline_pct": 1.3657674575517087,
+        "pocket_pct": 1.4107948002167463,
+        "pocket_wins": true
+      }
+    ]
+  },
+  "8": {
+    "n_blocks": 8,
+    "n_pocket_wins": 4,
+    "win_fraction": 0.5,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2008-10-08",
+        "baseline_pct": 5.430541280227097,
+        "pocket_pct": 5.363010461074947,
+        "pocket_wins": false
+      },
+      {
+        "start": "2008-10-08",
+        "end": "2011-04-19",
+        "baseline_pct": -0.4729176392471742,
+        "pocket_pct": 2.872985734619361,
+        "pocket_wins": true
+      },
+      {
+        "start": "2011-04-19",
+        "end": "2013-10-28",
+        "baseline_pct": 1.6214924399050774,
+        "pocket_pct": 1.1588883273025823,
+        "pocket_wins": false
+      },
+      {
+        "start": "2013-10-28",
+        "end": "2016-05-08",
+        "baseline_pct": 2.0449445199192353,
+        "pocket_pct": 1.5307592135205075,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2018-11-16",
+        "baseline_pct": 1.3860985389183595,
+        "pocket_pct": 3.181164284970729,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-11-16",
+        "end": "2021-05-27",
+        "baseline_pct": 0.4937465476372446,
+        "pocket_pct": 0.8854242123952565,
+        "pocket_wins": true
+      },
+      {
+        "start": "2021-05-27",
+        "end": "2023-12-06",
+        "baseline_pct": -0.6421889905399993,
+        "pocket_pct": -1.7741471422835644,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-12-06",
+        "end": "2026-06-16",
+        "baseline_pct": 2.7437964865328848,
+        "pocket_pct": 2.7504177952136404,
+        "pocket_wins": true
+      }
+    ]
+  },
+  "10": {
+    "n_blocks": 10,
+    "n_pocket_wins": 4,
+    "win_fraction": 0.4,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2008-04-07",
+        "baseline_pct": 5.089594792766793,
+        "pocket_pct": 4.930854029041756,
+        "pocket_wins": false
+      },
+      {
+        "start": "2008-04-07",
+        "end": "2010-04-15",
+        "baseline_pct": 0.39239686795420564,
+        "pocket_pct": 2.2545525259996264,
+        "pocket_wins": true
+      },
+      {
+        "start": "2010-04-15",
+        "end": "2012-04-22",
+        "baseline_pct": 0.31422185186095236,
+        "pocket_pct": 4.233746893474991,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-04-22",
+        "end": "2014-04-30",
+        "baseline_pct": 4.389128418526276,
+        "pocket_pct": 1.6485022633457098,
+        "pocket_wins": false
+      },
+      {
+        "start": "2014-04-30",
+        "end": "2016-05-08",
+        "baseline_pct": 0.9467033634778306,
+        "pocket_pct": 0.8244057017618671,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2018-05-16",
+        "baseline_pct": 2.131916553027744,
+        "pocket_pct": 3.8414105813589297,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-05-16",
+        "end": "2020-05-23",
+        "baseline_pct": -0.7367855768985121,
+        "pocket_pct": -0.30734853125945816,
+        "pocket_wins": true
+      },
+      {
+        "start": "2020-05-23",
+        "end": "2022-05-31",
+        "baseline_pct": 2.9671244891674506,
+        "pocket_pct": 2.3861544019604293,
+        "pocket_wins": false
+      },
+      {
+        "start": "2022-05-31",
+        "end": "2024-06-07",
+        "baseline_pct": -1.1672344214486423,
+        "pocket_pct": -1.3461411318844758,
+        "pocket_wins": false
+      },
+      {
+        "start": "2024-06-07",
+        "end": "2026-06-16",
+        "baseline_pct": 1.7739429943309422,
+        "pocket_pct": 1.7197936430905973,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "13": {
+    "n_blocks": 13,
+    "n_pocket_wins": 7,
+    "win_fraction": 0.5384615384615384,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2007-10-19",
+        "baseline_pct": 6.570551222032288,
+        "pocket_pct": 6.222996602265994,
+        "pocket_wins": false
+      },
+      {
+        "start": "2007-10-19",
+        "end": "2009-05-09",
+        "baseline_pct": -0.0028801028973543994,
+        "pocket_pct": 0.08736498333238489,
+        "pocket_wins": true
+      },
+      {
+        "start": "2009-05-09",
+        "end": "2010-11-28",
+        "baseline_pct": -1.153619179092916,
+        "pocket_pct": 3.2951988440148914,
+        "pocket_wins": true
+      },
+      {
+        "start": "2010-11-28",
+        "end": "2012-06-18",
+        "baseline_pct": 2.2704436065279983,
+        "pocket_pct": 4.604501698369458,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-06-18",
+        "end": "2014-01-07",
+        "baseline_pct": 5.082896403981066,
+        "pocket_pct": 2.4134942316875003,
+        "pocket_wins": false
+      },
+      {
+        "start": "2014-01-07",
+        "end": "2015-07-29",
+        "baseline_pct": 4.237639357798155,
+        "pocket_pct": 4.317827337905338,
+        "pocket_wins": true
+      },
+      {
+        "start": "2015-07-29",
+        "end": "2017-02-15",
+        "baseline_pct": -0.7271083324461487,
+        "pocket_pct": -1.387650120829563,
+        "pocket_wins": false
+      },
+      {
+        "start": "2017-02-15",
+        "end": "2018-09-06",
+        "baseline_pct": 1.7002644090005254,
+        "pocket_pct": 5.17006263962447,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-09-06",
+        "end": "2020-03-27",
+        "baseline_pct": -1.1730857110438784,
+        "pocket_pct": -1.585327343333009,
+        "pocket_wins": false
+      },
+      {
+        "start": "2020-03-27",
+        "end": "2021-10-16",
+        "baseline_pct": 2.8260131818670553,
+        "pocket_pct": 3.6784689104279886,
+        "pocket_wins": true
+      },
+      {
+        "start": "2021-10-16",
+        "end": "2023-05-07",
+        "baseline_pct": -1.384261361567287,
+        "pocket_pct": -3.504846334694198,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-05-07",
+        "end": "2024-11-25",
+        "baseline_pct": 3.0113541370794406,
+        "pocket_pct": 3.9187748769791044,
+        "pocket_wins": true
+      },
+      {
+        "start": "2024-11-25",
+        "end": "2026-06-16",
+        "baseline_pct": -0.011118822384945349,
+        "pocket_pct": -0.6310657594052179,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "16": {
+    "n_blocks": 16,
+    "n_pocket_wins": 8,
+    "win_fraction": 0.5,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2007-07-05",
+        "baseline_pct": 7.565054674495675,
+        "pocket_pct": 6.465388586932555,
+        "pocket_wins": false
+      },
+      {
+        "start": "2007-07-05",
+        "end": "2008-10-08",
+        "baseline_pct": 3.2895400033011684,
+        "pocket_pct": 4.257281641825675,
+        "pocket_wins": true
+      },
+      {
+        "start": "2008-10-08",
+        "end": "2010-01-13",
+        "baseline_pct": -2.8410790508594306,
+        "pocket_pct": -0.7156596122943922,
+        "pocket_wins": true
+      },
+      {
+        "start": "2010-01-13",
+        "end": "2011-04-19",
+        "baseline_pct": 1.9024418313669442,
+        "pocket_pct": 6.472538818149874,
+        "pocket_wins": true
+      },
+      {
+        "start": "2011-04-19",
+        "end": "2012-07-23",
+        "baseline_pct": -0.6190326013913187,
+        "pocket_pct": 0.8468947011443967,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-07-23",
+        "end": "2013-10-28",
+        "baseline_pct": 3.855228011379362,
+        "pocket_pct": 1.4699365182299857,
+        "pocket_wins": false
+      },
+      {
+        "start": "2013-10-28",
+        "end": "2015-02-01",
+        "baseline_pct": 6.577318948806626,
+        "pocket_pct": 6.405731077849147,
+        "pocket_wins": false
+      },
+      {
+        "start": "2015-02-01",
+        "end": "2016-05-08",
+        "baseline_pct": -1.5829213461533196,
+        "pocket_pct": -2.3713332331980768,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2017-08-12",
+        "baseline_pct": 1.0999424397957953,
+        "pocket_pct": 1.3847669695530649,
+        "pocket_wins": true
+      },
+      {
+        "start": "2017-08-12",
+        "end": "2018-11-16",
+        "baseline_pct": 1.672875367106266,
+        "pocket_pct": 4.981458340768909,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-11-16",
+        "end": "2020-02-21",
+        "baseline_pct": 0.6503794966398696,
+        "pocket_pct": 1.9581731360509051,
+        "pocket_wins": true
+      },
+      {
+        "start": "2020-02-21",
+        "end": "2021-05-27",
+        "baseline_pct": 0.3367738308493654,
+        "pocket_pct": -0.18965171543318154,
+        "pocket_wins": false
+      },
+      {
+        "start": "2021-05-27",
+        "end": "2022-08-31",
+        "baseline_pct": 2.9002384643188415,
+        "pocket_pct": 1.1972438996023103,
+        "pocket_wins": false
+      },
+      {
+        "start": "2022-08-31",
+        "end": "2023-12-06",
+        "baseline_pct": -4.1769488535052055,
+        "pocket_pct": -4.739106601827695,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-12-06",
+        "end": "2025-03-11",
+        "baseline_pct": 4.674061506150372,
+        "pocket_pct": 5.999197131318434,
+        "pocket_wins": true
+      },
+      {
+        "start": "2025-03-11",
+        "end": "2026-06-16",
+        "baseline_pct": 0.8008878095816572,
+        "pocket_pct": -0.5196417548831063,
+        "pocket_wins": false
+      }
+    ]
+  },
+  "20": {
+    "n_blocks": 20,
+    "n_pocket_wins": 12,
+    "win_fraction": 0.6,
+    "blocks": [
+      {
+        "start": "2006-03-31",
+        "end": "2007-04-04",
+        "baseline_pct": 5.377413640840979,
+        "pocket_pct": 4.5911266391944965,
+        "pocket_wins": false
+      },
+      {
+        "start": "2007-04-04",
+        "end": "2008-04-07",
+        "baseline_pct": 4.800681576448978,
+        "pocket_pct": 5.27187315801391,
+        "pocket_wins": true
+      },
+      {
+        "start": "2008-04-07",
+        "end": "2009-04-11",
+        "baseline_pct": 1.1664322441703285,
+        "pocket_pct": 0.7014503222532226,
+        "pocket_wins": false
+      },
+      {
+        "start": "2009-04-11",
+        "end": "2010-04-15",
+        "baseline_pct": -0.3816385082619173,
+        "pocket_pct": 3.80765472974603,
+        "pocket_wins": true
+      },
+      {
+        "start": "2010-04-15",
+        "end": "2011-04-19",
+        "baseline_pct": 1.4360151229576044,
+        "pocket_pct": 6.230257360949587,
+        "pocket_wins": true
+      },
+      {
+        "start": "2011-04-19",
+        "end": "2012-04-22",
+        "baseline_pct": -0.8075714192357,
+        "pocket_pct": 2.2372364260003974,
+        "pocket_wins": true
+      },
+      {
+        "start": "2012-04-22",
+        "end": "2013-04-26",
+        "baseline_pct": 0.9128813299879466,
+        "pocket_pct": -1.5317189599108072,
+        "pocket_wins": false
+      },
+      {
+        "start": "2013-04-26",
+        "end": "2014-04-30",
+        "baseline_pct": 7.8918108461409435,
+        "pocket_pct": 4.852907678414063,
+        "pocket_wins": false
+      },
+      {
+        "start": "2014-04-30",
+        "end": "2015-05-04",
+        "baseline_pct": 4.483589096135018,
+        "pocket_pct": 5.177331023006943,
+        "pocket_wins": true
+      },
+      {
+        "start": "2015-05-04",
+        "end": "2016-05-08",
+        "baseline_pct": -2.206780121736844,
+        "pocket_pct": -3.0566577960420074,
+        "pocket_wins": false
+      },
+      {
+        "start": "2016-05-08",
+        "end": "2017-05-12",
+        "baseline_pct": 2.0960615032831815,
+        "pocket_pct": 2.854872013578414,
+        "pocket_wins": true
+      },
+      {
+        "start": "2017-05-12",
+        "end": "2018-05-16",
+        "baseline_pct": 2.1678687709287954,
+        "pocket_pct": 4.8306226953935925,
+        "pocket_wins": true
+      },
+      {
+        "start": "2018-05-16",
+        "end": "2019-05-20",
+        "baseline_pct": -4.0976734145384075,
+        "pocket_pct": -3.6911675058812556,
+        "pocket_wins": true
+      },
+      {
+        "start": "2019-05-20",
+        "end": "2020-05-23",
+        "baseline_pct": 2.624102260741382,
+        "pocket_pct": 3.07647044336234,
+        "pocket_wins": true
+      },
+      {
+        "start": "2020-05-23",
+        "end": "2021-05-27",
+        "baseline_pct": 1.9061204280607642,
+        "pocket_pct": 3.0934470989540284,
+        "pocket_wins": true
+      },
+      {
+        "start": "2021-05-27",
+        "end": "2022-05-31",
+        "baseline_pct": 4.028128550274138,
+        "pocket_pct": 1.6788617049668302,
+        "pocket_wins": false
+      },
+      {
+        "start": "2022-05-31",
+        "end": "2023-06-04",
+        "baseline_pct": -3.496727432635204,
+        "pocket_pct": -4.095033294301363,
+        "pocket_wins": false
+      },
+      {
+        "start": "2023-06-04",
+        "end": "2024-06-07",
+        "baseline_pct": 1.1622585897379194,
+        "pocket_pct": 1.402751030532411,
+        "pocket_wins": true
+      },
+      {
+        "start": "2024-06-07",
+        "end": "2025-06-11",
+        "baseline_pct": 2.223141755394659,
+        "pocket_pct": 3.5358507637317396,
+        "pocket_wins": true
+      },
+      {
+        "start": "2025-06-11",
+        "end": "2026-06-16",
+        "baseline_pct": 1.3210622762093265,
+        "pocket_pct": -0.11114919165416118,
+        "pocket_wins": false
+      }
+    ]
+  }
+}
