@@ -1,6 +1,6 @@
 date_predicted,equities_tilt,gold_tilt,bonds_tilt,crypto_tilt,fx_tilt,dominant_horizon_days,n_signals_firing,equities_price,gold_price,bonds_price,crypto_price,fx_price,outcome_date,equities_price_out,gold_price_out,bonds_price_out,crypto_price_out,fx_price_out,equities_return,gold_return,bonds_return,crypto_return,fx_return,tilt_pnl,neutral_pnl,tilt_beat_neutral,status,notes
 2026-06-18,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1196,740.96,4339.4,86.33,36.36,28.18,2026-08-20,772.67,4417.7998,81.35,36.42,28.1,4.28,1.81,-5.77,0.17,-0.28,1.92,1.69,1.0,RESOLVED,
-2026-06-19,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1193,746.74,4163.4,86.75,35.62,28.3,,,,,,,,,,,,,,,PENDING,
+2026-06-19,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1193,746.74,4163.4,86.75,35.62,28.3,2026-08-21,772.67,4417.7998,81.35,36.42,28.1,3.47,6.11,-6.22,2.25,-0.71,3.35,3.11,1.0,RESOLVED,
 2026-06-20,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1192,746.74,4172.9,86.75,35.62,28.3,,,,,,,,,,,,,,,PENDING,
 2026-06-21,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1192,746.74,4172.9,86.75,35.62,28.3,,,,,,,,,,,,,,,PENDING,
 2026-06-22,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1193,746.74,4196.7,86.75,35.62,28.3,,,,,,,,,,,,,,,PENDING,
@@ -61,3 +61,4 @@ date_predicted,equities_tilt,gold_tilt,bonds_tilt,crypto_tilt,fx_tilt,dominant_h
 2026-08-18,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1182,776.34,4417.8,82.04,35.63,28.11,,,,,,,,,,,,,,,PENDING,
 2026-08-19,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1169,767.45,4366.0,81.66,36.6,28.14,,,,,,,,,,,,,,,PENDING,
 2026-08-20,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1182,769.06,4489.4,83.02,38.78,27.88,,,,,,,,,,,,,,,PENDING,
+2026-08-21,NEUTRAL,NEUTRAL,TILT DOWN,NEUTRAL,TILT UP,63,1189,762.6,4516.3,82.34,41.2,27.91,,,,,,,,,,,,,,,PENDING,
