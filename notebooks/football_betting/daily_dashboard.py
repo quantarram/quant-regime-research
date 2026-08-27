@@ -271,6 +271,15 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     n_scanned = all_scored_df["fixture"].nunique() if len(all_scored_df) else 0
     n_qualifying_fixtures = qualifying_df["fixture"].nunique() if len(qualifying_df) else 0
 
+    # Singapore Pools' own API returns several days of upcoming fixtures at once (currently
+    # ~5), not just "today" -- scanning and displaying all of it, not just the current
+    # calendar day, so the section label reflects the real span rather than calling it "today".
+    if len(all_scored_df):
+        span_dates = pd.to_datetime(all_scored_df["start_time"]).dt.tz_convert(SGT)
+        span_label = f"{span_dates.min().strftime('%a %d %b')} &ndash; {span_dates.max().strftime('%a %d %b')} SGT"
+    else:
+        span_label = "no upcoming fixtures found"
+
     # -- real-world track record: resolved picks only, chronological cumulative P&L.
     #    Rendered as inline SVG, not Plotly: this page is published through the Artifact
     #    tool, whose CSP blocks external script hosts (Plotly's CDN included) -- shipping
@@ -341,7 +350,7 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
     rows_html = ""
     if len(qualifying_df):
-        qualifying_df = qualifying_df.sort_values("ppg_diff", ascending=False)
+        qualifying_df = qualifying_df.sort_values("start_time")  # chronological -- soonest kickoff first
         for _, r in qualifying_df.iterrows():
             odds_str = f"{r['odds']:.2f}" if pd.notna(r["odds"]) else "&mdash;"
             rows_html += f"""
@@ -363,9 +372,10 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     else:
         rows_html = f"""
         <tr><td colspan="5" style="text-align:center;padding:32px 16px;color:var(--muted);">
-          No fixture clears the bar today. This condition typically fires on roughly 1 in 20-25
-          matches across the 13 validated leagues, so most days should show at least one pick &mdash;
-          check the log if this persists for several days running.
+          No fixture in this window clears the bar. This condition typically fires on roughly
+          1 in 20-25 matches across the 13 validated leagues, so most days should show at least
+          one pick somewhere in the upcoming span &mdash; check the log if this persists for
+          several runs in a row.
         </td></tr>"""
 
     html = f"""<title>Football Checklist &mdash; CPE Framework</title>
@@ -450,12 +460,12 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
   </div>
   <div class="h-badge">
     <div class="h-badge-num">{n_qualifying_fixtures}</div>
-    <span class="h-badge-label">Qualifying Today</span>
+    <span class="h-badge-label">Qualifying Now</span>
   </div>
 </div>
 
 <div class="section">
-  <div class="section-title">Today's Qualifying Picks</div>
+  <div class="section-title">Qualifying Picks &mdash; {span_label}</div>
   <div class="card" style="padding:0;overflow:hidden;">
     <table class="tilt-table">
       <thead>
