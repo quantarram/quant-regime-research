@@ -1,1 +1,6 @@
-run_date,fixture,league,country,competition,start_time,selection,pick,model_p,market_p,odds,qualifies
+run_date,fixture,league,country,competition,start_time,pick,ppg_diff,home_ppg_home_only,ppg_diff_threshold,home_ppg_threshold,odds,qualifies
+2026-08-27,Barcelona vs Athletic Bilbao,SP1,Spain,Spanish League,2026-08-27T19:00:00Z,Barcelona,1.4,3.0,0.6000000000000001,2.0,1.18,True
+2026-08-27,Bayern Munich vs Stuttgart,D1,Germany,German League,2026-08-28T18:30:00Z,Bayern Munich,1.0,2.3,0.6000000000000001,2.0,1.22,True
+2026-08-27,Southampton vs Millwall,E1,England,English League Champ,2026-08-29T14:00:00Z,Southampton,0.8,2.4,0.6000000000000001,2.0,1.9,True
+2026-08-27,Dortmund vs Hamburg,D1,Germany,German League,2026-08-29T16:30:00Z,Dortmund,0.9000000000000001,2.4,0.6000000000000001,2.0,1.3,True
+2026-08-27,Feyenoord vs ADO Den Haag,N1,Netherlands,Dutch League,2026-08-30T12:30:00Z,Feyenoord,1.0,2.1,0.6000000000000001,2.0,1.15,True

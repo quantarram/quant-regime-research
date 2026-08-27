@@ -1,4 +1,4 @@
-<title>Ninety Percent</title>
+<title>Form Edge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -56,6 +56,10 @@ h1 .dim { color: var(--text-dim); font-weight: 500; }
   padding: 16px 20px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
 }
 .rule b { color: var(--text); font-weight: 600; }
+.rule code {
+  font-family: "IBM Plex Mono", monospace; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; font-size: 12.5px; color: var(--text);
+}
 
 .board-label {
   font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
@@ -74,13 +78,11 @@ h1 .dim { color: var(--text-dim); font-weight: 500; }
 .ticket-pick span { color: var(--accent); font-weight: 600; }
 
 .ticket-figures { display: flex; gap: 22px; align-items: flex-end; }
-.fig { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 58px; }
+.fig { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 62px; }
 .fig-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
 .fig-val { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
 .fig-val.model { color: var(--accent); }
-.fig-val.pos { color: var(--pos); }
-.fig-val.neg { color: var(--neg); }
-.pbar { width: 52px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.pbar { width: 56px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .pbar-fill { height: 100%; background: var(--accent); }
 
 .empty {
@@ -95,34 +97,146 @@ h1 .dim { color: var(--text-dim); font-weight: 500; }
 </style>
 <div class="wrap">
   <div class="masthead">
-    <h1>Ninety Percent <span class="dim">&middot; SG Pools checklist</span></h1>
-    <div class="meta">updated 2026-08-27 10:31 UTC</div>
+    <h1>Form Edge <span class="dim">&middot; SG Pools checklist</span></h1>
+    <div class="meta">updated 2026-08-27 10:43 UTC</div>
   </div>
 
   <div class="scoreboard">
-    <div class="stat"><div class="n">0</div><div class="l">Qualifying today</div></div>
+    <div class="stat"><div class="n">5</div><div class="l">Qualifying today</div></div>
     <div class="stat"><div class="n">57</div><div class="l">Fixtures scanned</div></div>
-    <div class="stat"><div class="n">90%</div><div class="l">Minimum model probability</div></div>
+    <div class="stat"><div class="n">74%</div><div class="l">Validated historical hit rate</div></div>
   </div>
 
   <div class="rule">
-    A pick appears only if <b>both</b> hold: the Dixon-Coles model, fit on 10 years of results
-    across the 13 validated deep/liquid leagues, puts the outcome at <b>&ge;90% probability</b>,
-    and that beats the vig-stripped probability implied by the market's own odds. Backtested hit
-    rate at this bar: <b>91.8%</b> on 183 bets, holds up in an out-of-sample check. Confirm the
-    exact fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
+    Pure empirical counting &mdash; no fitted distribution, Poisson or otherwise. A pick appears
+    only when <b>both</b> real historical conditions hold for the home team, over its last 10
+    matches: <code>trailing PPG edge &gt; 0.60</code>
+    and <code>home-only trailing PPG &gt; 2.00</code>
+    &mdash; both are the 80th/75th percentile of those stats' real historical distribution, not
+    fitted values. Backtested on a real chronological holdout (never seen when the thresholds were
+    set): <b>74.0%</b> hit rate, <b>+1.4%</b> ROI on
+    1,650 bets. This fires far more often than a 90%-confidence rule would
+    (~1 in 10 matches) &mdash; expect several picks most weeks, not one every few weeks. Confirm
+    the fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
   </div>
 
   <div>
     <div class="board-label" style="margin-bottom:10px;">Today's board</div>
     <div class="tickets">
-        <div class="empty">
-          <div class="empty-mark">&mdash;</div>
-          <div class="empty-title">No pick clears the bar today</div>
-          <div class="empty-body">That's the normal state, not a malfunction &mdash; across the
-          validated 13 leagues this rule fires roughly once every 3&ndash;4 weeks. The board is
-          quiet until a match genuinely clears 90% model probability with real edge over the
-          market's own price. Check back tomorrow.</div>
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-comp">Spain - La Liga &middot; Thu 27 Aug, 19:00 UTC</div>
+            <div class="ticket-fixture">Barcelona vs Athletic Bilbao</div>
+            <div class="ticket-pick">Pick: <span>Barcelona</span> to win</div>
+          </div>
+          <div class="ticket-figures">
+            <div class="fig">
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">+1.40</div>
+              <div class="pbar"><div class="pbar-fill" style="width:90.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">3.00</div>
+              <div class="pbar"><div class="pbar-fill" style="width:100.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Odds</div>
+              <div class="fig-val odds">1.18</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-comp">Germany - Bundesliga &middot; Fri 28 Aug, 18:30 UTC</div>
+            <div class="ticket-fixture">Bayern Munich vs Stuttgart</div>
+            <div class="ticket-pick">Pick: <span>Bayern Munich</span> to win</div>
+          </div>
+          <div class="ticket-figures">
+            <div class="fig">
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">+1.00</div>
+              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">2.30</div>
+              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Odds</div>
+              <div class="fig-val odds">1.22</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-comp">Netherlands - Eredivisie &middot; Sun 30 Aug, 12:30 UTC</div>
+            <div class="ticket-fixture">Feyenoord vs ADO Den Haag</div>
+            <div class="ticket-pick">Pick: <span>Feyenoord</span> to win</div>
+          </div>
+          <div class="ticket-figures">
+            <div class="fig">
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">+1.00</div>
+              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">2.10</div>
+              <div class="pbar"><div class="pbar-fill" style="width:56.7%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Odds</div>
+              <div class="fig-val odds">1.15</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-comp">Germany - Bundesliga &middot; Sat 29 Aug, 16:30 UTC</div>
+            <div class="ticket-fixture">Dortmund vs Hamburg</div>
+            <div class="ticket-pick">Pick: <span>Dortmund</span> to win</div>
+          </div>
+          <div class="ticket-figures">
+            <div class="fig">
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">+0.90</div>
+              <div class="pbar"><div class="pbar-fill" style="width:65.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">2.40</div>
+              <div class="pbar"><div class="pbar-fill" style="width:76.7%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Odds</div>
+              <div class="fig-val odds">1.30</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-comp">England - Championship &middot; Sat 29 Aug, 14:00 UTC</div>
+            <div class="ticket-fixture">Southampton vs Millwall</div>
+            <div class="ticket-pick">Pick: <span>Southampton</span> to win</div>
+          </div>
+          <div class="ticket-figures">
+            <div class="fig">
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">+0.80</div>
+              <div class="pbar"><div class="pbar-fill" style="width:60.0%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">2.40</div>
+              <div class="pbar"><div class="pbar-fill" style="width:76.7%"></div></div>
+            </div>
+            <div class="fig">
+              <div class="fig-label">Odds</div>
+              <div class="fig-val odds">1.90</div>
+            </div>
+          </div>
         </div></div>
   </div>
 

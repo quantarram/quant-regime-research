@@ -1,39 +1,66 @@
 """
-Daily dashboard generator: pulls Singapore Pools' own public odds API (no
-login, no browser needed -- confirmed live to be a plain unauthenticated
-JSON endpoint), fits the validated Dixon-Coles model on CORE_LEAGUES history,
-and lists every upcoming match where a 1x2 selection clears the validated
-rule: model probability >= 90% AND beats the market's own devigged price.
+Daily dashboard generator -- CPE (empirical exceedance) engine, not a fitted
+distributional model. Pulls Singapore Pools' own public odds API (no login,
+no browser needed -- confirmed live to be a plain unauthenticated JSON
+endpoint) and lists every upcoming match where the home team's real trailing
+results clear the validated CPE joint condition.
+
+NO Poisson, NO Gaussian, no fitted distribution of any kind anywhere in this
+pipeline. Every number here is either a real historical points-per-game
+average or a raw percentile cutoff computed directly from real historical
+values -- see football_cpe_engine.py / football_cpe_widened.py for how this
+was discovered and football_joint_cpe.py for the discovery/holdout check
+that validated it:
+
+    ppg_diff            > 0.60   (home team's trailing PPG, any venue, last
+                                   10 matches, minus the away team's)
+    home_ppg_home_only  > 2.00   (home team's trailing PPG from ONLY its
+                                   last 10 home matches)
+
+Both thresholds are the 80th/75th percentile of those statistics' real
+historical distribution across the 13 validated leagues -- not fitted, not
+assumed, just where the actual numbers happened to fall.
+
+Backtested (this exact rule, chronological discovery/holdout split, real
+market odds): 74.0% hit rate, +1.39% ROI on 1,650 holdout bets. This is a
+DIRECTIONAL, HOME-WIN-ONLY signal -- it only ever picks the home team, never
+draw or away, because that's what the two predictors were built to detect.
+It is also a much more frequent signal than a probability-threshold rule
+would suggest: about 10% of all matches in these leagues clear it, so expect
+multiple qualifying picks most weeks, not one every few weeks.
 
 This produces a list only. It never places a bet, logs into an account, or
-touches money -- checking availability on Singapore Pools and deciding
-whether to bet stays entirely manual, by design.
+touches money.
 
 Usage:
-    python daily_dashboard.py            # fetch, score, write dashboard.html
+    python daily_dashboard.py
 Output:
     output/dashboard.html                 -- the page itself
     output/dashboard_qualifying.json      -- same data, machine-readable
+    output/qualifying_log.csv             -- running log, appended daily
 """
-import json
 import re
 import unicodedata
 from datetime import datetime, timezone
 from difflib import get_close_matches
 from pathlib import Path
 
+import numpy as np
 import requests
 import pandas as pd
 
-from dixon_coles import DixonColesModel, implied_prob_devigged
 from data_download import CORE_LEAGUES
 
 DATA_DIR = Path(__file__).parent / "data"
 OUT_DIR = Path(__file__).parent / "output"
 OUT_DIR.mkdir(exist_ok=True)
 
-PROB_THRESHOLD = 0.90
-EDGE_THRESHOLD = 0.0
+FORM_WINDOW = 10
+PPG_DIFF_THRESHOLD_Q = 0.80
+HOME_PPG_THRESHOLD_Q = 0.75
+VALIDATED_HIT_RATE = 0.740
+VALIDATED_ROI = 0.0139
+VALIDATED_HOLDOUT_N = 1650
 
 SGPOOLS_API = "https://api.singaporepools.com/football/events/v1/upcoming-event"
 
@@ -43,14 +70,11 @@ SGPOOLS_API = "https://api.singaporepools.com/football/events/v1/upcoming-event"
 # was built, so they're best-guess names, marked unconfirmed below.
 #
 # STRICT ON PURPOSE: a competition string not in this dict is SKIPPED, never
-# passed to a fuzzy team-name search across all 13 leagues' rosters. An early
-# version did that as a "catch unrecognized names" fallback and it produced a
-# live false positive: "Dutch League Div 2" (Eerste Divisie, not a validated
-# league) wasn't in the map, fell through to searching all leagues, and both
-# teams happened to have played in the Eredivisie at some point in the last 10
-# years -- so it got scored with stale top-flight team-strength ratings and
-# claimed 93% on a match the real market priced at 22%. Missing a genuine
-# match because a competition name isn't mapped yet is a far smaller cost than
+# passed to a fuzzy team-name search across all 13 leagues' rosters -- an
+# early version did that as a fallback and it produced a live false positive
+# (a Dutch second-division match scored with top-flight team history because
+# both teams had once played in the Eredivisie). Missing a genuine match
+# because a competition name isn't mapped yet is a far smaller cost than
 # silently scoring the wrong league.
 COMPETITION_MAP = {
     ("England", "English Premier"): "E0",           # confirmed
@@ -69,11 +93,6 @@ COMPETITION_MAP = {
     ("Scotland", "Scottish League"): "SC0",          # unconfirmed guess
 }
 
-# Competitions confirmed to exist on the board that must NEVER map to a
-# CORE_LEAGUES code, even though the country/name looks superficially close
-# to one that does -- these are lower tiers of countries we DO trade the top
-# flight of, so a naming-drift fix to COMPETITION_MAP must not accidentally
-# catch these instead.
 KNOWN_EXCLUDED = {
     ("England", "English League One"), ("England", "English League Two"),
     ("Italy", "Italian League Div 2"), ("Spain", "Spanish League Div 2"),
@@ -81,16 +100,52 @@ KNOWN_EXCLUDED = {
 }
 
 
-def load_models():
+def compute_current_form_and_thresholds():
+    """Pure counting, no model fit: walks all CORE_LEAGUES history chronologically
+    and returns each team's CURRENT trailing PPG (any venue, last 10 matches) and
+    home-only trailing PPG (last 10 home matches), plus the live percentile
+    thresholds computed from the full real historical distribution of both stats."""
+    matches = pd.read_parquet(DATA_DIR / "matches.parquet")
+    matches = matches[matches["league"].isin(CORE_LEAGUES)].sort_values("date").reset_index(drop=True)
+
+    hist_any, hist_home = {}, {}   # team -> list of real points earned, chronological
+    ppg_diff_history, home_ppg_history = [], []  # for threshold computation
+
+    for row in matches.itertuples():
+        h, a = row.home_team, row.away_team
+        hh, ah = hist_any.get(h, []), hist_any.get(a, [])
+        hh_home = hist_home.get(h, [])
+
+        if len(hh) >= FORM_WINDOW and len(ah) >= FORM_WINDOW:
+            ppg_diff_history.append(np.mean(hh[-FORM_WINDOW:]) - np.mean(ah[-FORM_WINDOW:]))
+        if len(hh_home) >= FORM_WINDOW:
+            home_ppg_history.append(np.mean(hh_home[-FORM_WINDOW:]))
+
+        if row.ftr == "H":
+            h_pts, a_pts = 3, 0
+        elif row.ftr == "A":
+            h_pts, a_pts = 0, 3
+        else:
+            h_pts, a_pts = 1, 1
+        hist_any.setdefault(h, []).append(h_pts)
+        hist_any.setdefault(a, []).append(a_pts)
+        hist_home.setdefault(h, []).append(h_pts)
+
+    current_ppg_any = {t: np.mean(pts[-FORM_WINDOW:]) for t, pts in hist_any.items() if len(pts) >= FORM_WINDOW}
+    current_ppg_home_only = {t: np.mean(pts[-FORM_WINDOW:]) for t, pts in hist_home.items() if len(pts) >= FORM_WINDOW}
+
+    ppg_diff_threshold = float(np.quantile(ppg_diff_history, PPG_DIFF_THRESHOLD_Q))
+    home_ppg_threshold = float(np.quantile(home_ppg_history, HOME_PPG_THRESHOLD_Q))
+    return current_ppg_any, current_ppg_home_only, ppg_diff_threshold, home_ppg_threshold
+
+
+def _all_team_names():
     matches = pd.read_parquet(DATA_DIR / "matches.parquet")
     matches = matches[matches["league"].isin(CORE_LEAGUES)]
-    models, team_lists = {}, {}
+    by_league = {}
     for league, df in matches.groupby("league"):
-        if len(df) < 300:
-            continue
-        models[league] = DixonColesModel().fit(df.sort_values("date"))
-        team_lists[league] = models[league].teams
-    return models, team_lists
+        by_league[league] = sorted(set(df["home_team"]) | set(df["away_team"]))
+    return by_league
 
 
 def _norm(name):
@@ -115,7 +170,8 @@ def fetch_upcoming():
     return r.json().get("events", [])
 
 
-def score_events(events, models, team_lists):
+def score_events(events, team_lists, current_ppg_any, current_ppg_home_only,
+                  ppg_diff_threshold, home_ppg_threshold):
     rows = []
     for ev in events:
         country = ev["type"]["sportClass"]["name"]
@@ -126,52 +182,46 @@ def score_events(events, models, team_lists):
         if mkt is None:
             continue
         outcomes = {o["minorCode"]: o for o in mkt.get("outcomes", [])}
-        if not all(k in outcomes for k in ("H", "D", "A")):
+        if "H" not in outcomes:
             continue
         try:
             odds_h = float(outcomes["H"]["prices"][0]["decimal"])
-            odds_d = float(outcomes["D"]["prices"][0]["decimal"])
-            odds_a = float(outcomes["A"]["prices"][0]["decimal"])
         except (KeyError, IndexError, ValueError):
-            continue
+            odds_h = None
         home_name = outcomes["H"]["name"]
-        away_name = outcomes["A"]["name"]
+        away_name = outcomes.get("A", {}).get("name", "?")
 
-        # Strict: only score a fixture whose competition string is explicitly
-        # recognized as one of the 13 validated leagues. No fallback search
-        # across other leagues' rosters -- see COMPETITION_MAP's docstring
-        # for why that's actively dangerous, not just imprecise.
         league_code = COMPETITION_MAP.get((country, comp))
         if league_code is None or league_code not in team_lists:
             continue
-
         home = match_team(home_name, team_lists[league_code])
         away = match_team(away_name, team_lists[league_code])
         if not home or not away:
             continue
-        matched_league = league_code
 
-        probs = models[matched_league].match_probs(home, away)
-        if probs is None:
+        ppg_diff = current_ppg_any.get(home)
+        away_ppg = current_ppg_any.get(away)
+        home_only = current_ppg_home_only.get(home)
+        if ppg_diff is None or away_ppg is None or home_only is None:
             continue
-        mkt_p = implied_prob_devigged([odds_h, odds_d, odds_a])
-        for sel, p, mp, odds, disp_name in [
-            ("H", probs["1x2"]["H"], mkt_p[0], odds_h, home_name),
-            ("D", probs["1x2"]["D"], mkt_p[1], odds_d, "Draw"),
-            ("A", probs["1x2"]["A"], mkt_p[2], odds_a, away_name),
-        ]:
-            rows.append(dict(
-                fixture=f"{home_name} vs {away_name}", league=matched_league, country=country,
-                competition=comp, start_time=start_time, selection=sel, pick=disp_name,
-                model_p=p, market_p=mp, odds=odds,
-                qualifies=(p >= PROB_THRESHOLD and (p - mp) >= EDGE_THRESHOLD),
-            ))
-    cols = ["fixture", "league", "country", "competition", "start_time", "selection",
-            "pick", "model_p", "market_p", "odds", "qualifies"]
+        ppg_diff = ppg_diff - away_ppg
+
+        qualifies = (ppg_diff > ppg_diff_threshold) and (home_only > home_ppg_threshold)
+
+        rows.append(dict(
+            fixture=f"{home_name} vs {away_name}", league=league_code, country=country,
+            competition=comp, start_time=start_time, pick=home_name,
+            ppg_diff=ppg_diff, home_ppg_home_only=home_only,
+            ppg_diff_threshold=ppg_diff_threshold, home_ppg_threshold=home_ppg_threshold,
+            odds=odds_h, qualifies=qualifies,
+        ))
+    cols = ["fixture", "league", "country", "competition", "start_time", "pick",
+            "ppg_diff", "home_ppg_home_only", "ppg_diff_threshold", "home_ppg_threshold",
+            "odds", "qualifies"]
     return pd.DataFrame(rows, columns=cols)
 
 
-def render_html(qualifying_df, all_scored_df, generated_at):
+def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, home_ppg_threshold):
     LEAGUE_NAMES = {
         "E0": "England - Premier League", "E1": "England - Championship",
         "D1": "Germany - Bundesliga", "D2": "Germany - 2. Bundesliga",
@@ -188,40 +238,36 @@ def render_html(qualifying_df, all_scored_df, generated_at):
         except Exception:
             return iso_str or ""
 
-    def prob_bar(p, hi=1.0):
-        pct = max(0, min(100, p / hi * 100))
+    def margin_bar(val, threshold, span):
+        pct = max(0, min(100, (val - threshold) / span * 100 + 50))
         return f'<div class="pbar"><div class="pbar-fill" style="width:{pct:.1f}%"></div></div>'
 
     cards_html = ""
     if len(qualifying_df):
-        qualifying_df = qualifying_df.sort_values("model_p", ascending=False)
+        qualifying_df = qualifying_df.sort_values("ppg_diff", ascending=False)
         for _, r in qualifying_df.iterrows():
-            edge = r["model_p"] - r["market_p"]
+            odds_str = f"{r['odds']:.2f}" if pd.notna(r["odds"]) else "&mdash;"
             cards_html += f"""
         <div class="ticket">
           <div class="ticket-main">
             <div class="ticket-comp">{LEAGUE_NAMES.get(r['league'], r['league'])} &middot; {fmt_time(r['start_time'])}</div>
             <div class="ticket-fixture">{r['fixture']}</div>
-            <div class="ticket-pick">Pick: <span>{r['pick']}</span></div>
+            <div class="ticket-pick">Pick: <span>{r['pick']}</span> to win</div>
           </div>
           <div class="ticket-figures">
             <div class="fig">
-              <div class="fig-label">Model</div>
-              <div class="fig-val model">{r['model_p']:.1%}</div>
-              {prob_bar(r['model_p'])}
+              <div class="fig-label">Form edge</div>
+              <div class="fig-val model">{r['ppg_diff']:+.2f}</div>
+              {margin_bar(r['ppg_diff'], r['ppg_diff_threshold'], 2.0)}
             </div>
             <div class="fig">
-              <div class="fig-label">Market</div>
-              <div class="fig-val">{r['market_p']:.1%}</div>
-              {prob_bar(r['market_p'])}
-            </div>
-            <div class="fig">
-              <div class="fig-label">Edge</div>
-              <div class="fig-val {'pos' if edge >= 0 else 'neg'}">{edge:+.1%}</div>
+              <div class="fig-label">Home PPG</div>
+              <div class="fig-val model">{r['home_ppg_home_only']:.2f}</div>
+              {margin_bar(r['home_ppg_home_only'], r['home_ppg_threshold'], 1.5)}
             </div>
             <div class="fig">
               <div class="fig-label">Odds</div>
-              <div class="fig-val odds">{r['odds']:.2f}</div>
+              <div class="fig-val odds">{odds_str}</div>
             </div>
           </div>
         </div>"""
@@ -230,16 +276,16 @@ def render_html(qualifying_df, all_scored_df, generated_at):
         <div class="empty">
           <div class="empty-mark">&mdash;</div>
           <div class="empty-title">No pick clears the bar today</div>
-          <div class="empty-body">That's the normal state, not a malfunction &mdash; across the
-          validated 13 leagues this rule fires roughly once every 3&ndash;4 weeks. The board is
-          quiet until a match genuinely clears 90% model probability with real edge over the
-          market's own price. Check back tomorrow.</div>
+          <div class="empty-body">Unusual, but not wrong &mdash; this condition typically clears
+          on roughly 1 in 10 matches across the validated 13 leagues, so most days should show
+          at least one pick. Check back tomorrow, or verify the data refreshed correctly if this
+          persists for several days running.</div>
         </div>"""
 
     n_scanned = all_scored_df["fixture"].nunique() if len(all_scored_df) else 0
     n_qualifying_fixtures = qualifying_df["fixture"].nunique() if len(qualifying_df) else 0
 
-    html = f"""<title>Ninety Percent</title>
+    html = f"""<title>Form Edge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -297,6 +343,10 @@ h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
   padding: 16px 20px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
 }}
 .rule b {{ color: var(--text); font-weight: 600; }}
+.rule code {{
+  font-family: "IBM Plex Mono", monospace; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; font-size: 12.5px; color: var(--text);
+}}
 
 .board-label {{
   font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
@@ -315,13 +365,11 @@ h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
 .ticket-pick span {{ color: var(--accent); font-weight: 600; }}
 
 .ticket-figures {{ display: flex; gap: 22px; align-items: flex-end; }}
-.fig {{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 58px; }}
+.fig {{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 62px; }}
 .fig-label {{ font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }}
 .fig-val {{ font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }}
 .fig-val.model {{ color: var(--accent); }}
-.fig-val.pos {{ color: var(--pos); }}
-.fig-val.neg {{ color: var(--neg); }}
-.pbar {{ width: 52px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }}
+.pbar {{ width: 56px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }}
 .pbar-fill {{ height: 100%; background: var(--accent); }}
 
 .empty {{
@@ -336,22 +384,27 @@ h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
 </style>
 <div class="wrap">
   <div class="masthead">
-    <h1>Ninety Percent <span class="dim">&middot; SG Pools checklist</span></h1>
+    <h1>Form Edge <span class="dim">&middot; SG Pools checklist</span></h1>
     <div class="meta">updated {generated_at}</div>
   </div>
 
   <div class="scoreboard">
     <div class="stat"><div class="n">{n_qualifying_fixtures}</div><div class="l">Qualifying today</div></div>
     <div class="stat"><div class="n">{n_scanned}</div><div class="l">Fixtures scanned</div></div>
-    <div class="stat"><div class="n">90%</div><div class="l">Minimum model probability</div></div>
+    <div class="stat"><div class="n">{VALIDATED_HIT_RATE:.0%}</div><div class="l">Validated historical hit rate</div></div>
   </div>
 
   <div class="rule">
-    A pick appears only if <b>both</b> hold: the Dixon-Coles model, fit on 10 years of results
-    across the 13 validated deep/liquid leagues, puts the outcome at <b>&ge;90% probability</b>,
-    and that beats the vig-stripped probability implied by the market's own odds. Backtested hit
-    rate at this bar: <b>91.8%</b> on 183 bets, holds up in an out-of-sample check. Confirm the
-    exact fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
+    Pure empirical counting &mdash; no fitted distribution, Poisson or otherwise. A pick appears
+    only when <b>both</b> real historical conditions hold for the home team, over its last 10
+    matches: <code>trailing PPG edge &gt; {ppg_diff_threshold:.2f}</code>
+    and <code>home-only trailing PPG &gt; {home_ppg_threshold:.2f}</code>
+    &mdash; both are the 80th/75th percentile of those stats' real historical distribution, not
+    fitted values. Backtested on a real chronological holdout (never seen when the thresholds were
+    set): <b>{VALIDATED_HIT_RATE:.1%}</b> hit rate, <b>{VALIDATED_ROI:+.1%}</b> ROI on
+    {VALIDATED_HOLDOUT_N:,} bets. This fires far more often than a 90%-confidence rule would
+    (~1 in 10 matches) &mdash; expect several picks most weeks, not one every few weeks. Confirm
+    the fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
   </div>
 
   <div>
@@ -366,43 +419,43 @@ h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
 
 
 def main():
+    print("Computing current team form from real historical results (no model fit)...")
+    current_ppg_any, current_ppg_home_only, ppg_diff_threshold, home_ppg_threshold = compute_current_form_and_thresholds()
+    print(f"  ppg_diff threshold (80th pct, real history): {ppg_diff_threshold:.2f}")
+    print(f"  home_ppg_home_only threshold (75th pct, real history): {home_ppg_threshold:.2f}")
+
+    team_lists = _all_team_names()
+
     print("Fetching Singapore Pools upcoming football odds...")
     events = fetch_upcoming()
     print(f"  {len(events)} events returned")
-
-    print("Loading Dixon-Coles models for the 13 validated leagues...")
-    models, team_lists = load_models()
-    print(f"  {len(models)} league models loaded")
 
     seen_competitions = {(ev["type"]["sportClass"]["name"], ev["type"]["name"]) for ev in events}
     unmapped = seen_competitions - set(COMPETITION_MAP.keys()) - KNOWN_EXCLUDED
     if unmapped:
         print(f"  Unrecognized competitions on the board today (skipped, not scored): {sorted(unmapped)}")
 
-    scored = score_events(events, models, team_lists)
+    scored = score_events(events, team_lists, current_ppg_any, current_ppg_home_only,
+                           ppg_diff_threshold, home_ppg_threshold)
     qualifying = scored[scored["qualifies"]].copy() if len(scored) else scored
     print(f"  {scored['fixture'].nunique() if len(scored) else 0} fixtures matched to a validated league")
-    print(f"  {len(qualifying)} qualifying (market, selection) rows, "
-          f"{qualifying['fixture'].nunique() if len(qualifying) else 0} distinct fixtures")
+    print(f"  {len(qualifying)} qualifying fixtures")
 
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    html = render_html(qualifying, scored, generated_at)
+    html = render_html(qualifying, scored, generated_at, ppg_diff_threshold, home_ppg_threshold)
     (OUT_DIR / "dashboard.html").write_text(html)
 
     qualifying.to_json(OUT_DIR / "dashboard_qualifying.json", orient="records", indent=2)
     scored.to_parquet(OUT_DIR / "dashboard_all_scored.parquet", index=False)
     print(f"Saved -> {OUT_DIR / 'dashboard.html'}")
 
-    # Append today's qualifying picks to a running log (same pattern as this repo's other
-    # dashboards -- gold_predictions.csv etc. -- so picks can later be checked against what
-    # actually happened, not just seen once and forgotten). Dedup on rerun same day.
     log_path = OUT_DIR / "qualifying_log.csv"
     today_log = qualifying.copy()
     today_log.insert(0, "run_date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     if log_path.exists():
         prior = pd.read_csv(log_path)
         combined = pd.concat([prior, today_log], ignore_index=True)
-        combined = combined.drop_duplicates(subset=["run_date", "fixture", "selection"], keep="last")
+        combined = combined.drop_duplicates(subset=["run_date", "fixture"], keep="last")
     else:
         combined = today_log
     combined.to_csv(log_path, index=False)
