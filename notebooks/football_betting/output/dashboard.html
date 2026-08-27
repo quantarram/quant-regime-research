@@ -1,244 +1,128 @@
-<title>Form Edge</title>
+<title>Football Checklist &mdash; CPE Framework</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f2f5f3; --surface: #ffffff; --surface-2: #eaf0ec; --border: #d9e2dc;
-  --text: #16221b; --text-dim: #59695f; --text-faint: #8a988e;
-  --accent: #9c7a24; --accent-soft: #f4ead0;
-  --pos: #2f7d4f; --neg: #a4402f;
-  --shadow: 0 1px 2px rgba(22,34,27,0.06), 0 8px 24px -12px rgba(22,34,27,0.12);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
-    --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
-    --accent: #d8ac4a; --accent-soft: #2a2313;
-    --pos: #4fae7c; --neg: #d1685c;
-    --shadow: none;
+  :root{
+    --bg:#0C0E0D; --card:#141614; --card2:#1B1E1B; --border:#2C302C; --border2:#3A3F3A;
+    --text:#DDE8DD; --muted:#7A8F7A; --faint:#1B1E1B;
+    --gold:#C9A84C; --green:#4DB87A; --red:#E05555; --warn:#E8A020;
+    --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
   }
-}
-:root[data-theme="dark"] {
-  --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
-  --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
-  --accent: #d8ac4a; --accent-soft: #2a2313;
-  --pos: #4fae7c; --neg: #d1685c;
-  --shadow: none;
-}
-* { box-sizing: border-box; }
-body {
-  background: var(--bg); color: var(--text); margin: 0; padding: 40px 20px 64px;
-  font-family: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-}
-.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
-.masthead { display: flex; flex-direction: column; gap: 4px; }
-h1 {
-  font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.01em;
-  margin: 0; text-wrap: balance;
-}
-h1 .dim { color: var(--text-dim); font-weight: 500; }
-.meta { color: var(--text-faint); font-size: 13px; font-family: "IBM Plex Mono", monospace; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}
+  a{color:var(--gold);text-decoration:none;}
+  .page{max-width:1000px;margin:0 auto;padding:32px 24px 80px;}
 
-.scoreboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.stat {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px 18px; box-shadow: var(--shadow);
-}
-.stat .n {
-  font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 28px;
-  font-variant-numeric: tabular-nums; line-height: 1;
-}
-.stat .l { font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.01em; }
+  .header{background:linear-gradient(160deg,#141614,#1B1E1B);border:1px solid var(--border2);
+           border-radius:16px;padding:32px 40px;margin-bottom:28px;
+           display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}
+  .h-title{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}
+  .h-title em{font-style:italic;color:var(--gold);}
+  .h-sub{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .h-meta{font-size:12px;color:var(--muted);}
+  .h-badge{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
+            border-radius:12px;padding:12px 20px;text-align:center;}
+  .h-badge-num{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}
+  .h-badge-label{font-size:10px;color:var(--muted);display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}
 
-.rule {
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px 20px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
-}
-.rule b { color: var(--text); font-weight: 600; }
-.rule code {
-  font-family: "IBM Plex Mono", monospace; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; padding: 1px 5px; font-size: 12.5px; color: var(--text);
-}
+  .section{margin-bottom:28px;}
+  .section-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+                  text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px 24px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 
-.board-label {
-  font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--text-faint);
-}
+  .tilt-table{width:100%;border-collapse:collapse;}
+  .tilt-table th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+                  text-transform:uppercase;color:var(--muted);padding:10px 14px;
+                  border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}
+  .tilt-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .tilt-table tr:last-child td{border-bottom:none;}
+  .tilt-table tr:hover td{background:var(--card2);}
+  .ac-cell{display:flex;align-items:center;gap:10px;}
+  .ac-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .ac-name{font-weight:600;font-size:13px;color:var(--text);}
+  .ac-desc{font-size:10px;color:var(--muted);margin-top:2px;}
+  .tilt-pill{display:inline-flex;align-items:center;padding:4px 10px;
+              border-radius:100px;font-family:var(--mono);font-size:9px;
+              font-weight:600;letter-spacing:.06em;white-space:nowrap;}
+  .weight-bar-bg{background:var(--border);border-radius:4px;height:6px;display:inline-block;vertical-align:middle;margin-top:4px;}
+  .weight-bar-fill{height:100%;border-radius:4px;}
 
-.tickets { display: flex; flex-direction: column; gap: 10px; }
-.ticket {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  box-shadow: var(--shadow); padding: 18px 20px;
-  display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;
-}
-.ticket-comp { font-size: 12px; color: var(--text-faint); font-family: "IBM Plex Mono", monospace; }
-.ticket-fixture { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; margin-top: 3px; }
-.ticket-pick { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
-.ticket-pick span { color: var(--accent); font-weight: 600; }
+  .disclaimer{background:var(--card);border:1px solid var(--border);border-radius:10px;
+               padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}
+  .disclaimer code{font-family:var(--mono);background:var(--card2);border:1px solid var(--border);
+               border-radius:4px;padding:1px 5px;font-size:10.5px;color:var(--text);}
 
-.ticket-figures { display: flex; gap: 22px; align-items: flex-end; }
-.fig { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 62px; }
-.fig-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
-.fig-val { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
-.fig-val.model { color: var(--accent); }
-.pbar { width: 56px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.pbar-fill { height: 100%; background: var(--accent); }
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 
-.empty {
-  background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
-  padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
-.empty-mark { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: var(--text-faint); }
-.empty-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 16px; }
-.empty-body { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; max-width: 480px; }
-
-.footer { color: var(--text-faint); font-size: 12px; text-align: center; line-height: 1.6; }
+  @media(max-width:700px){
+    .header{grid-template-columns:1fr;}
+    .page{padding:16px 12px 60px;}
+  }
 </style>
-<div class="wrap">
-  <div class="masthead">
-    <h1>Form Edge <span class="dim">&middot; SG Pools checklist</span></h1>
-    <div class="meta">updated 2026-08-27 10:43 UTC</div>
-  </div>
+<div class="page">
 
-  <div class="scoreboard">
-    <div class="stat"><div class="n">5</div><div class="l">Qualifying today</div></div>
-    <div class="stat"><div class="n">57</div><div class="l">Fixtures scanned</div></div>
-    <div class="stat"><div class="n">74%</div><div class="l">Validated historical hit rate</div></div>
-  </div>
-
-  <div class="rule">
-    Pure empirical counting &mdash; no fitted distribution, Poisson or otherwise. A pick appears
-    only when <b>both</b> real historical conditions hold for the home team, over its last 10
-    matches: <code>trailing PPG edge &gt; 0.60</code>
-    and <code>home-only trailing PPG &gt; 2.00</code>
-    &mdash; both are the 80th/75th percentile of those stats' real historical distribution, not
-    fitted values. Backtested on a real chronological holdout (never seen when the thresholds were
-    set): <b>74.0%</b> hit rate, <b>+1.4%</b> ROI on
-    1,650 bets. This fires far more often than a 90%-confidence rule would
-    (~1 in 10 matches) &mdash; expect several picks most weeks, not one every few weeks. Confirm
-    the fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
-  </div>
-
+<div class="header">
   <div>
-    <div class="board-label" style="margin-bottom:10px;">Today's board</div>
-    <div class="tickets">
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">Spain - La Liga &middot; Thu 27 Aug, 19:00 UTC</div>
-            <div class="ticket-fixture">Barcelona vs Athletic Bilbao</div>
-            <div class="ticket-pick">Pick: <span>Barcelona</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">+1.40</div>
-              <div class="pbar"><div class="pbar-fill" style="width:90.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">3.00</div>
-              <div class="pbar"><div class="pbar-fill" style="width:100.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">1.18</div>
-            </div>
-          </div>
-        </div>
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">Germany - Bundesliga &middot; Fri 28 Aug, 18:30 UTC</div>
-            <div class="ticket-fixture">Bayern Munich vs Stuttgart</div>
-            <div class="ticket-pick">Pick: <span>Bayern Munich</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">+1.00</div>
-              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">2.30</div>
-              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">1.22</div>
-            </div>
-          </div>
-        </div>
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">Netherlands - Eredivisie &middot; Sun 30 Aug, 12:30 UTC</div>
-            <div class="ticket-fixture">Feyenoord vs ADO Den Haag</div>
-            <div class="ticket-pick">Pick: <span>Feyenoord</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">+1.00</div>
-              <div class="pbar"><div class="pbar-fill" style="width:70.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">2.10</div>
-              <div class="pbar"><div class="pbar-fill" style="width:56.7%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">1.15</div>
-            </div>
-          </div>
-        </div>
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">Germany - Bundesliga &middot; Sat 29 Aug, 16:30 UTC</div>
-            <div class="ticket-fixture">Dortmund vs Hamburg</div>
-            <div class="ticket-pick">Pick: <span>Dortmund</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">+0.90</div>
-              <div class="pbar"><div class="pbar-fill" style="width:65.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">2.40</div>
-              <div class="pbar"><div class="pbar-fill" style="width:76.7%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">1.30</div>
-            </div>
-          </div>
-        </div>
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">England - Championship &middot; Sat 29 Aug, 14:00 UTC</div>
-            <div class="ticket-fixture">Southampton vs Millwall</div>
-            <div class="ticket-pick">Pick: <span>Southampton</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">+0.80</div>
-              <div class="pbar"><div class="pbar-fill" style="width:60.0%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">2.40</div>
-              <div class="pbar"><div class="pbar-fill" style="width:76.7%"></div></div>
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">1.90</div>
-            </div>
-          </div>
-        </div></div>
+    <div class="h-sub">CPE Framework &mdash; Football Checklist</div>
+    <div class="h-title">Singapore Pools <em>Form Edge</em> Checklist</div>
+    <div class="h-meta">
+      Updated: 2026-08-27 10:54 UTC &nbsp;.&nbsp;
+      54 fixtures scanned &nbsp;.&nbsp;
+      13 validated leagues
+    </div>
   </div>
+  <div class="h-badge">
+    <div class="h-badge-num">1</div>
+    <span class="h-badge-label">Qualifying Today</span>
+  </div>
+</div>
 
-  <div class="footer">Generated from Singapore Pools' own public odds feed.<br>This page never places bets or touches your account.</div>
+<div class="section">
+  <div class="section-title">Today's Qualifying Picks</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="tilt-table">
+      <thead>
+        <tr>
+          <th style="width:280px">Fixture</th><th>Pick</th><th>Form Edge</th><th>Home PPG</th><th style="text-align:right">Odds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="ac-cell">
+              <span class="ac-dot" style="background:var(--gold);"></span>
+              <div>
+                <div class="ac-name">Barcelona vs Athletic Bilbao</div>
+                <div class="ac-desc">Spain - La Liga &middot; Thu 27 Aug, 19:00</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">Barcelona</span></td>
+          <td style="font-family:var(--mono);">+1.43 <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:57%;background:var(--gold);height:100%;"></div></div></td>
+          <td style="font-family:var(--mono);">2.83 <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:94%;background:var(--gold);height:100%;"></div></div></td>
+          <td style="font-family:var(--mono);text-align:right;">1.17</td>
+        </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>How this works:</strong> pure empirical counting &mdash; no fitted distribution, Poisson
+  or otherwise, anywhere in this pipeline. A pick appears only when <b>both</b> hold for the home
+  team, over its last 30 matches: <code>trailing PPG edge &gt; 0.80</code> and
+  <code>home-only trailing PPG &gt; 2.27</code> &mdash; both are the
+  90th percentile of those stats' real historical distribution across the 13 validated
+  leagues (top-5 Europe, EFL Championship, Scottish Premiership, Eredivisie, Portugal, Turkey,
+  Greece, Belgium), not fitted values. Backtested on a real chronological holdout, never seen
+  when the thresholds were set: 83.8% hit rate, +1.9% ROI on
+  648 bets. Fires roughly 1 in 20-25 matches &mdash; expect a handful of picks most
+  weeks. Confirm the fixture and price on Singapore Pools yourself; if it isn't listed there,
+  don't bet it. This page never places a bet or touches your account.
+  &nbsp;.&nbsp; <strong>Dr. Arun Ramanathan</strong>
+</div>
+
 </div>

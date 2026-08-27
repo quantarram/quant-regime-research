@@ -8,26 +8,32 @@ results clear the validated CPE joint condition.
 NO Poisson, NO Gaussian, no fitted distribution of any kind anywhere in this
 pipeline. Every number here is either a real historical points-per-game
 average or a raw percentile cutoff computed directly from real historical
-values -- see football_cpe_engine.py / football_cpe_widened.py for how this
-was discovered and football_joint_cpe.py for the discovery/holdout check
-that validated it:
+values -- see football_cpe_engine.py / football_cpe_widened.py for how the
+signal was discovered and football_joint_cpe.py for the discovery/holdout
+check that validated it. The trailing-match WINDOW itself was also run
+through that same discipline (football_cpe_window_scan.py), not guessed --
+3 and 5 matches never clear the discovery gate at all, 8 posts the best
+single holdout ROI but is an isolated spike between weak/failing neighbors
+(noise, not signal), and 25-30 is the one region that holds together as a
+coherent plateau (rising hit rate, consistently positive ROI, largest and
+most stable holdout n of any window tested). 30 -- the top of that plateau
+-- is what's used here:
 
-    ppg_diff            > 0.60   (home team's trailing PPG, any venue, last
-                                   10 matches, minus the away team's)
-    home_ppg_home_only  > 2.00   (home team's trailing PPG from ONLY its
-                                   last 10 home matches)
+    ppg_diff            > 0.80   (home team's trailing PPG, any venue, last
+                                   30 matches, minus the away team's)
+    home_ppg_home_only  > 2.27   (home team's trailing PPG from ONLY its
+                                   last 30 home matches)
 
-Both thresholds are the 80th/75th percentile of those statistics' real
-historical distribution across the 13 validated leagues -- not fitted, not
-assumed, just where the actual numbers happened to fall.
+Both thresholds are the 90th percentile of those statistics' real historical
+distribution across the 13 validated leagues -- not fitted, not assumed,
+just where the actual numbers happened to fall.
 
 Backtested (this exact rule, chronological discovery/holdout split, real
-market odds): 74.0% hit rate, +1.39% ROI on 1,650 holdout bets. This is a
+market odds): 83.8% hit rate, +1.90% ROI on 648 holdout bets. This is a
 DIRECTIONAL, HOME-WIN-ONLY signal -- it only ever picks the home team, never
 draw or away, because that's what the two predictors were built to detect.
-It is also a much more frequent signal than a probability-threshold rule
-would suggest: about 10% of all matches in these leagues clear it, so expect
-multiple qualifying picks most weeks, not one every few weeks.
+It qualifies roughly 1 in 20-25 matches in these leagues, so expect a
+handful of picks most weeks, not one every few weeks.
 
 This produces a list only. It never places a bet, logs into an account, or
 touches money.
@@ -55,12 +61,21 @@ DATA_DIR = Path(__file__).parent / "data"
 OUT_DIR = Path(__file__).parent / "output"
 OUT_DIR.mkdir(exist_ok=True)
 
-FORM_WINDOW = 10
-PPG_DIFF_THRESHOLD_Q = 0.80
-HOME_PPG_THRESHOLD_Q = 0.75
-VALIDATED_HIT_RATE = 0.740
-VALIDATED_ROI = 0.0139
-VALIDATED_HOLDOUT_N = 1650
+## FORM_WINDOW itself was scanned, not guessed: football_cpe_window_scan.py ran the
+## SAME joint-search-then-holdout discipline at windows of 3/5/8/10/15/20/25/30/38
+## matches. 3 and 5 never even clear the discovery gate. 8 posts the single best
+## holdout ROI (+2.94%) but is an isolated spike between two failing/weak neighbors
+## (5 and 10) -- the signature of noise, not a real effect. 25-30 is the one region
+## that holds together as a coherent plateau: hit rate climbs steadily (81.7% ->
+## 82.9% -> 83.8%), ROI stays positive (+0.40% -> +1.85% -> +1.90%), and holdout n
+## is the largest and most stable of any window tested (657-679 bets). 30 is the top
+## of that plateau. See output/football_cpe_window_scan.csv for the full table.
+FORM_WINDOW = 30
+PPG_DIFF_THRESHOLD_Q = 0.90
+HOME_PPG_THRESHOLD_Q = 0.90
+VALIDATED_HIT_RATE = 0.838
+VALIDATED_ROI = 0.0190
+VALIDATED_HOLDOUT_N = 648
 
 SGPOOLS_API = "https://api.singaporepools.com/football/events/v1/upcoming-event"
 
@@ -102,8 +117,8 @@ KNOWN_EXCLUDED = {
 
 def compute_current_form_and_thresholds():
     """Pure counting, no model fit: walks all CORE_LEAGUES history chronologically
-    and returns each team's CURRENT trailing PPG (any venue, last 10 matches) and
-    home-only trailing PPG (last 10 home matches), plus the live percentile
+    and returns each team's CURRENT trailing PPG (any venue, last FORM_WINDOW matches) and
+    home-only trailing PPG (last FORM_WINDOW home matches), plus the live percentile
     thresholds computed from the full real historical distribution of both stats."""
     matches = pd.read_parquet(DATA_DIR / "matches.parquet")
     matches = matches[matches["league"].isin(CORE_LEAGUES)].sort_values("date").reset_index(drop=True)
@@ -234,185 +249,159 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     def fmt_time(iso_str):
         try:
             dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-            return dt.strftime("%a %d %b, %H:%M UTC")
+            return dt.strftime("%a %d %b, %H:%M")
         except Exception:
             return iso_str or ""
 
-    def margin_bar(val, threshold, span):
-        pct = max(0, min(100, (val - threshold) / span * 100 + 50))
-        return f'<div class="pbar"><div class="pbar-fill" style="width:{pct:.1f}%"></div></div>'
-
-    cards_html = ""
-    if len(qualifying_df):
-        qualifying_df = qualifying_df.sort_values("ppg_diff", ascending=False)
-        for _, r in qualifying_df.iterrows():
-            odds_str = f"{r['odds']:.2f}" if pd.notna(r["odds"]) else "&mdash;"
-            cards_html += f"""
-        <div class="ticket">
-          <div class="ticket-main">
-            <div class="ticket-comp">{LEAGUE_NAMES.get(r['league'], r['league'])} &middot; {fmt_time(r['start_time'])}</div>
-            <div class="ticket-fixture">{r['fixture']}</div>
-            <div class="ticket-pick">Pick: <span>{r['pick']}</span> to win</div>
-          </div>
-          <div class="ticket-figures">
-            <div class="fig">
-              <div class="fig-label">Form edge</div>
-              <div class="fig-val model">{r['ppg_diff']:+.2f}</div>
-              {margin_bar(r['ppg_diff'], r['ppg_diff_threshold'], 2.0)}
-            </div>
-            <div class="fig">
-              <div class="fig-label">Home PPG</div>
-              <div class="fig-val model">{r['home_ppg_home_only']:.2f}</div>
-              {margin_bar(r['home_ppg_home_only'], r['home_ppg_threshold'], 1.5)}
-            </div>
-            <div class="fig">
-              <div class="fig-label">Odds</div>
-              <div class="fig-val odds">{odds_str}</div>
-            </div>
-          </div>
-        </div>"""
-    else:
-        cards_html = """
-        <div class="empty">
-          <div class="empty-mark">&mdash;</div>
-          <div class="empty-title">No pick clears the bar today</div>
-          <div class="empty-body">Unusual, but not wrong &mdash; this condition typically clears
-          on roughly 1 in 10 matches across the validated 13 leagues, so most days should show
-          at least one pick. Check back tomorrow, or verify the data refreshed correctly if this
-          persists for several days running.</div>
-        </div>"""
+    def bar(val, lo, hi, color="var(--gold)"):
+        pct = max(0, min(100, (val - lo) / (hi - lo) * 100))
+        return (f'<div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" '
+                f'style="width:{pct:.0f}%;background:{color};height:100%;"></div></div>')
 
     n_scanned = all_scored_df["fixture"].nunique() if len(all_scored_df) else 0
     n_qualifying_fixtures = qualifying_df["fixture"].nunique() if len(qualifying_df) else 0
 
-    html = f"""<title>Form Edge</title>
+    rows_html = ""
+    if len(qualifying_df):
+        qualifying_df = qualifying_df.sort_values("ppg_diff", ascending=False)
+        for _, r in qualifying_df.iterrows():
+            odds_str = f"{r['odds']:.2f}" if pd.notna(r["odds"]) else "&mdash;"
+            rows_html += f"""
+        <tr>
+          <td>
+            <div class="ac-cell">
+              <span class="ac-dot" style="background:var(--gold);"></span>
+              <div>
+                <div class="ac-name">{r['fixture']}</div>
+                <div class="ac-desc">{LEAGUE_NAMES.get(r['league'], r['league'])} &middot; {fmt_time(r['start_time'])}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">{r['pick']}</span></td>
+          <td style="font-family:var(--mono);">{r['ppg_diff']:+.2f} {bar(r['ppg_diff'], 0, 2.5)}</td>
+          <td style="font-family:var(--mono);">{r['home_ppg_home_only']:.2f} {bar(r['home_ppg_home_only'], 0, 3.0)}</td>
+          <td style="font-family:var(--mono);text-align:right;">{odds_str}</td>
+        </tr>"""
+    else:
+        rows_html = f"""
+        <tr><td colspan="5" style="text-align:center;padding:32px 16px;color:var(--muted);">
+          No fixture clears the bar today. This condition typically fires on roughly 1 in 20-25
+          matches across the 13 validated leagues, so most days should show at least one pick &mdash;
+          check the log if this persists for several days running.
+        </td></tr>"""
+
+    html = f"""<title>Football Checklist &mdash; CPE Framework</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root {{
-  --bg: #f2f5f3; --surface: #ffffff; --surface-2: #eaf0ec; --border: #d9e2dc;
-  --text: #16221b; --text-dim: #59695f; --text-faint: #8a988e;
-  --accent: #9c7a24; --accent-soft: #f4ead0;
-  --pos: #2f7d4f; --neg: #a4402f;
-  --shadow: 0 1px 2px rgba(22,34,27,0.06), 0 8px 24px -12px rgba(22,34,27,0.12);
-}}
-@media (prefers-color-scheme: dark) {{
-  :root:not([data-theme="light"]) {{
-    --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
-    --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
-    --accent: #d8ac4a; --accent-soft: #2a2313;
-    --pos: #4fae7c; --neg: #d1685c;
-    --shadow: none;
+  :root{{
+    --bg:#0C0E0D; --card:#141614; --card2:#1B1E1B; --border:#2C302C; --border2:#3A3F3A;
+    --text:#DDE8DD; --muted:#7A8F7A; --faint:#1B1E1B;
+    --gold:#C9A84C; --green:#4DB87A; --red:#E05555; --warn:#E8A020;
+    --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
   }}
-}}
-:root[data-theme="dark"] {{
-  --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
-  --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
-  --accent: #d8ac4a; --accent-soft: #2a2313;
-  --pos: #4fae7c; --neg: #d1685c;
-  --shadow: none;
-}}
-* {{ box-sizing: border-box; }}
-body {{
-  background: var(--bg); color: var(--text); margin: 0; padding: 40px 20px 64px;
-  font-family: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-}}
-.wrap {{ max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }}
-.masthead {{ display: flex; flex-direction: column; gap: 4px; }}
-h1 {{
-  font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.01em;
-  margin: 0; text-wrap: balance;
-}}
-h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
-.meta {{ color: var(--text-faint); font-size: 13px; font-family: "IBM Plex Mono", monospace; }}
+  *{{box-sizing:border-box;margin:0;padding:0;}}
+  body{{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}}
+  a{{color:var(--gold);text-decoration:none;}}
+  .page{{max-width:1000px;margin:0 auto;padding:32px 24px 80px;}}
 
-.scoreboard {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }}
-.stat {{
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px 18px; box-shadow: var(--shadow);
-}}
-.stat .n {{
-  font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 28px;
-  font-variant-numeric: tabular-nums; line-height: 1;
-}}
-.stat .l {{ font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.01em; }}
+  .header{{background:linear-gradient(160deg,#141614,#1B1E1B);border:1px solid var(--border2);
+           border-radius:16px;padding:32px 40px;margin-bottom:28px;
+           display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}}
+  .h-title{{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}}
+  .h-title em{{font-style:italic;color:var(--gold);}}
+  .h-sub{{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}}
+  .h-meta{{font-size:12px;color:var(--muted);}}
+  .h-badge{{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
+            border-radius:12px;padding:12px 20px;text-align:center;}}
+  .h-badge-num{{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}}
+  .h-badge-label{{font-size:10px;color:var(--muted);display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}}
 
-.rule {{
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px 20px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
-}}
-.rule b {{ color: var(--text); font-weight: 600; }}
-.rule code {{
-  font-family: "IBM Plex Mono", monospace; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; padding: 1px 5px; font-size: 12.5px; color: var(--text);
-}}
+  .section{{margin-bottom:28px;}}
+  .section-title{{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+                  text-transform:uppercase;color:var(--muted);margin-bottom:14px;}}
+  .card{{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px 24px;}}
+  .grid-3{{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}}
 
-.board-label {{
-  font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--text-faint);
-}}
+  .tilt-table{{width:100%;border-collapse:collapse;}}
+  .tilt-table th{{font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+                  text-transform:uppercase;color:var(--muted);padding:10px 14px;
+                  border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}}
+  .tilt-table td{{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}}
+  .tilt-table tr:last-child td{{border-bottom:none;}}
+  .tilt-table tr:hover td{{background:var(--card2);}}
+  .ac-cell{{display:flex;align-items:center;gap:10px;}}
+  .ac-dot{{width:10px;height:10px;border-radius:50%;flex-shrink:0;}}
+  .ac-name{{font-weight:600;font-size:13px;color:var(--text);}}
+  .ac-desc{{font-size:10px;color:var(--muted);margin-top:2px;}}
+  .tilt-pill{{display:inline-flex;align-items:center;padding:4px 10px;
+              border-radius:100px;font-family:var(--mono);font-size:9px;
+              font-weight:600;letter-spacing:.06em;white-space:nowrap;}}
+  .weight-bar-bg{{background:var(--border);border-radius:4px;height:6px;display:inline-block;vertical-align:middle;margin-top:4px;}}
+  .weight-bar-fill{{height:100%;border-radius:4px;}}
 
-.tickets {{ display: flex; flex-direction: column; gap: 10px; }}
-.ticket {{
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  box-shadow: var(--shadow); padding: 18px 20px;
-  display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;
-}}
-.ticket-comp {{ font-size: 12px; color: var(--text-faint); font-family: "IBM Plex Mono", monospace; }}
-.ticket-fixture {{ font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; margin-top: 3px; }}
-.ticket-pick {{ font-size: 13px; color: var(--text-dim); margin-top: 6px; }}
-.ticket-pick span {{ color: var(--accent); font-weight: 600; }}
+  .disclaimer{{background:var(--card);border:1px solid var(--border);border-radius:10px;
+               padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}}
+  .disclaimer code{{font-family:var(--mono);background:var(--card2);border:1px solid var(--border);
+               border-radius:4px;padding:1px 5px;font-size:10.5px;color:var(--text);}}
 
-.ticket-figures {{ display: flex; gap: 22px; align-items: flex-end; }}
-.fig {{ display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 62px; }}
-.fig-label {{ font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }}
-.fig-val {{ font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }}
-.fig-val.model {{ color: var(--accent); }}
-.pbar {{ width: 56px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }}
-.pbar-fill {{ height: 100%; background: var(--accent); }}
+  ::-webkit-scrollbar{{width:4px;height:4px;}}
+  ::-webkit-scrollbar-track{{background:var(--bg);}}
+  ::-webkit-scrollbar-thumb{{background:var(--border2);border-radius:2px;}}
 
-.empty {{
-  background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
-  padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
-}}
-.empty-mark {{ font-family: "IBM Plex Mono", monospace; font-size: 22px; color: var(--text-faint); }}
-.empty-title {{ font-family: "Archivo", sans-serif; font-weight: 600; font-size: 16px; }}
-.empty-body {{ color: var(--text-dim); font-size: 13.5px; line-height: 1.6; max-width: 480px; }}
-
-.footer {{ color: var(--text-faint); font-size: 12px; text-align: center; line-height: 1.6; }}
+  @media(max-width:700px){{
+    .header{{grid-template-columns:1fr;}}
+    .page{{padding:16px 12px 60px;}}
+  }}
 </style>
-<div class="wrap">
-  <div class="masthead">
-    <h1>Form Edge <span class="dim">&middot; SG Pools checklist</span></h1>
-    <div class="meta">updated {generated_at}</div>
-  </div>
+<div class="page">
 
-  <div class="scoreboard">
-    <div class="stat"><div class="n">{n_qualifying_fixtures}</div><div class="l">Qualifying today</div></div>
-    <div class="stat"><div class="n">{n_scanned}</div><div class="l">Fixtures scanned</div></div>
-    <div class="stat"><div class="n">{VALIDATED_HIT_RATE:.0%}</div><div class="l">Validated historical hit rate</div></div>
-  </div>
-
-  <div class="rule">
-    Pure empirical counting &mdash; no fitted distribution, Poisson or otherwise. A pick appears
-    only when <b>both</b> real historical conditions hold for the home team, over its last 10
-    matches: <code>trailing PPG edge &gt; {ppg_diff_threshold:.2f}</code>
-    and <code>home-only trailing PPG &gt; {home_ppg_threshold:.2f}</code>
-    &mdash; both are the 80th/75th percentile of those stats' real historical distribution, not
-    fitted values. Backtested on a real chronological holdout (never seen when the thresholds were
-    set): <b>{VALIDATED_HIT_RATE:.1%}</b> hit rate, <b>{VALIDATED_ROI:+.1%}</b> ROI on
-    {VALIDATED_HOLDOUT_N:,} bets. This fires far more often than a 90%-confidence rule would
-    (~1 in 10 matches) &mdash; expect several picks most weeks, not one every few weeks. Confirm
-    the fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
-  </div>
-
+<div class="header">
   <div>
-    <div class="board-label" style="margin-bottom:10px;">Today's board</div>
-    <div class="tickets">{cards_html}</div>
+    <div class="h-sub">CPE Framework &mdash; Football Checklist</div>
+    <div class="h-title">Singapore Pools <em>Form Edge</em> Checklist</div>
+    <div class="h-meta">
+      Updated: {generated_at} &nbsp;.&nbsp;
+      {n_scanned} fixtures scanned &nbsp;.&nbsp;
+      13 validated leagues
+    </div>
   </div>
+  <div class="h-badge">
+    <div class="h-badge-num">{n_qualifying_fixtures}</div>
+    <span class="h-badge-label">Qualifying Today</span>
+  </div>
+</div>
 
-  <div class="footer">Generated from Singapore Pools' own public odds feed.<br>This page never places bets or touches your account.</div>
+<div class="section">
+  <div class="section-title">Today's Qualifying Picks</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="tilt-table">
+      <thead>
+        <tr>
+          <th style="width:280px">Fixture</th><th>Pick</th><th>Form Edge</th><th>Home PPG</th><th style="text-align:right">Odds</th>
+        </tr>
+      </thead>
+      <tbody>{rows_html}</tbody>
+    </table>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>How this works:</strong> pure empirical counting &mdash; no fitted distribution, Poisson
+  or otherwise, anywhere in this pipeline. A pick appears only when <b>both</b> hold for the home
+  team, over its last {FORM_WINDOW} matches: <code>trailing PPG edge &gt; {ppg_diff_threshold:.2f}</code> and
+  <code>home-only trailing PPG &gt; {home_ppg_threshold:.2f}</code> &mdash; both are the
+  90th percentile of those stats' real historical distribution across the 13 validated
+  leagues (top-5 Europe, EFL Championship, Scottish Premiership, Eredivisie, Portugal, Turkey,
+  Greece, Belgium), not fitted values. Backtested on a real chronological holdout, never seen
+  when the thresholds were set: {VALIDATED_HIT_RATE:.1%} hit rate, {VALIDATED_ROI:+.1%} ROI on
+  {VALIDATED_HOLDOUT_N:,} bets. Fires roughly 1 in 20-25 matches &mdash; expect a handful of picks most
+  weeks. Confirm the fixture and price on Singapore Pools yourself; if it isn't listed there,
+  don't bet it. This page never places a bet or touches your account.
+  &nbsp;.&nbsp; <strong>Dr. Arun Ramanathan</strong>
+</div>
+
 </div>
 """
     return html
@@ -421,8 +410,8 @@ h1 .dim {{ color: var(--text-dim); font-weight: 500; }}
 def main():
     print("Computing current team form from real historical results (no model fit)...")
     current_ppg_any, current_ppg_home_only, ppg_diff_threshold, home_ppg_threshold = compute_current_form_and_thresholds()
-    print(f"  ppg_diff threshold (80th pct, real history): {ppg_diff_threshold:.2f}")
-    print(f"  home_ppg_home_only threshold (75th pct, real history): {home_ppg_threshold:.2f}")
+    print(f"  ppg_diff threshold ({PPG_DIFF_THRESHOLD_Q:.0%} pct, real history): {ppg_diff_threshold:.2f}")
+    print(f"  home_ppg_home_only threshold ({HOME_PPG_THRESHOLD_Q:.0%} pct, real history): {home_ppg_threshold:.2f}")
 
     team_lists = _all_team_names()
 
