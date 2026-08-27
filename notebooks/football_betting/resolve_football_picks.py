@@ -56,17 +56,28 @@ def main():
 
         r = result.iloc[0]
         won = bool(r["ftr"] == "H")
+        # pnl (theoretical, flat S$50 stake): comparable to the 83.8%/+1.90% backtest figures,
+        # computed on EVERY qualifying signal regardless of whether a real bet was placed on it.
         pnl = STAKE_SGD * (row["odds"] - 1) if won else -STAKE_SGD
 
         log.loc[idx, "status"] = "RESOLVED"
         log.loc[idx, "actual_result"] = f"{int(r['fthg'])}-{int(r['ftag'])} ({r['ftr']})"
         log.loc[idx, "won"] = won
         log.loc[idx, "pnl"] = pnl
-        resolved_count += 1
 
+        # actual_pnl (real money): only set when record_bet.py marked this row bet_placed,
+        # using the REAL stake AND the real odds actually obtained (may differ slightly from
+        # the "odds" column, which is just a snapshot from when the dashboard was last built).
+        if bool(row.get("bet_placed", False)) and pd.notna(row.get("actual_stake_sgd")):
+            stake = float(row["actual_stake_sgd"])
+            price = row["actual_odds"] if pd.notna(row.get("actual_odds")) else row["odds"]
+            log.loc[idx, "actual_pnl"] = stake * (price - 1) if won else -stake
+
+        resolved_count += 1
         outcome_str = "WON " if won else "LOST"
+        bet_note = f"  [REAL BET: S${row['actual_stake_sgd']:.2f}]" if bool(row.get("bet_placed", False)) else ""
         print(f"  [{row['fixture']}] {outcome_str}  actual {int(r['fthg'])}-{int(r['ftag'])}  "
-              f"pnl=S${pnl:+.2f}")
+              f"pnl(theoretical S$50)=S${pnl:+.2f}{bet_note}")
 
     log.to_csv(LOG_PATH, index=False)
     print(f"\n{resolved_count} pick(s) resolved this run.")
@@ -77,12 +88,26 @@ def main():
         hit_rate = resolved["won"].mean()
         total_pnl = resolved["pnl"].sum()
         roi = total_pnl / (STAKE_SGD * len(resolved))
-        print(f"\n=== Running real-world track record ===")
+        print(f"\n=== Signal track record (every qualifying pick, theoretical S$50 stake) ===")
         print(f"Resolved: {len(resolved)}   Still pending: {still_pending}")
-        print(f"Real hit rate: {hit_rate:.1%}  (backtested: 83.8%)")
-        print(f"Real total P&L: S${total_pnl:+.2f}   ROI: {roi:+.2%}  (backtested: +1.90%)")
+        print(f"Hit rate: {hit_rate:.1%}  (backtested: 83.8%)")
+        print(f"Total P&L: S${total_pnl:+.2f}   ROI: {roi:+.2%}  (backtested: +1.90%)")
     else:
         print(f"\nNo picks resolved yet ({still_pending} still pending).")
+
+    real_bets = resolved[resolved.get("bet_placed", False) == True] if len(resolved) else resolved
+    if len(real_bets):
+        real_hit_rate = real_bets["won"].mean()
+        real_pnl = real_bets["actual_pnl"].sum()
+        real_staked = real_bets["actual_stake_sgd"].sum()
+        real_roi = real_pnl / real_staked if real_staked else float("nan")
+        print(f"\n=== REAL money track record (actual bets placed, actual stakes) ===")
+        print(f"Bets placed: {len(real_bets)}   Total staked: S${real_staked:.2f}")
+        print(f"Real hit rate: {real_hit_rate:.1%}")
+        print(f"Real total P&L: S${real_pnl:+.2f}   ROI: {real_roi:+.2%}")
+    else:
+        n_placed_pending = int(((log.get("bet_placed", False) == True) & (log["status"] == "PENDING")).sum())
+        print(f"\nNo real bets resolved yet ({n_placed_pending} placed bet(s) still pending).")
 
 
 if __name__ == "__main__":

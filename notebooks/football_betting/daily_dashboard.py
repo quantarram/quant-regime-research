@@ -275,17 +275,24 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     #    dark/gold visual language and works identically in both places. Renders as a
     #    blank axes (no line, no points) until there's real resolved data -- never a
     #    synthetic or placeholder point.
+    if len(log_df) and "bet_placed" in log_df.columns:
+        log_df["bet_placed"] = log_df["bet_placed"].fillna(False).astype(bool)
     resolved = log_df[log_df["status"] == "RESOLVED"].sort_values("start_time") if len(log_df) else log_df
+    real_bets = resolved[resolved["bet_placed"]] if len(resolved) and "bet_placed" in resolved.columns else resolved.iloc[0:0]
     n_resolved = len(resolved)
+    n_real_bets = len(real_bets)
     n_pending = int((log_df["status"] == "PENDING").sum()) if len(log_df) else 0
+    n_bets_placed_total = int(log_df["bet_placed"].sum()) if len(log_df) and "bet_placed" in log_df.columns else 0
 
-    def render_chart_svg(resolved):
+    def render_chart_svg(real_bets):
+        # Plots REAL money only (actual bets placed, actual stakes) -- not the theoretical
+        # S$50-per-signal figure, since what matters here is what actually happened to real cash.
         W, H, PAD = 900, 220, 30
-        if not len(resolved):
+        if not len(real_bets):
             return (f'<svg viewBox="0 0 {W} {H}" style="width:100%;height:220px;" preserveAspectRatio="none">'
                     f'<line x1="{PAD}" y1="{H/2}" x2="{W-PAD}" y2="{H/2}" stroke="#2C302C" stroke-width="1"/>'
                     f'</svg>')
-        cum = resolved["pnl"].astype(float).cumsum().tolist()
+        cum = real_bets["actual_pnl"].astype(float).cumsum().tolist()
         n = len(cum)
         y_min, y_max = min(cum + [0]), max(cum + [0])
         y_span = (y_max - y_min) or 1.0
@@ -301,26 +308,32 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
           <circle cx="{last_x:.1f}" cy="{last_y:.1f}" r="4" fill="{line_color}"/>
         </svg>"""
 
-    chart_svg = render_chart_svg(resolved)
+    chart_svg = render_chart_svg(real_bets)
 
-    if n_resolved:
-        real_hit_rate = resolved["won"].astype(bool).mean()
-        real_roi = resolved["pnl"].astype(float).sum() / (STAKE_SGD * n_resolved)
+    if n_real_bets:
+        real_hit_rate = real_bets["won"].astype(bool).mean()
+        real_staked = real_bets["actual_stake_sgd"].astype(float).sum()
+        real_pnl = real_bets["actual_pnl"].astype(float).sum()
+        real_roi = real_pnl / real_staked if real_staked else float("nan")
+        signal_note = (f" &nbsp;.&nbsp; {n_resolved} signals resolved overall ({n_bets_placed_total} bets placed, "
+                       f"{n_bets_placed_total - n_real_bets} still pending)" if n_resolved > n_real_bets else "")
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
-        <div><div class="buy-stat-l">Resolved</div><span>{n_resolved}</span></div>
-        <div><div class="buy-stat-l">Pending</div><span>{n_pending}</span></div>
+        <div><div class="buy-stat-l">Bets placed</div><span>{n_real_bets}</span></div>
+        <div><div class="buy-stat-l">Staked</div><span>S${real_staked:.2f}</span></div>
         <div><div class="buy-stat-l">Real hit rate</div><span style="color:var(--gold)">{real_hit_rate:.1%}</span></div>
-        <div><div class="buy-stat-l">Real ROI</div><span style="color:{'var(--green)' if real_roi>=0 else 'var(--red)'}">{real_roi:+.2%}</span></div>
+        <div><div class="buy-stat-l">Real P&amp;L</div><span style="color:{'var(--green)' if real_pnl>=0 else 'var(--red)'}">S${real_pnl:+.2f} ({real_roi:+.1%})</span></div>
         <div><div class="buy-stat-l">Backtested</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
-      </div>"""
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">{signal_note}</div>"""
     else:
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
-        <div><div class="buy-stat-l">Resolved</div><span>0</span></div>
-        <div><div class="buy-stat-l">Pending</div><span>{n_pending}</span></div>
+        <div><div class="buy-stat-l">Bets placed</div><span>{n_bets_placed_total}</span></div>
+        <div><div class="buy-stat-l">Signals pending</div><span>{n_pending}</span></div>
         <div><div class="buy-stat-l">Backtested (reference)</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
-      </div>"""
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">Chart fills in once a placed bet resolves &mdash; this tracks real money, not just qualifying signals.</div>"""
 
     rows_html = ""
     if len(qualifying_df):
@@ -510,14 +523,16 @@ def main():
     today_log = qualifying.copy()
     today_log.insert(0, "run_date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     today_log["status"] = "PENDING"
-    for c in ["actual_result", "won", "pnl"]:
+    today_log["bet_placed"] = False
+    for c in ["actual_result", "won", "pnl", "actual_stake_sgd", "actual_pnl"]:
         today_log[c] = np.nan
     if log_path.exists():
         prior = pd.read_csv(log_path)
         combined = pd.concat([prior, today_log], ignore_index=True)
         # if a rerun same day duplicates a fixture already RESOLVED by resolve_football_picks.py,
-        # keep the resolved row rather than clobbering it with a fresh PENDING one
-        combined = combined.sort_values("status", ascending=False)  # "RESOLVED" > "PENDING" alphabetically
+        # or already marked bet_placed by record_bet.py, keep that row rather than clobbering
+        # it with a fresh PENDING/not-bet one
+        combined = combined.sort_values(["bet_placed", "status"], ascending=[False, False])
         combined = combined.drop_duplicates(subset=["fixture", "start_time"], keep="first")
     else:
         combined = today_log
