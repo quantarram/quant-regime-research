@@ -55,7 +55,7 @@ import numpy as np
 import requests
 import pandas as pd
 
-from data_download import CORE_LEAGUES
+from data_download import CORE_LEAGUES, refresh_core_leagues
 
 DATA_DIR = Path(__file__).parent / "data"
 OUT_DIR = Path(__file__).parent / "output"
@@ -226,11 +226,17 @@ def score_events(events, team_lists, current_ppg_any, current_ppg_home_only,
         rows.append(dict(
             fixture=f"{home_name} vs {away_name}", league=league_code, country=country,
             competition=comp, start_time=start_time, pick=home_name,
+            # canonical (football-data.co.uk) names, distinct from the SG Pools display
+            # names above -- needed so resolve_football_picks.py can look the match up
+            # in matches.parquet later without re-fuzzy-matching against a name that may
+            # have drifted (SG Pools renames, accents, "Man City" vs "Manchester City").
+            home_team_matched=home, away_team_matched=away,
             ppg_diff=ppg_diff, home_ppg_home_only=home_only,
             ppg_diff_threshold=ppg_diff_threshold, home_ppg_threshold=home_ppg_threshold,
             odds=odds_h, qualifies=qualifies,
         ))
     cols = ["fixture", "league", "country", "competition", "start_time", "pick",
+            "home_team_matched", "away_team_matched",
             "ppg_diff", "home_ppg_home_only", "ppg_diff_threshold", "home_ppg_threshold",
             "odds", "qualifies"]
     return pd.DataFrame(rows, columns=cols)
@@ -408,6 +414,10 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
 
 def main():
+    print("Refreshing historical results (13 validated leagues) so form/thresholds reflect today...")
+    refreshed = refresh_core_leagues()
+    print(f"  {len(refreshed):,} matches on file, most recent: {refreshed['date'].max().date()}")
+
     print("Computing current team form from real historical results (no model fit)...")
     current_ppg_any, current_ppg_home_only, ppg_diff_threshold, home_ppg_threshold = compute_current_form_and_thresholds()
     print(f"  ppg_diff threshold ({PPG_DIFF_THRESHOLD_Q:.0%} pct, real history): {ppg_diff_threshold:.2f}")
@@ -441,10 +451,16 @@ def main():
     log_path = OUT_DIR / "qualifying_log.csv"
     today_log = qualifying.copy()
     today_log.insert(0, "run_date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    today_log["status"] = "PENDING"
+    for c in ["actual_result", "won", "pnl"]:
+        today_log[c] = np.nan
     if log_path.exists():
         prior = pd.read_csv(log_path)
         combined = pd.concat([prior, today_log], ignore_index=True)
-        combined = combined.drop_duplicates(subset=["run_date", "fixture"], keep="last")
+        # if a rerun same day duplicates a fixture already RESOLVED by resolve_football_picks.py,
+        # keep the resolved row rather than clobbering it with a fresh PENDING one
+        combined = combined.sort_values("status", ascending=False)  # "RESOLVED" > "PENDING" alphabetically
+        combined = combined.drop_duplicates(subset=["fixture", "start_time"], keep="first")
     else:
         combined = today_log
     combined.to_csv(log_path, index=False)

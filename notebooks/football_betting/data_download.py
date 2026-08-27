@@ -22,9 +22,12 @@ Two source formats on the same site:
 """
 import io
 import time
+import warnings
 import requests
 import pandas as pd
 from pathlib import Path
+
+warnings.filterwarnings("ignore", message="Could not infer format")
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -169,6 +172,28 @@ def fetch_extra_country(country_code):
     })
     out = out.dropna(subset=["date", "fthg", "ftag"])
     return out
+
+
+def refresh_core_leagues():
+    """Fast daily refresh: re-fetch ONLY CORE_LEAGUES (13 leagues, not the full 37)
+    and overwrite matches.parquet with just that -- the other 24 leagues were tested
+    and don't survive holdout validation (see CORE_LEAGUES' own comment), so there's
+    no reason to keep re-fetching them daily. Called from daily_dashboard.py before
+    every run, so trailing form and thresholds are always computed from results as
+    of today, not a stale one-time download."""
+    frames = []
+    for league_code, league_name in LEAGUES.items():
+        if league_code not in CORE_LEAGUES:
+            continue
+        for season in SEASONS:
+            df = fetch_one(league_code, season)
+            if df is not None and len(df):
+                frames.append(df)
+            time.sleep(0.1)
+    all_df = pd.concat(frames, ignore_index=True)
+    all_df = all_df.sort_values(["league", "date"]).reset_index(drop=True)
+    all_df.to_parquet(DATA_DIR / "matches.parquet", index=False)
+    return all_df
 
 
 def main():
