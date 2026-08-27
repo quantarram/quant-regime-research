@@ -242,7 +242,7 @@ def score_events(events, team_lists, current_ppg_any, current_ppg_home_only,
     return pd.DataFrame(rows, columns=cols)
 
 
-def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, home_ppg_threshold):
+def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, home_ppg_threshold, log_df):
     LEAGUE_NAMES = {
         "E0": "England - Premier League", "E1": "England - Championship",
         "D1": "Germany - Bundesliga", "D2": "Germany - 2. Bundesliga",
@@ -266,6 +266,61 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
     n_scanned = all_scored_df["fixture"].nunique() if len(all_scored_df) else 0
     n_qualifying_fixtures = qualifying_df["fixture"].nunique() if len(qualifying_df) else 0
+
+    # -- real-world track record: resolved picks only, chronological cumulative P&L.
+    #    Rendered as inline SVG, not Plotly: this page is published through the Artifact
+    #    tool, whose CSP blocks external script hosts (Plotly's CDN included) -- shipping
+    #    a <script src="cdn.plot.ly/..."> here would silently fail there even though it
+    #    works fine opening the local HTML file directly. Inline SVG matches the same
+    #    dark/gold visual language and works identically in both places. Renders as a
+    #    blank axes (no line, no points) until there's real resolved data -- never a
+    #    synthetic or placeholder point.
+    resolved = log_df[log_df["status"] == "RESOLVED"].sort_values("start_time") if len(log_df) else log_df
+    n_resolved = len(resolved)
+    n_pending = int((log_df["status"] == "PENDING").sum()) if len(log_df) else 0
+
+    def render_chart_svg(resolved):
+        W, H, PAD = 900, 220, 30
+        if not len(resolved):
+            return (f'<svg viewBox="0 0 {W} {H}" style="width:100%;height:220px;" preserveAspectRatio="none">'
+                    f'<line x1="{PAD}" y1="{H/2}" x2="{W-PAD}" y2="{H/2}" stroke="#2C302C" stroke-width="1"/>'
+                    f'</svg>')
+        cum = resolved["pnl"].astype(float).cumsum().tolist()
+        n = len(cum)
+        y_min, y_max = min(cum + [0]), max(cum + [0])
+        y_span = (y_max - y_min) or 1.0
+        def x_at(i): return PAD + (i / max(n - 1, 1)) * (W - 2 * PAD)
+        def y_at(v): return H - PAD - ((v - y_min) / y_span) * (H - 2 * PAD)
+        pts = " ".join(f"{x_at(i):.1f},{y_at(v):.1f}" for i, v in enumerate(cum))
+        zero_y = y_at(0)
+        last_x, last_y = x_at(n - 1), y_at(cum[-1])
+        line_color = "#4DB87A" if cum[-1] >= 0 else "#E05555"
+        return f"""<svg viewBox="0 0 {W} {H}" style="width:100%;height:220px;" preserveAspectRatio="none">
+          <line x1="{PAD}" y1="{zero_y:.1f}" x2="{W-PAD}" y2="{zero_y:.1f}" stroke="#2C302C" stroke-width="1" stroke-dasharray="3,3"/>
+          <polyline points="{pts}" fill="none" stroke="{line_color}" stroke-width="2"/>
+          <circle cx="{last_x:.1f}" cy="{last_y:.1f}" r="4" fill="{line_color}"/>
+        </svg>"""
+
+    chart_svg = render_chart_svg(resolved)
+
+    if n_resolved:
+        real_hit_rate = resolved["won"].astype(bool).mean()
+        real_roi = resolved["pnl"].astype(float).sum() / (STAKE_SGD * n_resolved)
+        track_stats_html = f"""
+      <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+        <div><div class="buy-stat-l">Resolved</div><span>{n_resolved}</span></div>
+        <div><div class="buy-stat-l">Pending</div><span>{n_pending}</span></div>
+        <div><div class="buy-stat-l">Real hit rate</div><span style="color:var(--gold)">{real_hit_rate:.1%}</span></div>
+        <div><div class="buy-stat-l">Real ROI</div><span style="color:{'var(--green)' if real_roi>=0 else 'var(--red)'}">{real_roi:+.2%}</span></div>
+        <div><div class="buy-stat-l">Backtested</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
+      </div>"""
+    else:
+        track_stats_html = f"""
+      <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+        <div><div class="buy-stat-l">Resolved</div><span>0</span></div>
+        <div><div class="buy-stat-l">Pending</div><span>{n_pending}</span></div>
+        <div><div class="buy-stat-l">Backtested (reference)</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
+      </div>"""
 
     rows_html = ""
     if len(qualifying_df):
@@ -346,6 +401,9 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
               font-weight:600;letter-spacing:.06em;white-space:nowrap;}}
   .weight-bar-bg{{background:var(--border);border-radius:4px;height:6px;display:inline-block;vertical-align:middle;margin-top:4px;}}
   .weight-bar-fill{{height:100%;border-radius:4px;}}
+  .buy-stats{{display:flex;gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
+              font-family:var(--mono);font-size:11px;color:var(--text);flex-wrap:wrap;}}
+  .buy-stat-l{{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}}
 
   .disclaimer{{background:var(--card);border:1px solid var(--border);border-radius:10px;
                padding:16px 20px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:28px;}}
@@ -390,6 +448,14 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
       </thead>
       <tbody>{rows_html}</tbody>
     </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Real-World Track Record</div>
+  <div class="card">
+    {chart_svg}
+    {track_stats_html}
   </div>
 </div>
 
@@ -440,14 +506,6 @@ def main():
     print(f"  {scored['fixture'].nunique() if len(scored) else 0} fixtures matched to a validated league")
     print(f"  {len(qualifying)} qualifying fixtures")
 
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    html = render_html(qualifying, scored, generated_at, ppg_diff_threshold, home_ppg_threshold)
-    (OUT_DIR / "dashboard.html").write_text(html)
-
-    qualifying.to_json(OUT_DIR / "dashboard_qualifying.json", orient="records", indent=2)
-    scored.to_parquet(OUT_DIR / "dashboard_all_scored.parquet", index=False)
-    print(f"Saved -> {OUT_DIR / 'dashboard.html'}")
-
     log_path = OUT_DIR / "qualifying_log.csv"
     today_log = qualifying.copy()
     today_log.insert(0, "run_date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
@@ -465,6 +523,14 @@ def main():
         combined = today_log
     combined.to_csv(log_path, index=False)
     print(f"Saved -> {log_path} ({len(combined)} rows total)")
+
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    html = render_html(qualifying, scored, generated_at, ppg_diff_threshold, home_ppg_threshold, combined)
+    (OUT_DIR / "dashboard.html").write_text(html)
+
+    qualifying.to_json(OUT_DIR / "dashboard_qualifying.json", orient="records", indent=2)
+    scored.to_parquet(OUT_DIR / "dashboard_all_scored.parquet", index=False)
+    print(f"Saved -> {OUT_DIR / 'dashboard.html'}")
 
 
 if __name__ == "__main__":
