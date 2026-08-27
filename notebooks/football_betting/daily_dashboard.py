@@ -48,6 +48,9 @@ Output:
 import re
 import unicodedata
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
+SGT = ZoneInfo("Asia/Singapore")  # UTC+8, no DST -- fixed offset year-round
 from difflib import get_close_matches
 from pathlib import Path
 
@@ -254,8 +257,9 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
     def fmt_time(iso_str):
         try:
-            dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-            return dt.strftime("%a %d %b, %H:%M")
+            dt_utc = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+            dt_sgt = dt_utc.astimezone(SGT)
+            return f"{dt_sgt.strftime('%a %d %b, %H:%M')} SGT ({dt_utc.strftime('%H:%M')} UTC)"
         except Exception:
             return iso_str or ""
 
@@ -539,7 +543,8 @@ def main():
     combined.to_csv(log_path, index=False)
     print(f"Saved -> {log_path} ({len(combined)} rows total)")
 
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    _now_utc = datetime.now(timezone.utc)
+    generated_at = f"{_now_utc.astimezone(SGT).strftime('%Y-%m-%d %H:%M')} SGT ({_now_utc.strftime('%H:%M')} UTC)"
     html = render_html(qualifying, scored, generated_at, ppg_diff_threshold, home_ppg_threshold, combined)
     (OUT_DIR / "dashboard.html").write_text(html)
 
