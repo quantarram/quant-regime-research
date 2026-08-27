@@ -1,0 +1,130 @@
+<title>Ninety Percent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --surface-2: #eaf0ec; --border: #d9e2dc;
+  --text: #16221b; --text-dim: #59695f; --text-faint: #8a988e;
+  --accent: #9c7a24; --accent-soft: #f4ead0;
+  --pos: #2f7d4f; --neg: #a4402f;
+  --shadow: 0 1px 2px rgba(22,34,27,0.06), 0 8px 24px -12px rgba(22,34,27,0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
+    --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
+    --accent: #d8ac4a; --accent-soft: #2a2313;
+    --pos: #4fae7c; --neg: #d1685c;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1310; --surface: #121c17; --surface-2: #17231d; --border: #263630;
+  --text: #e9f1ec; --text-dim: #9fb3a7; --text-faint: #647a6d;
+  --accent: #d8ac4a; --accent-soft: #2a2313;
+  --pos: #4fae7c; --neg: #d1685c;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--text); margin: 0; padding: 40px 20px 64px;
+  font-family: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.masthead { display: flex; flex-direction: column; gap: 4px; }
+h1 {
+  font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.01em;
+  margin: 0; text-wrap: balance;
+}
+h1 .dim { color: var(--text-dim); font-weight: 500; }
+.meta { color: var(--text-faint); font-size: 13px; font-family: "IBM Plex Mono", monospace; }
+
+.scoreboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.stat {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.stat .n {
+  font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 28px;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.stat .l { font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.01em; }
+
+.rule {
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 20px; font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
+}
+.rule b { color: var(--text); font-weight: 600; }
+
+.board-label {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-faint);
+}
+
+.tickets { display: flex; flex-direction: column; gap: 10px; }
+.ticket {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 18px 20px;
+  display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.ticket-comp { font-size: 12px; color: var(--text-faint); font-family: "IBM Plex Mono", monospace; }
+.ticket-fixture { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; margin-top: 3px; }
+.ticket-pick { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+.ticket-pick span { color: var(--accent); font-weight: 600; }
+
+.ticket-figures { display: flex; gap: 22px; align-items: flex-end; }
+.fig { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 58px; }
+.fig-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+.fig-val { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
+.fig-val.model { color: var(--accent); }
+.fig-val.pos { color: var(--pos); }
+.fig-val.neg { color: var(--neg); }
+.pbar { width: 52px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.pbar-fill { height: 100%; background: var(--accent); }
+
+.empty {
+  background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
+  padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.empty-mark { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: var(--text-faint); }
+.empty-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 16px; }
+.empty-body { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; max-width: 480px; }
+
+.footer { color: var(--text-faint); font-size: 12px; text-align: center; line-height: 1.6; }
+</style>
+<div class="wrap">
+  <div class="masthead">
+    <h1>Ninety Percent <span class="dim">&middot; SG Pools checklist</span></h1>
+    <div class="meta">updated 2026-08-27 10:31 UTC</div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="stat"><div class="n">0</div><div class="l">Qualifying today</div></div>
+    <div class="stat"><div class="n">57</div><div class="l">Fixtures scanned</div></div>
+    <div class="stat"><div class="n">90%</div><div class="l">Minimum model probability</div></div>
+  </div>
+
+  <div class="rule">
+    A pick appears only if <b>both</b> hold: the Dixon-Coles model, fit on 10 years of results
+    across the 13 validated deep/liquid leagues, puts the outcome at <b>&ge;90% probability</b>,
+    and that beats the vig-stripped probability implied by the market's own odds. Backtested hit
+    rate at this bar: <b>91.8%</b> on 183 bets, holds up in an out-of-sample check. Confirm the
+    exact fixture and price on Singapore Pools yourself &mdash; if it isn't listed there, don't bet it.
+  </div>
+
+  <div>
+    <div class="board-label" style="margin-bottom:10px;">Today's board</div>
+    <div class="tickets">
+        <div class="empty">
+          <div class="empty-mark">&mdash;</div>
+          <div class="empty-title">No pick clears the bar today</div>
+          <div class="empty-body">That's the normal state, not a malfunction &mdash; across the
+          validated 13 leagues this rule fires roughly once every 3&ndash;4 weeks. The board is
+          quiet until a match genuinely clears 90% model probability with real edge over the
+          market's own price. Check back tomorrow.</div>
+        </div></div>
+  </div>
+
+  <div class="footer">Generated from Singapore Pools' own public odds feed.<br>This page never places bets or touches your account.</div>
+</div>

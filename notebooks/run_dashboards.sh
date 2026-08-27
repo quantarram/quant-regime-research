@@ -34,12 +34,18 @@ echo "[6/8] Updating IBKR paper ledger (simulated, bullish-only)..."
 python ibkr_paper_ledger.py || { echo "ERROR: ibkr_paper_ledger.py failed."; exit 1; }
 
 echo ""
-echo "[7/8] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html ibkr_paper_ledger.csv
+echo "[7/9] Building football (Singapore Pools) checklist..."
+python football_betting/daily_dashboard.py || { echo "ERROR: football_betting/daily_dashboard.py failed."; exit 1; }
+echo "NOTE: this only refreshes the local HTML/log -- ask Claude to also republish the live"
+echo "dashboard artifact (it can't self-publish from a plain script)."
+
+echo ""
+echo "[8/9] Committing to git..."
+git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html ibkr_paper_ledger.csv football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""
-echo "[8/8] Pushing to GitHub..."
+echo "[9/9] Pushing to GitHub..."
 git push
 
 echo ""
