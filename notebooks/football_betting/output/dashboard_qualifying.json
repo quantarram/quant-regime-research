@@ -1,18 +1,3 @@
 [
-  {
-    "fixture":"Barcelona vs Athletic Bilbao",
-    "league":"SP1",
-    "country":"Spain",
-    "competition":"Spanish League",
-    "start_time":"2026-08-27T19:00:00Z",
-    "pick":"Barcelona",
-    "home_team_matched":"Barcelona",
-    "away_team_matched":"Ath Bilbao",
-    "ppg_diff":1.4333333333,
-    "home_ppg_home_only":2.8333333333,
-    "ppg_diff_threshold":0.8,
-    "home_ppg_threshold":2.2666666667,
-    "odds":1.18,
-    "qualifies":true
-  }
+
 ]
