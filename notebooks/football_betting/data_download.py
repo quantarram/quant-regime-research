@@ -32,6 +32,13 @@ warnings.filterwarnings("ignore", message="Could not infer format")
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
+# Closed seasons never change once football-data.co.uk has posted a season's final
+# results, so caching them locally turns refresh_core_leagues()'s daily re-fetch from
+# 13 leagues x 11 seasons = 143 HTTP requests into just 13 (only the live season still
+# needs a fresh pull). See refresh_core_leagues() for how this is used.
+SEASON_CACHE_DIR = DATA_DIR / "season_cache"
+SEASON_CACHE_DIR.mkdir(exist_ok=True)
+
 LEAGUES = {
     "E0": "England - Premier League",
     "E1": "England - Championship",
@@ -174,22 +181,43 @@ def fetch_extra_country(country_code):
     return out
 
 
+def _fetch_one_cached(league_code, season):
+    """Like fetch_one(), but closed seasons (every SEASONS entry except the current,
+    live one) are read from a local parquet cache after their first fetch instead of
+    hitting the network again -- their results are final and never change. Only the
+    live season (SEASONS[-1]) always fetches fresh, since it's still being played."""
+    is_live_season = season == SEASONS[-1]
+    cache_path = SEASON_CACHE_DIR / f"{league_code}_{season}.parquet"
+    if not is_live_season and cache_path.exists():
+        return pd.read_parquet(cache_path)
+
+    df = fetch_one(league_code, season)
+    time.sleep(0.1)  # be polite to a free public data source -- only reached on an actual HTTP fetch
+
+    if not is_live_season and df is not None and len(df):
+        df.to_parquet(cache_path, index=False)
+    return df
+
+
 def refresh_core_leagues():
     """Fast daily refresh: re-fetch ONLY CORE_LEAGUES (13 leagues, not the full 37)
     and overwrite matches.parquet with just that -- the other 24 leagues were tested
     and don't survive holdout validation (see CORE_LEAGUES' own comment), so there's
     no reason to keep re-fetching them daily. Called from daily_dashboard.py before
     every run, so trailing form and thresholds are always computed from results as
-    of today, not a stale one-time download."""
+    of today, not a stale one-time download.
+
+    Closed seasons are served from SEASON_CACHE_DIR after their first fetch (see
+    _fetch_one_cached) -- only the current season is re-downloaded every run, cutting
+    this from 143 HTTP requests/day down to 13 once the cache is warm."""
     frames = []
     for league_code, league_name in LEAGUES.items():
         if league_code not in CORE_LEAGUES:
             continue
         for season in SEASONS:
-            df = fetch_one(league_code, season)
+            df = _fetch_one_cached(league_code, season)
             if df is not None and len(df):
                 frames.append(df)
-            time.sleep(0.1)
     all_df = pd.concat(frames, ignore_index=True)
     all_df = all_df.sort_values(["league", "date"]).reset_index(drop=True)
     all_df.to_parquet(DATA_DIR / "matches.parquet", index=False)
