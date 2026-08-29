@@ -323,43 +323,62 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
     chart_svg = render_chart_svg(real_bets)
 
+    # "Placed" (n_bets_placed_total) counts every real bet regardless of whether it has
+    # resolved yet -- this is the number that answers "how many bets have I made". The
+    # resolved-only subset (real_bets/n_real_bets) is a NARROWER group used only for hit
+    # rate/P&L/ROI, which can't be computed on a bet whose match hasn't been played yet.
+    # Conflating the two here previously made "Bets placed" silently undercount any bet
+    # still awaiting its result.
+    n_bets_pending_real = n_bets_placed_total - n_real_bets
+    total_staked_all = float(log_df.loc[log_df["bet_placed"], "actual_stake_sgd"].astype(float).sum()) if len(log_df) and "bet_placed" in log_df.columns else 0.0
+
     if n_real_bets:
         real_hit_rate = real_bets["won"].astype(bool).mean()
-        real_staked = real_bets["actual_stake_sgd"].astype(float).sum()
+        real_staked_resolved = real_bets["actual_stake_sgd"].astype(float).sum()
         real_pnl = real_bets["actual_pnl"].astype(float).sum()
-        real_roi = real_pnl / real_staked if real_staked else float("nan")
-        signal_note = (f" &nbsp;.&nbsp; {n_resolved} signals resolved overall ({n_bets_placed_total} bets placed, "
-                       f"{n_bets_placed_total - n_real_bets} still pending)" if n_resolved > n_real_bets else "")
+        real_roi = real_pnl / real_staked_resolved if real_staked_resolved else float("nan")
+        pending_note = (f"{n_bets_pending_real} bet(s) still awaiting resolution &mdash; not in the hit "
+                        f"rate/P&amp;L figures below yet." if n_bets_pending_real else "")
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
-        <div><div class="buy-stat-l">Bets placed</div><span>{n_real_bets}</span></div>
-        <div><div class="buy-stat-l">Staked</div><span>S${real_staked:.2f}</span></div>
+        <div><div class="buy-stat-l">Bets placed</div><span>{n_bets_placed_total}</span></div>
+        <div><div class="buy-stat-l">Total staked</div><span>S${total_staked_all:.2f}</span></div>
+        <div><div class="buy-stat-l">Resolved</div><span>{n_real_bets}</span></div>
         <div><div class="buy-stat-l">Real hit rate</div><span style="color:var(--gold)">{real_hit_rate:.1%}</span></div>
         <div><div class="buy-stat-l">Real P&amp;L</div><span style="color:{'var(--green)' if real_pnl>=0 else 'var(--red)'}">S${real_pnl:+.2f} ({real_roi:+.1%})</span></div>
         <div><div class="buy-stat-l">Backtested</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:8px;">{signal_note}</div>"""
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">{pending_note}</div>"""
     else:
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
         <div><div class="buy-stat-l">Bets placed</div><span>{n_bets_placed_total}</span></div>
+        <div><div class="buy-stat-l">Total staked</div><span>S${total_staked_all:.2f}</span></div>
         <div><div class="buy-stat-l">Signals pending</div><span>{n_pending}</span></div>
         <div><div class="buy-stat-l">Backtested (reference)</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:8px;">Chart fills in once a placed bet resolves &mdash; this tracks real money, not just qualifying signals.</div>"""
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">{'Chart fills in once a placed bet resolves.' if n_bets_placed_total else 'Chart fills in once a placed bet resolves -- this tracks real money, not just qualifying signals.'}</div>"""
+
+    # Fixtures already backed with a real bet (record_bet.py), so the picks table can show
+    # it directly on the row instead of only in the separate track-record section below --
+    # this is the more intuitive place to notice "I already acted on this one".
+    bet_fixtures = set(log_df.loc[log_df["bet_placed"], "fixture"]) if len(log_df) and "bet_placed" in log_df.columns else set()
 
     rows_html = ""
     if len(qualifying_df):
         qualifying_df = qualifying_df.sort_values("start_time")  # chronological -- soonest kickoff first
         for _, r in qualifying_df.iterrows():
             odds_str = f"{r['odds']:.2f}" if pd.notna(r["odds"]) else "&mdash;"
+            bet_badge = ('<span class="tilt-pill" style="color:var(--green);background:rgba(77,184,122,0.12);'
+                         'border:1px solid rgba(77,184,122,0.3);margin-left:6px;">&#10003; BET PLACED</span>'
+                         if r["fixture"] in bet_fixtures else "")
             rows_html += f"""
         <tr>
           <td>
             <div class="ac-cell">
               <span class="ac-dot" style="background:var(--gold);"></span>
               <div>
-                <div class="ac-name">{r['fixture']}</div>
+                <div class="ac-name">{r['fixture']}{bet_badge}</div>
                 <div class="ac-desc">{LEAGUE_NAMES.get(r['league'], r['league'])} &middot; {fmt_time(r['start_time'])}</div>
               </div>
             </div>
