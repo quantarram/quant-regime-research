@@ -1,3 +1,50 @@
 [
-
+  {
+    "fixture":"Hearts vs St Johnstone",
+    "league":"SC0",
+    "country":"Scotland",
+    "competition":"Scottish League",
+    "start_time":"2026-08-29T14:00:00Z",
+    "pick":"Hearts",
+    "home_team_matched":"Hearts",
+    "away_team_matched":"St Johnstone",
+    "ppg_diff":1.0,
+    "home_ppg_home_only":2.3333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.65,
+    "qualifies":true
+  },
+  {
+    "fixture":"Real Madrid vs Malaga",
+    "league":"SP1",
+    "country":"Spain",
+    "competition":"Spanish League",
+    "start_time":"2026-08-30T15:00:00Z",
+    "pick":"Real Madrid",
+    "home_team_matched":"Real Madrid",
+    "away_team_matched":"Malaga",
+    "ppg_diff":1.5333333333,
+    "home_ppg_home_only":2.5666666667,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.09,
+    "qualifies":true
+  },
+  {
+    "fixture":"Barcelona vs Vallecano",
+    "league":"SP1",
+    "country":"Spain",
+    "competition":"Spanish League",
+    "start_time":"2026-08-31T19:30:00Z",
+    "pick":"Barcelona",
+    "home_team_matched":"Barcelona",
+    "away_team_matched":"Vallecano",
+    "ppg_diff":1.1,
+    "home_ppg_home_only":2.8333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.15,
+    "qualifies":true
+  }
 ]
