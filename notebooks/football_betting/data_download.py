@@ -82,7 +82,10 @@ EXTRA_COUNTRIES = {
 }
 
 # season codes: "2324" = 2023-24. football-data.co.uk keeps ~ the last 10-12 seasons at this path.
-SEASONS = ["1516", "1617", "1718", "1819", "1920", "2021", "2122", "2223", "2324", "2425", "2526"]
+# "2627" (2026-27) MUST be the last entry -- _fetch_one_cached() treats SEASONS[-1] as the live,
+# still-being-played season and always re-fetches it fresh; everything before it is cached
+# permanently as closed/final. Update this list at the start of each new season.
+SEASONS = ["1516", "1617", "1718", "1819", "1920", "2021", "2122", "2223", "2324", "2425", "2526", "2627"]
 
 BASE_URL = "https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
 EXTRA_URL = "https://www.football-data.co.uk/new/{country}.csv"

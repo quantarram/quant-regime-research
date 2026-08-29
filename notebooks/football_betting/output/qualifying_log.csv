@@ -1,5 +1,5 @@
 run_date,fixture,league,country,competition,start_time,pick,home_team_matched,away_team_matched,ppg_diff,home_ppg_home_only,ppg_diff_threshold,home_ppg_threshold,odds,qualifies,status,actual_result,won,pnl,bet_placed,actual_stake_sgd,actual_odds,actual_pnl
 2026-08-27,Barcelona vs Athletic Bilbao,SP1,Spain,Spanish League,2026-08-27T19:00:00Z,Barcelona,Barcelona,Ath Bilbao,1.4333333333333331,2.8333333333333335,0.8,2.2666666666666666,1.18,True,RESOLVED,Home win (user-reported result; exact scoreline pending data-source confirmation),1.0,8.999999999999996,True,10.0,1.17,1.7
-2026-08-29,Hearts vs St Johnstone,SC0,Scotland,Scottish League,2026-08-29T14:00:00Z,Hearts,Hearts,St Johnstone,1.0,2.3333333333333335,0.8,2.2666666666666666,1.65,True,PENDING,,,,False,,,
-2026-08-29,Real Madrid vs Malaga,SP1,Spain,Spanish League,2026-08-30T15:00:00Z,Real Madrid,Real Madrid,Malaga,1.5333333333333332,2.566666666666667,0.8,2.2666666666666666,1.09,True,PENDING,,,,False,,,
-2026-08-29,Barcelona vs Vallecano,SP1,Spain,Spanish League,2026-08-31T19:30:00Z,Barcelona,Barcelona,Vallecano,1.1,2.8333333333333335,0.8,2.2666666666666666,1.15,True,PENDING,,,,False,,,
+2026-08-29,Hearts vs St Johnstone,SC0,Scotland,Scottish League,2026-08-29T14:00:00Z,Hearts,Hearts,St Johnstone,1.0,2.3333333333333335,0.8,2.2666666666666666,1.65,True,PENDING,,,,True,17.0,1.65,
+2026-08-29,Real Madrid vs Malaga,SP1,Spain,Spanish League,2026-08-30T15:00:00Z,Real Madrid,Real Madrid,Malaga,1.5333333333333332,2.566666666666667,0.8,2.2666666666666666,1.09,True,PENDING,,,,True,17.0,1.09,
+2026-08-29,Barcelona vs Vallecano,SP1,Spain,Spanish League,2026-08-31T19:30:00Z,Barcelona,Barcelona,Vallecano,1.1,2.8333333333333335,0.8,2.2666666666666666,1.15,True,PENDING,,,,True,17.7,1.15,
