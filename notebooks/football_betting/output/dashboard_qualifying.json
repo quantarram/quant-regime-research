@@ -1,21 +1,5 @@
 [
   {
-    "fixture":"Hearts vs St Johnstone",
-    "league":"SC0",
-    "country":"Scotland",
-    "competition":"Scottish League",
-    "start_time":"2026-08-29T14:00:00Z",
-    "pick":"Hearts",
-    "home_team_matched":"Hearts",
-    "away_team_matched":"St Johnstone",
-    "ppg_diff":1.0666666667,
-    "home_ppg_home_only":2.3333333333,
-    "ppg_diff_threshold":0.8,
-    "home_ppg_threshold":2.2666666667,
-    "odds":1.65,
-    "qualifies":true
-  },
-  {
     "fixture":"Real Madrid vs Malaga",
     "league":"SP1",
     "country":"Spain",
@@ -28,7 +12,7 @@
     "home_ppg_home_only":2.5666666667,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.09,
+    "odds":1.07,
     "qualifies":true
   },
   {
@@ -44,7 +28,7 @@
     "home_ppg_home_only":2.8333333333,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.15,
+    "odds":1.13,
     "qualifies":true
   }
 ]
