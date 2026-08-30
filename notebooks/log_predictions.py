@@ -844,6 +844,24 @@ def print_summary():
             print(f"  {label:5s}: {n_total} rows | {n_pending} pending | "
                   f"{n_resolved} resolved")
 
+    # Combined three-metal accuracy (Gold + Silver + Platinum). GOLD_CSV and METALS_CSV are
+    # separate logs with their own accuracy figures above (METALS there is Silver+Platinum
+    # only, Gold is tracked on its own) -- this blends all three into one number. Note: Gold's
+    # resolved sample mixes 21d and 63d horizons while Silver/Platinum are still 21d-only, so
+    # this isn't a perfectly apples-to-apples blend, just a quick combined read.
+    combined_parts = []
+    if os.path.exists(GOLD_CSV):
+        g = pd.read_csv(GOLD_CSV)
+        combined_parts.append(g[g["status"] == "RESOLVED"]["prediction_correct"])
+    if os.path.exists(METALS_CSV):
+        m = pd.read_csv(METALS_CSV)
+        combined_parts.append(m[m["status"] == "RESOLVED"]["prediction_correct"])
+    if combined_parts:
+        combined = pd.concat(combined_parts).astype(float)
+        if len(combined):
+            print(f"  COMBINED (Gold+Silver+Platinum): {len(combined)} resolved | "
+                  f"accuracy={combined.mean()*100:.0f}%")
+
 
 # ════════════════════════════════════════════════════════════
 #  MAIN
