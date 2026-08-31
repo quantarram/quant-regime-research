@@ -300,23 +300,45 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     def render_chart_svg(real_bets):
         # Plots REAL money only (actual bets placed, actual stakes) -- not the theoretical
         # S$50-per-signal figure, since what matters here is what actually happened to real cash.
-        W, H, PAD = 900, 220, 30
+        # PAD_L is wider than the other three sides to leave room for the S$ value labels on the
+        # y-axis (added 2026-08-31 -- the chart previously had no axis labels at all, just a bare
+        # shape against a zero line, which the user found confusing with no way to read exact values).
+        W, H, PAD_L, PAD_R, PAD_T, PAD_B = 900, 220, 60, 20, 20, 20
         if not len(real_bets):
+            zero_y = H / 2
             return (f'<svg viewBox="0 0 {W} {H}" style="width:100%;height:220px;" preserveAspectRatio="none">'
-                    f'<line x1="{PAD}" y1="{H/2}" x2="{W-PAD}" y2="{H/2}" stroke="#2C302C" stroke-width="1"/>'
+                    f'<line x1="{PAD_L}" y1="{zero_y}" x2="{W-PAD_R}" y2="{zero_y}" stroke="#2C302C" stroke-width="1"/>'
+                    f'<text x="{PAD_L-8}" y="{zero_y+4:.1f}" text-anchor="end" font-family="monospace" font-size="11" fill="#7A8F7A">S$0</text>'
                     f'</svg>')
         cum = real_bets["actual_pnl"].astype(float).cumsum().tolist()
         n = len(cum)
         y_min, y_max = min(cum + [0]), max(cum + [0])
         y_span = (y_max - y_min) or 1.0
-        def x_at(i): return PAD + (i / max(n - 1, 1)) * (W - 2 * PAD)
-        def y_at(v): return H - PAD - ((v - y_min) / y_span) * (H - 2 * PAD)
+        def x_at(i): return PAD_L + (i / max(n - 1, 1)) * (W - PAD_L - PAD_R)
+        def y_at(v): return H - PAD_B - ((v - y_min) / y_span) * (H - PAD_T - PAD_B)
         pts = " ".join(f"{x_at(i):.1f},{y_at(v):.1f}" for i, v in enumerate(cum))
         zero_y = y_at(0)
+        top_y, bottom_y = y_at(y_max), y_at(y_min)
         last_x, last_y = x_at(n - 1), y_at(cum[-1])
         line_color = "#4DB87A" if cum[-1] >= 0 else "#E05555"
+
+        # y-axis value labels: always show S$0 (the baseline), plus the max/min of the cumulative
+        # series when they're far enough (>=14px) from the zero line and from each other to avoid
+        # overlapping text -- with only 1-3 resolved bets the three values can easily collide.
+        labels = [(zero_y, "S$0")]
+        MIN_GAP = 14
+        if abs(top_y - zero_y) >= MIN_GAP:
+            labels.append((top_y, f"S${y_max:+.0f}"))
+        if abs(bottom_y - zero_y) >= MIN_GAP and (not labels or abs(bottom_y - labels[-1][0]) >= MIN_GAP):
+            labels.append((bottom_y, f"S${y_min:+.0f}"))
+        label_svg = "".join(
+            f'<text x="{PAD_L-8}" y="{y+4:.1f}" text-anchor="end" font-family="monospace" '
+            f'font-size="11" fill="#7A8F7A">{text}</text>'
+            for y, text in labels
+        )
         return f"""<svg viewBox="0 0 {W} {H}" style="width:100%;height:220px;" preserveAspectRatio="none">
-          <line x1="{PAD}" y1="{zero_y:.1f}" x2="{W-PAD}" y2="{zero_y:.1f}" stroke="#2C302C" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="{PAD_L}" y1="{zero_y:.1f}" x2="{W-PAD_R}" y2="{zero_y:.1f}" stroke="#2C302C" stroke-width="1" stroke-dasharray="3,3"/>
+          {label_svg}
           <polyline points="{pts}" fill="none" stroke="{line_color}" stroke-width="2"/>
           <circle cx="{last_x:.1f}" cy="{last_y:.1f}" r="4" fill="{line_color}"/>
         </svg>"""
