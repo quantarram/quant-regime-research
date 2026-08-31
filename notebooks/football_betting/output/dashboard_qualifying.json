@@ -1,21 +1,5 @@
 [
   {
-    "fixture":"Real Madrid vs Malaga",
-    "league":"SP1",
-    "country":"Spain",
-    "competition":"Spanish League",
-    "start_time":"2026-08-30T15:00:00Z",
-    "pick":"Real Madrid",
-    "home_team_matched":"Real Madrid",
-    "away_team_matched":"Malaga",
-    "ppg_diff":1.6,
-    "home_ppg_home_only":2.5666666667,
-    "ppg_diff_threshold":0.8,
-    "home_ppg_threshold":2.2666666667,
-    "odds":1.07,
-    "qualifies":true
-  },
-  {
     "fixture":"Barcelona vs Vallecano",
     "league":"SP1",
     "country":"Spain",
@@ -28,7 +12,7 @@
     "home_ppg_home_only":2.8333333333,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.13,
+    "odds":1.05,
     "qualifies":true
   }
 ]
