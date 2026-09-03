@@ -102,9 +102,15 @@ print(f"  Parquet history frozen at: {PARQUET_MAX_DATE.date()}")
 print("\nFetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
+    # Also fetch the FULL CPE predictor universe (every X ticker the firing-
+    # predictor scan checks), not just metals' own hand-picked list --
+    # confirmed 2026-09-03 that most of the 158 X tickers were never in any
+    # dashboard's fetch list, so their firing status was silently running on
+    # multiasset_prices.parquet's frozen 2026-06-16 snapshot every day.
     fetch_list = list(set(
         ["GC=F","GLD","IAU","SI=F","SLV","PL=F","PPLT",
          "SGDUSD=X","DX-Y.NYB","UUP","^GVZ"]
+        + cpe["X"].unique().tolist()
     ))
     raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
@@ -155,6 +161,26 @@ try:
     _age = (_today - _latest).days
     if _age > 4:
         print(f"  WARNING: data is {_age} days old - Yahoo may be lagging.")
+
+    # ── Persist a live, ever-growing price history (shared with the other
+    # two dashboard builders) -- see build_portfolio_dashboard.py for the
+    # full rationale. Never touches multiasset_prices.parquet itself.
+    LIVE_HISTORY_PARQUET = "multiasset_prices_live_history.parquet"
+    try:
+        if os.path.exists(LIVE_HISTORY_PARQUET):
+            existing_hist = pd.read_parquet(LIVE_HISTORY_PARQUET)
+            merged_hist = existing_hist.copy()
+            for col in prices.columns:
+                merged_hist[col] = prices[col].combine_first(existing_hist.get(col))
+        else:
+            merged_hist = prices.copy()
+        merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
+        merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
+        print(f"  Live price history saved -> {LIVE_HISTORY_PARQUET} "
+              f"({merged_hist.shape[0]} rows x {merged_hist.shape[1]} tickers, "
+              f"through {merged_hist.index.max().date()})")
+    except Exception as _hist_err:
+        print(f"  WARNING: could not persist live price history: {_hist_err}")
 except Exception as e:
     print(f"  yfinance error: {e}")
     print("  FATAL: Cannot build dashboard without fresh prices. Exiting.")

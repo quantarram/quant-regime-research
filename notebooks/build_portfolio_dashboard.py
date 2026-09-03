@@ -14,7 +14,7 @@ Outputs:
 ============================================================
 """
 
-import json, math, warnings
+import json, math, os, warnings
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
@@ -104,11 +104,19 @@ print(f"  CPE joint: {jcpe.shape[0]:,} rows")
 print("\nFetching latest prices from Yahoo Finance...")
 try:
     import yfinance as yf
+    # Fetch the FULL CPE predictor universe (every X ticker the firing-predictor
+    # scan below checks), not just the 5 asset-class proxies -- confirmed
+    # 2026-09-03 that only ~15-22 of 158 X tickers were ever in this list across
+    # all three dashboard builders, so ~90% of "which predictors are firing"
+    # was silently running on multiasset_prices.parquet's frozen 2026-06-16
+    # snapshot every single day, not genuinely live data. See ibkr_paper_ledger
+    # commit history / project memory for the full investigation.
     fetch_list = list(set(
         ["SPY","QQQ","GC=F","GLD","IAU","TLT","AGG",
          "IBIT","FBTC","BTC-USD","UUP","SGDUSD=X",
          "SLV","^VIX","^GVZ","DX-Y.NYB"]
         # Note: XAUUSD=X removed — delisted on Yahoo Finance
+        + cpe["X"].unique().tolist()
     ))
     raw = yf.download(fetch_list, period="400d",
                       auto_adjust=True, progress=False)["Close"]
@@ -177,6 +185,34 @@ try:
                 _tage = (_latest - _lv.index[-1].date()).days
                 if _tage > 1:
                     print(f"  WARNING: {_t} last valid {_lv.index[-1].date()} ({_tage}d stale)")
+
+    # ── Persist a live, ever-growing price history ────────────────────
+    # NEVER overwrites multiasset_prices.parquet itself -- that file is a
+    # frozen 2026-06-16 snapshot referenced by already-published papers, and
+    # changing its update behavior would be a real reproducibility risk, not
+    # a routine fix. This is a separate file that all three dashboard
+    # builders (gold/portfolio/metals) merge their freshly-fetched prices
+    # into, so a real, non-frozen daily price record exists on disk going
+    # forward for anything that later needs to reconstruct a past date's
+    # regime state (confirmed 2026-09-03 that no such record existed before
+    # this, which is why a hold-to-horizon paper-ledger track couldn't be
+    # backfilled).
+    LIVE_HISTORY_PARQUET = "multiasset_prices_live_history.parquet"
+    try:
+        if os.path.exists(LIVE_HISTORY_PARQUET):
+            existing_hist = pd.read_parquet(LIVE_HISTORY_PARQUET)
+            merged_hist = existing_hist.copy()
+            for col in prices.columns:
+                merged_hist[col] = prices[col].combine_first(existing_hist.get(col))
+        else:
+            merged_hist = prices.copy()
+        merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
+        merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
+        print(f"  Live price history saved -> {LIVE_HISTORY_PARQUET} "
+              f"({merged_hist.shape[0]} rows x {merged_hist.shape[1]} tickers, "
+              f"through {merged_hist.index.max().date()})")
+    except Exception as _hist_err:
+        print(f"  WARNING: could not persist live price history: {_hist_err}")
 
 except Exception as e:
     print(f"  yfinance error: {e}")
