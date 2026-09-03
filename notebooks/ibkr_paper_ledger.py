@@ -123,20 +123,46 @@ def fetch_dashboard_state():
 
 def bullish_only_weights(state):
     """
-    Apply only the bullish side of the tilt. Bearish labels (TILT DOWN /
-    UNDERWEIGHT) fall back to neutral weight instead of being shorted —
-    the backtest showed bearish calls are not reliable yet.
-    Renormalises so weights sum to 1.
-    """
-    raw = {}
-    for cls, s in state.items():
-        if s["tilt"] in ("TILT DOWN", "UNDERWEIGHT"):
-            raw[cls] = s["neutral_w"]
-        else:  # OVERWEIGHT, TILT UP, NEUTRAL
-            raw[cls] = s["suggested_w"]
+    Apply only the bullish side of the tilt. Bearish/neutral sleeves keep
+    their exact neutral weight -- never diluted below it. Only truly
+    bullish sleeves (TILT UP / OVERWEIGHT) are boosted above neutral,
+    sharing whatever weight budget is left over once every other sleeve
+    has taken its full neutral share, in proportion to each bullish
+    sleeve's own suggested_w.
 
-    total = sum(raw.values())
-    return {cls: w / total for cls, w in raw.items()}
+    Fixed 2026-09-03: the previous version set bullish sleeves to their
+    already-globally-normalised suggested_w and every other sleeve to
+    neutral_w, then renormalised the total back to 1 -- which silently
+    diluted EVERY sleeve, including ones meant to be floored at neutral,
+    any time a sleeve was tilted up (raw total > 1 whenever any bullish
+    tilt existed, since nothing was ever allowed to go below neutral to
+    fund it). Verified against the live daily record: FX was tilted up on
+    most days since the ledger opened, which mechanically pulled crypto
+    and gold below their true neutral share even while both sat at
+    "NEUTRAL" tilt -- and those two were the best-performing sleeves of
+    the period, so the bug was a real, measurable drag on the tilt
+    account's NAV, not just a technicality.
+    """
+    floor_cls = [cls for cls, s in state.items() if s["tilt"] not in ("TILT UP", "OVERWEIGHT")]
+    bull_cls  = [cls for cls, s in state.items() if s["tilt"] in ("TILT UP", "OVERWEIGHT")]
+
+    floor_w = {cls: state[cls]["neutral_w"] for cls in floor_cls}
+    budget_left = 1.0 - sum(floor_w.values())
+    bull_raw_total = sum(state[cls]["suggested_w"] for cls in bull_cls)
+
+    if not bull_cls or budget_left <= 0 or bull_raw_total <= 0:
+        # No bullish sleeve to fund, or the floor group already claims the
+        # whole budget (shouldn't happen since neutral_w's sum to 1) --
+        # fall back to plain neutral weights, renormalised for safety.
+        raw = {cls: state[cls]["neutral_w"] for cls in state}
+        total = sum(raw.values())
+        return {cls: w / total for cls, w in raw.items()}
+
+    bull_w = {
+        cls: budget_left * (state[cls]["suggested_w"] / bull_raw_total)
+        for cls in bull_cls
+    }
+    return {**floor_w, **bull_w}
 
 
 def neutral_weights(state):
