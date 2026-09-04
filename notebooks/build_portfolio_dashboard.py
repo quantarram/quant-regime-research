@@ -201,9 +201,14 @@ try:
     try:
         if os.path.exists(LIVE_HISTORY_PARQUET):
             existing_hist = pd.read_parquet(LIVE_HISTORY_PARQUET)
-            merged_hist = existing_hist.copy()
-            for col in prices.columns:
-                merged_hist[col] = prices[col].combine_first(existing_hist.get(col))
+            # DataFrame-level combine_first unions BOTH the row index and
+            # columns correctly; the earlier per-column-assignment version
+            # silently truncated new dates because assigning into a column
+            # of a DataFrame whose index was frozen at existing_hist's
+            # (older, shorter) index can't grow that index -- caught
+            # 2026-09-04 when the saved file was found still stuck at
+            # 2026-09-02 a full day after this was first added.
+            merged_hist = prices.combine_first(existing_hist)
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]

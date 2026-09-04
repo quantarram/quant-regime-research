@@ -169,9 +169,10 @@ try:
     try:
         if os.path.exists(LIVE_HISTORY_PARQUET):
             existing_hist = pd.read_parquet(LIVE_HISTORY_PARQUET)
-            merged_hist = existing_hist.copy()
-            for col in prices.columns:
-                merged_hist[col] = prices[col].combine_first(existing_hist.get(col))
+            # DataFrame-level combine_first unions row index AND columns
+            # correctly -- see build_portfolio_dashboard.py for why the
+            # earlier per-column version silently truncated new dates.
+            merged_hist = prices.combine_first(existing_hist)
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
