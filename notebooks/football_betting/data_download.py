@@ -188,7 +188,14 @@ def _fetch_one_cached(league_code, season):
     """Like fetch_one(), but closed seasons (every SEASONS entry except the current,
     live one) are read from a local parquet cache after their first fetch instead of
     hitting the network again -- their results are final and never change. Only the
-    live season (SEASONS[-1]) always fetches fresh, since it's still being played."""
+    live season (SEASONS[-1]) always fetches fresh, since it's still being played.
+
+    The live season also keeps a "last known good" snapshot, updated whenever a
+    fetch succeeds, and falls back to it if today's fetch fails -- e.g. a transient
+    503 from football-data.co.uk. Without this, a single outage silently regresses
+    matches.parquet's live-season coverage back to whatever the previous closed
+    season ended with (caught 2026-09-06: an outage dropped ~341 matches and pushed
+    the "most recent" date back over 3 months, with no warning anywhere)."""
     is_live_season = season == SEASONS[-1]
     cache_path = SEASON_CACHE_DIR / f"{league_code}_{season}.parquet"
     if not is_live_season and cache_path.exists():
@@ -197,8 +204,20 @@ def _fetch_one_cached(league_code, season):
     df = fetch_one(league_code, season)
     time.sleep(0.1)  # be polite to a free public data source -- only reached on an actual HTTP fetch
 
-    if not is_live_season and df is not None and len(df):
-        df.to_parquet(cache_path, index=False)
+    if not is_live_season:
+        if df is not None and len(df):
+            df.to_parquet(cache_path, index=False)
+        return df
+
+    # Live season from here on.
+    last_good_path = SEASON_CACHE_DIR / f"{league_code}_{season}_last_good.parquet"
+    if df is not None and len(df):
+        df.to_parquet(last_good_path, index=False)
+        return df
+    if last_good_path.exists():
+        print(f"  WARNING: live fetch failed for {league_code}_{season} "
+              f"(source may be down) -- using last known good snapshot instead.")
+        return pd.read_parquet(last_good_path)
     return df
 
 
