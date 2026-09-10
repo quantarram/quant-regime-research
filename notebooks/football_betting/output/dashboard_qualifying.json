@@ -1,3 +1,34 @@
 [
-
+  {
+    "fixture":"Real Madrid vs Vallecano",
+    "league":"SP1",
+    "country":"Spain",
+    "competition":"Spanish League",
+    "start_time":"2026-09-12T19:00:00Z",
+    "pick":"Real Madrid",
+    "home_team_matched":"Real Madrid",
+    "away_team_matched":"Vallecano",
+    "ppg_diff":0.8333333333,
+    "home_ppg_home_only":2.5666666667,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.07,
+    "qualifies":true
+  },
+  {
+    "fixture":"Inter vs Udinese",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-09-14T18:45:00Z",
+    "pick":"Inter",
+    "home_team_matched":"Inter",
+    "away_team_matched":"Udinese",
+    "ppg_diff":1.1,
+    "home_ppg_home_only":2.4333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.25,
+    "qualifies":true
+  }
 ]
