@@ -1,3 +1,18 @@
 [
-
+  {
+    "fixture":"Bayern Munich vs Union Berlin",
+    "league":"D1",
+    "country":"Germany",
+    "competition":"German League",
+    "start_time":"2026-09-18T18:30:00Z",
+    "pick":"Bayern Munich",
+    "home_team_matched":"Bayern Munich",
+    "away_team_matched":"Union Berlin",
+    "ppg_diff":1.5,
+    "home_ppg_home_only":2.6,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.05,
+    "qualifies":true
+  }
 ]
