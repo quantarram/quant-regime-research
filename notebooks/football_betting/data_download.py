@@ -109,7 +109,16 @@ def _pick(df, *candidates):
 
 def fetch_one(league_code, season):
     url = BASE_URL.format(season=season, league=league_code)
-    r = requests.get(url, timeout=20)
+    try:
+        r = requests.get(url, timeout=20)
+    except requests.exceptions.RequestException:
+        # Network-level failure (connection refused, timeout, bad redirect, DNS,
+        # etc.) -- caught 2026-09-17 when football-data.co.uk's apex domain
+        # redirected to 127.0.0.1, a server-side misconfiguration on their end,
+        # not ours. Previously only pd.read_csv() below was wrapped in try/except,
+        # so this crashed the whole daily_dashboard.py run instead of falling
+        # back gracefully like a plain non-200 response already does.
+        return None
     if r.status_code != 200 or len(r.content) < 200:
         return None
     try:
