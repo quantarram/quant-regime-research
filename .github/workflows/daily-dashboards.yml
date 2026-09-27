@@ -1,0 +1,93 @@
+name: Daily CPE dashboard update
+
+# Runs the same steps as notebooks/run_dashboards.sh, minus its broken
+# Windows-only conda-activate line. Scheduled to run once a day at 03:00
+# UTC = 11:00 SGT, and can also be triggered manually from the Actions
+# tab (workflow_dispatch) for testing.
+#
+# NOT part of this workflow: recording real football bets (record_bet.py)
+# or manually resolving a real-money win ahead of official results. Those
+# stay a manual, in-chat step whenever the owner reports back -- the
+# qualifying picks this run logs are still there to record against
+# retroactively.
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-dashboards
+  cancel-in-progress: false
+
+jobs:
+  run-dashboards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build gold dashboard
+        working-directory: notebooks
+        run: python build_gold_dashboard.py
+
+      - name: Build portfolio dashboard
+        working-directory: notebooks
+        run: python build_portfolio_dashboard.py
+
+      - name: Build precious metals dashboard
+        working-directory: notebooks
+        run: python build_metals_dashboard.py
+
+      - name: Build predictor dashboard
+        working-directory: notebooks
+        run: python build_predictor_dashboard.py
+
+      - name: Log predictions and resolve expired
+        working-directory: notebooks
+        run: python log_predictions.py --both
+
+      - name: Update IBKR paper ledger
+        working-directory: notebooks
+        run: python ibkr_paper_ledger.py
+
+      - name: Build football checklist
+        working-directory: notebooks
+        run: python football_betting/daily_dashboard.py
+
+      - name: Resolve football picks
+        working-directory: notebooks
+        run: python football_betting/resolve_football_picks.py
+
+      - name: Commit and push
+        working-directory: notebooks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main
+          git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv \
+            gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html \
+            predictor_dashboard.html ibkr_paper_ledger.csv multiasset_prices_live_history.parquet \
+            football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json \
+            football_betting/output/qualifying_log.csv football_betting/data/matches.parquet \
+            football_betting/data/season_cache/*_last_good.parquet
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "CPE daily update $(date -u +%Y-%m-%d) [automated]"
+            git push origin main
+          fi
