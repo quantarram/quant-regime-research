@@ -17,7 +17,6 @@ on:
 
 permissions:
   contents: write
-  issues: write
 
 concurrency:
   group: daily-dashboards
@@ -74,14 +73,6 @@ jobs:
         working-directory: notebooks
         run: python football_betting/resolve_football_picks.py
 
-      - name: Generate daily narrative summary
-        working-directory: notebooks
-        continue-on-error: true
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GH_TOKEN: ${{ github.token }}
-        run: python generate_daily_summary.py
-
       - name: Commit and push
         working-directory: notebooks
         run: |
@@ -94,9 +85,6 @@ jobs:
             football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json \
             football_betting/output/qualifying_log.csv football_betting/data/matches.parquet \
             football_betting/data/season_cache/*_last_good.parquet
-          if compgen -G "daily_summaries/*.md" > /dev/null; then
-            git add daily_summaries/*.md
-          fi
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
