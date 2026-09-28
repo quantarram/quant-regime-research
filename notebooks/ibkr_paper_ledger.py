@@ -46,12 +46,22 @@ import os
 import re
 import json
 import warnings
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, timezone
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import yfinance as yf
 
 warnings.filterwarnings("ignore")
+
+# SGT is this pipeline's one true "today" -- must match build_portfolio_dashboard.py's
+# now-also-SGT "gen" timestamp (compared below) and log_predictions.py's TODAY, so a
+# stale-dashboard check or a hold-until comparison can't disagree just because of what
+# timezone the host machine happens to be in. Fixed 2026-09-28 alongside the same
+# bare-datetime.now()/date.today() issue across the rest of the pipeline.
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
 
 BASE_DIR       = os.path.dirname(os.path.abspath(__file__))
 DASHBOARD_HTML = os.path.join(BASE_DIR, "portfolio_dashboard.html")
@@ -77,7 +87,7 @@ CLS_MAP = {"equities": "Equities", "gold": "Gold", "bonds": "Bonds",
 # IBIT and UUP are thinner and carry wider estimated spreads.
 COST_BPS = {"equities": 2.0, "gold": 3.0, "bonds": 4.0, "crypto": 6.0, "fx": 8.0}
 
-TODAY = date.today()
+TODAY = _now_sgt().date()
 
 LEDGER_COLS = [
     "date",

@@ -15,15 +15,23 @@ Outputs:
 """
 
 import json, math, os, warnings
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
 warnings.filterwarnings("ignore")
 
+# SGT-user-facing display timestamps -- explicit UTC->SGT conversion, not bare
+# datetime.now(), so it's correct whether run on the owner's SGT Mac or a UTC
+# GitHub Actions runner (see build_gold_dashboard.py for the fuller writeup).
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
+
 print("=" * 60)
 print("  PORTFOLIO TILT DASHBOARD BUILDER")
-print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"  {_now_sgt().strftime('%Y-%m-%d %H:%M:%S')} SGT")
 print("=" * 60)
 
 # ── ASSET CLASS DEFINITIONS ──────────────────────────────────
@@ -574,7 +582,7 @@ for ac, info in ASSET_CLASSES.items():
             }
 
 # ── STEP 6: BUILD DATA BUNDLE ─────────────────────────────────
-gen_time = datetime.now().strftime("%Y-%m-%d %H:%M")
+gen_time = _now_sgt().strftime("%Y-%m-%d %H:%M")
 
 bundle = {
     "gen":               gen_time,

@@ -29,10 +29,23 @@ import re
 import os
 import warnings
 import argparse
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
+from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 warnings.filterwarnings("ignore")
+
+# SGT is this pipeline's one true "today" -- date_predicted values and the
+# once-per-day idempotency checks below must mean the same calendar day the
+# owner experiences, regardless of what timezone the host machine is in.
+# Historical rows are unaffected: every prior run was either on the owner's
+# own SGT Mac (where bare date.today() already equaled SGT) or, on GitHub
+# Actions so far, at a UTC hour that still fell on the same SGT calendar
+# day -- this only changes behavior for a run delayed far enough (past
+# ~16:00 UTC = SGT midnight) to actually cross that boundary, fixed 2026-09-28.
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
 
 # ── PATHS ────────────────────────────────────────────────────
 # Adjust BASE_DIR to your notebooks folder
@@ -51,8 +64,8 @@ METALS_CSV = os.path.join(BASE_DIR, "metals_predictions.csv")
 # by diffing two different price scales (fixed 2026-08-03).
 METALS_TICKERS = {"Silver": "SI=F", "Platinum": "PL=F"}
 
-TODAY = date.today()
-NOW   = datetime.now().strftime("%Y-%m-%d %H:%M")
+TODAY = _now_sgt().date()
+NOW   = _now_sgt().strftime("%Y-%m-%d %H:%M") + " SGT"
 
 print("=" * 60)
 print("  CPE PREDICTION LOGGER")

@@ -16,12 +16,21 @@ Requires: multiasset_prices.parquet, joint_cpe_results.parquet, cpe_results.parq
 import pandas as pd
 import numpy as np
 import json, os, warnings
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 warnings.filterwarnings("ignore")
+
+# This dashboard is SGT-user-facing (display timestamps, "last US close" labels,
+# staleness banners) -- always compute "now"/"today" by explicit UTC->SGT
+# conversion, never bare datetime.now()/date.today(), so behavior is identical
+# whether this runs on the owner's SGT Mac or a UTC GitHub Actions runner.
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
 
 print("="*60)
 print("  GOLD BUY SIGNAL DASHBOARD BUILDER")
-print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"  {_now_sgt().strftime('%Y-%m-%d %H:%M:%S')} SGT")
 print("="*60)
 
 # ── LOAD & REFRESH DATA ───────────────────────────────────────────────────────
@@ -312,15 +321,20 @@ print(f"  Spot SGD/g: S${gold_spot_sgd_g:.2f} | SGD/oz: S${gold_spot_sgd_oz:.2f}
 # US market closes at 4 PM New York = 4 AM next day Singapore time
 # So when running in Singapore morning, the last US close was YESTERDAY Singapore date
 from datetime import timedelta
-_sgt_hour = (datetime.utcnow().hour + 8) % 24
-_us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y') if _sgt_hour < 4 else datetime.now().strftime('%d %b %Y')
+# Bug fixed 2026-09-28: _sgt_hour was correctly UTC->SGT converted, but the date
+# arithmetic below was applied to bare datetime.now() (host-local) instead of the
+# same SGT instant -- silently correct only when the host's own clock happened to
+# be SGT (the owner's Mac), wrong once this started running on a UTC GitHub Actions
+# runner. Both the hour check and the date offset now come from the one _now_sgt().
+_now = _now_sgt()
+_sgt_hour = _now.hour
 # Before 4 AM SGT: US market still open, so close was 2 days ago SGT
 if _sgt_hour < 4:
-    _us_close_label = (datetime.now() - timedelta(days=2)).strftime('%d %b %Y')
+    _us_close_label = (_now - timedelta(days=2)).strftime('%d %b %Y')
 elif _sgt_hour < 16:  # 4 AM to 4 PM SGT: last close was yesterday SGT
-    _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
+    _us_close_label = (_now - timedelta(days=1)).strftime('%d %b %Y')
 else:  # after 4 PM SGT: today's US session still open, last close was yesterday
-    _us_close_label = (datetime.now() - timedelta(days=1)).strftime('%d %b %Y')
+    _us_close_label = (_now - timedelta(days=1)).strftime('%d %b %Y')
 bar_sub_text = (f"Gold spot price in Singapore dollars per gram · "
                 f"Last US close: {_us_close_label} · "
                 f"Derived from GLD ETF and USD/SGD rate.")
@@ -651,7 +665,7 @@ gold_pw = pair[pair["Y"].isin(GOLD_Y)].sort_values("CPE",ascending=False).head(6
 
 # ── DATA BUNDLE ───────────────────────────────────────────────────────────────
 data = {
-    "generated":     datetime.now().strftime("%Y-%m-%d %H:%M"),
+    "generated":     _now_sgt().strftime("%Y-%m-%d %H:%M"),
     "latest_date":   str(latest_date.date()),
     "gold_usd":      round(gold_usd,2),
     "gold_sgd_oz":   round(gold_sgd_oz,2),
@@ -704,9 +718,9 @@ print(f"  Data bundle: {len(data_json)/1e3:.1f} KB")
 
 # ── HTML ──────────────────────────────────────────────────────────────────────
 # ── SIMPLE BANNER: computed in Python, injected as static text ───────────────
-_days_old = (datetime.now() - latest_date.to_pydatetime().replace(tzinfo=None)).days
-_sgt_h = (datetime.utcnow().hour + 8) % 24
-_wday = datetime.now().weekday()  # 0=Mon, 6=Sun
+_days_old = (_now_sgt().replace(tzinfo=None) - latest_date.to_pydatetime().replace(tzinfo=None)).days
+_sgt_h = _now_sgt().hour
+_wday = _now_sgt().weekday()  # 0=Mon, 6=Sun -- now consistent with _sgt_h above
 if _days_old >= 1 and (_wday >= 5 or _sgt_h < 21):
     _banner = ("<div style=\"background:#1C1A0E;border:1px solid #4A4020;"
                "border-radius:8px;padding:14px 24px;font-family:sans-serif;"

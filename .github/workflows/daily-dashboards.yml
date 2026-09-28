@@ -1,9 +1,19 @@
 name: Daily CPE dashboard update
 
 # Runs the same steps as notebooks/run_dashboards.sh, minus its broken
-# Windows-only conda-activate line. Scheduled to run once a day at 03:00
-# UTC = 11:00 SGT, and can also be triggered manually from the Actions
+# Windows-only conda-activate line. Scheduled to run once a day at ~03:07
+# UTC (~11:07 SGT), and can also be triggered manually from the Actions
 # tab (workflow_dispatch) for testing.
+#
+# Cron minute deliberately NOT :00 -- GitHub's own docs warn that scheduled
+# workflows can be delayed during high load, "including the start of every
+# hour," and recommend picking an off-the-hour minute. The very first firing
+# of this schedule (2026-09-28, cron was "0 3 * * *") landed 6.5 hours late
+# (09:28 UTC instead of 03:00 UTC) -- consistent with widely-reported 2026
+# GitHub Actions cron congestion specifically at :00/:30. This won't
+# guarantee exact timing (GitHub never does), but it's the documented
+# mitigation. If runs keep landing very late, that's a GitHub-side platform
+# issue, not something fixable from this repo.
 #
 # NOT part of this workflow: recording real football bets (record_bet.py)
 # or manually resolving a real-money win ahead of official results. Those
@@ -12,7 +22,7 @@ name: Daily CPE dashboard update
 # retroactively.
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "7 3 * * *"
   workflow_dispatch: {}
 
 permissions:

@@ -18,7 +18,8 @@ Output: predictor_dashboard.html
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -32,9 +33,16 @@ import live_features as lfeat  # noqa: E402
 import live_train_predict as ltp  # noqa: E402
 import feature_lib as fl  # noqa: E402
 
+# SGT-user-facing display timestamps -- explicit UTC->SGT conversion, not bare
+# datetime.now(), so it's correct whether run on the owner's SGT Mac or a UTC
+# GitHub Actions runner (see build_gold_dashboard.py for the fuller writeup).
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
+
 print("=" * 60)
 print("  PREDICTOR_V1 LIVE DASHBOARD BUILDER")
-print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"  {_now_sgt().strftime('%Y-%m-%d %H:%M:%S')} SGT")
 print("=" * 60)
 
 FORBIDDEN_TOKENS = ["STRONG BUY", "BUY ZONE", "SELL SIGNAL", ">>BUY<<", ">>SELL<<"]
@@ -116,7 +124,7 @@ for _, r in results.sort_values("mape_deployed").iterrows():
     })
 
 data = {
-    "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "generated": _now_sgt().strftime("%Y-%m-%d %H:%M:%S"),
     "latest_date": str(main_meta["latest_date"].date()),
     "data_age_days": main_meta["age_days"],
     "data_stale": main_meta["stale"],

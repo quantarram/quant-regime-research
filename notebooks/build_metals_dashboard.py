@@ -23,15 +23,23 @@ Outputs:
 """
 
 import json, os, re, warnings
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
+from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
 warnings.filterwarnings("ignore")
 
+# SGT-user-facing display timestamps -- explicit UTC->SGT conversion, not bare
+# datetime.now(), so it's correct whether run on the owner's SGT Mac or a UTC
+# GitHub Actions runner (see build_gold_dashboard.py for the fuller writeup).
+SGT = ZoneInfo("Asia/Singapore")
+def _now_sgt():
+    return datetime.now(timezone.utc).astimezone(SGT)
+
 print("=" * 60)
 print("  PRECIOUS METALS DASHBOARD BUILDER")
-print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"  {_now_sgt().strftime('%Y-%m-%d %H:%M:%S')} SGT")
 print("=" * 60)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -213,7 +221,7 @@ def calibrate_ratio(etf_ticker, futures_ticker, cache_key):
     """Dynamically calibrate ETF-shares-per-oz vs its futures, cached weekly.
     Mirrors the GLD/GC=F calibration already used in build_gold_dashboard.py."""
     cache_path = os.path.join(BASE_DIR, f".{cache_key}_ratio_cache.json")
-    today = datetime.now().date()
+    today = _now_sgt().date()
     if os.path.exists(cache_path):
         try:
             with open(cache_path) as f:
@@ -522,7 +530,7 @@ if "Gold" in metal_data:
             if _m:
                 _GD = json.loads(_m.group(1))
                 _gd_date = datetime.strptime(_GD["generated"][:10], "%Y-%m-%d").date()
-                if (datetime.now().date() - _gd_date).days <= 1:
+                if (_now_sgt().date() - _gd_date).days <= 1:
                     _gc = _GD["components"]
                     g = metal_data["Gold"]
                     g["spot_usd_oz"]   = round(_GD["gold_usd"], 2)
@@ -545,7 +553,7 @@ if "Gold" in metal_data:
                     print(f"  Gold     : overridden with gold_dashboard.html's authoritative "
                           f"composite={_gc['composite']} ({_gc['label']})")
                 else:
-                    print(f"  Gold     : gold_dashboard.html is {(datetime.now().date()-_gd_date).days}d "
+                    print(f"  Gold     : gold_dashboard.html is {(_now_sgt().date()-_gd_date).days}d "
                           f"stale, keeping this script's own gold computation")
     except Exception as _e:
         print(f"  Gold     : could not import gold_dashboard.html ({_e}), keeping own computation")
@@ -624,7 +632,7 @@ if total_suggested > 0:
 print(f"  Suggested weights (normalised): {suggested_weights}")
 
 # ── DATA BUNDLE ───────────────────────────────────────────────
-gen_time = datetime.now().strftime("%Y-%m-%d %H:%M")
+gen_time = _now_sgt().strftime("%Y-%m-%d %H:%M")
 bundle = {
     "gen": gen_time,
     "data_date": str(prices.index.max().date()),
