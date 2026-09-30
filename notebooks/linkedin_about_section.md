@@ -2,7 +2,7 @@ I am a quantitative researcher working across atmospheric predictability and fin
 
 Professional Role:
 
-I currently work as a quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency) — ML and probabilistic modeling for numerical weather prediction: benchmarks, ensemble methods, uncertainty-aware forecasting.
+I currently work as a quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency) — ML and probabilistic modeling for numerical weather prediction.
 
 The CPE Framework:
 
@@ -16,11 +16,13 @@ A portfolio tilt achieving Sharpe 1.43 vs 1.03 for a 60/40 benchmark
 
 Moisture-stress variables (VPD, dry heat, combined heat+drought) with the series' highest lift (2.02×)
 
+A sugar-price call made before the outcome was known, confirmed once the 2026 monsoon resolved (+29%)
+
 github.com/quantarram/quant-regime-research
 
 Beyond CPE:
 
-I've also extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. That runs live as a 22-instrument price-forecasting dashboard (LightGBM quantile regression): real skill for half the panel, zero demonstrated tradeable alpha across five strategy tests. The same machinery yields a general AI/ML training-window rule, framed beyond finance. Five further attempts to beat that ceiling — architecture, depth, more data, loss functions, uncertainty — all failed. A sixth, at the decision layer (RL and genetic-algorithm policy search), hit the same wall — but using the predictability limit to pick which instruments a classic momentum strategy trades beat the unfiltered version, an edge that held up across ten tests. A companion study tests hurricane landfalls against reinsurer equity.
+I've also extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. That runs live as a 22-instrument price-forecasting dashboard (LightGBM quantile regression): real skill for half the panel, zero demonstrated tradeable alpha across five strategy tests. The same machinery yields a general AI/ML training-window rule. Five further attempts to beat that ceiling — architecture, depth, more data, loss functions, uncertainty — all failed. A sixth, at the decision layer, hit the same wall — but using the predictability limit to pick which instruments a classic momentum strategy trades beat the unfiltered version, an edge that held up across ten tests. A companion study tests hurricane landfalls against reinsurer equity.
 
 Negative Results:
 
