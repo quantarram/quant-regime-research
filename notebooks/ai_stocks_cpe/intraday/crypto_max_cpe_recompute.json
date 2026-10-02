@@ -1,0 +1,20 @@
+{
+  "max_cpe_tail_only_bullish": 0.3778538812785388,
+  "median_cpe_tail_only_bullish": 0.13331240248125736,
+  "n_combos_tested": 9216,
+  "symbols": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "BNB"
+  ],
+  "horizons_min": [
+    1,
+    5,
+    15,
+    30,
+    60,
+    240
+  ],
+  "note": "Bullish-side, q>=0.80-only restriction, recomputed to match the equities test's exact methodology for direct comparability -- supersedes the broader-grid '~0.545' figure in project memory for this specific statistic."
+}

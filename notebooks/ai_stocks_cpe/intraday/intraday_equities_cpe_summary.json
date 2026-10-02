@@ -1,0 +1,19 @@
+{
+  "total_combos_tested": 41472,
+  "n_surviving": 0,
+  "max_cpe_tail_only": 0.4159563586771224,
+  "median_cpe_tail_only": 0.11068673931077316,
+  "symbols": [
+    "NVDA",
+    "AMD",
+    "SPY"
+  ],
+  "horizons_min": [
+    1,
+    5,
+    15,
+    30,
+    60,
+    240
+  ]
+}

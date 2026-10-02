@@ -1,0 +1,392 @@
+[
+  {
+    "weight": 4.53,
+    "ticker": "NFLX",
+    "name": "NETFLIX INC"
+  },
+  {
+    "weight": 3.75,
+    "ticker": "IBM",
+    "name": "IBM"
+  },
+  {
+    "weight": 3.61,
+    "ticker": "ORCL",
+    "name": "ORACLE CORP"
+  },
+  {
+    "weight": 3.58,
+    "ticker": "CSCO",
+    "name": "CISCO SYSTEMS INC"
+  },
+  {
+    "weight": 3.51,
+    "ticker": "SIE GR",
+    "name": "SIEMENS AG-REG"
+  },
+  {
+    "weight": 3.36,
+    "ticker": "ACN",
+    "name": "ACCENTURE PLC-CL A"
+  },
+  {
+    "weight": 3.26,
+    "ticker": "005930 KS",
+    "name": "SAMSUNG ELECTRON"
+  },
+  {
+    "weight": 3.08,
+    "ticker": "MSFT",
+    "name": "MICROSOFT CORP"
+  },
+  {
+    "weight": 3.05,
+    "ticker": "AAPL",
+    "name": "APPLE INC"
+  },
+  {
+    "weight": 3.03,
+    "ticker": "NVDA",
+    "name": "NVIDIA CORP"
+  },
+  {
+    "weight": 2.82,
+    "ticker": "GOOGL",
+    "name": "ALPHABET INC-CL A"
+  },
+  {
+    "weight": 2.77,
+    "ticker": "700 HK",
+    "name": "TENCENT HOLDINGS LTD"
+  },
+  {
+    "weight": 2.75,
+    "ticker": "3690 HK",
+    "name": "MEITUAN-CLASS B"
+  },
+  {
+    "weight": 2.69,
+    "ticker": "ADBE",
+    "name": "ADOBE INC"
+  },
+  {
+    "weight": 2.61,
+    "ticker": "BABA",
+    "name": "ALIBABA GRP-ADR"
+  },
+  {
+    "weight": 2.6,
+    "ticker": "QCOM",
+    "name": "QUALCOMM INC"
+  },
+  {
+    "weight": 2.53,
+    "ticker": "CRM",
+    "name": "SALESFORCE INC"
+  },
+  {
+    "weight": 2.52,
+    "ticker": "NOW",
+    "name": "SERVICENOW INC"
+  },
+  {
+    "weight": 2.45,
+    "ticker": "AMZN",
+    "name": "AMAZON.COM INC"
+  },
+  {
+    "weight": 2.35,
+    "ticker": "INTC",
+    "name": "INTEL CORP"
+  },
+  {
+    "weight": 2.29,
+    "ticker": "TSLA",
+    "name": "TESLA INC"
+  },
+  {
+    "weight": 2.1,
+    "ticker": "META",
+    "name": "META PLATFORMS INC"
+  },
+  {
+    "weight": 1.68,
+    "ticker": "TRI",
+    "name": "THOMSON REUTERS CORP"
+  },
+  {
+    "weight": 1.64,
+    "ticker": "UBER",
+    "name": "UBER TECHNOLOGIES INC"
+  },
+  {
+    "weight": 1.61,
+    "ticker": "SNPS",
+    "name": "SYNOPSYS INC"
+  },
+  {
+    "weight": 1.46,
+    "ticker": "SHOP",
+    "name": "SHOPIFY INC - CLASS A"
+  },
+  {
+    "weight": 1.43,
+    "ticker": "CDNS",
+    "name": "CADENCE DESIGN SYS INC"
+  },
+  {
+    "weight": 1.39,
+    "ticker": "000660 KS",
+    "name": "SK HYNIX INC"
+  },
+  {
+    "weight": 1.34,
+    "ticker": "NXPI",
+    "name": "NXP SEMICONDUCTORS NV"
+  },
+  {
+    "weight": 1.3,
+    "ticker": "IFX GR",
+    "name": "INFINEON TECHNOLOGIES AG"
+  },
+  {
+    "weight": 1.04,
+    "ticker": "STM IM",
+    "name": "STMICROELECTRONICS NV"
+  },
+  {
+    "weight": 0.99,
+    "ticker": "WDAY",
+    "name": "WORKDAY INC-CLASS A"
+  },
+  {
+    "weight": 0.98,
+    "ticker": "EXPN LN",
+    "name": "EXPERIAN PLC"
+  },
+  {
+    "weight": 0.92,
+    "ticker": "ROK",
+    "name": "ROCKWELL AUTOMATION INC"
+  },
+  {
+    "weight": 0.89,
+    "ticker": "6954 JP",
+    "name": "FANUC CORP"
+  },
+  {
+    "weight": 0.88,
+    "ticker": "BIDU",
+    "name": "BAIDU INC - SPON ADR"
+  },
+  {
+    "weight": 0.85,
+    "ticker": "WKL NA",
+    "name": "WOLTERS KLUWER"
+  },
+  {
+    "weight": 0.74,
+    "ticker": "EBAY",
+    "name": "EBAY INC"
+  },
+  {
+    "weight": 0.68,
+    "ticker": "TTD",
+    "name": "TRADE DESK INC-A"
+  },
+  {
+    "weight": 0.65,
+    "ticker": "DDOG",
+    "name": "DATADOG INC - CLASS A"
+  },
+  {
+    "weight": 0.64,
+    "ticker": "HPE",
+    "name": "HEWLETT PACKA"
+  },
+  {
+    "weight": 0.6,
+    "ticker": "ZS",
+    "name": "ZSCALER INC"
+  },
+  {
+    "weight": 0.56,
+    "ticker": "SMCI",
+    "name": "SUPER MICRO COMPUTER INC"
+  },
+  {
+    "weight": 0.5,
+    "ticker": "ABMD",
+    "name": "ABIOMED INC"
+  },
+  {
+    "weight": 0.47,
+    "ticker": "3443 TT",
+    "name": "GLOBAL UNICHIP CORP"
+  },
+  {
+    "weight": 0.44,
+    "ticker": "3661 TT",
+    "name": "ALCHIP TECHNOLOGIES LTD"
+  },
+  {
+    "weight": 0.44,
+    "ticker": "SNAP",
+    "name": "SNAP INC - A"
+  },
+  {
+    "weight": 0.44,
+    "ticker": "AVV LN",
+    "name": "AVEVA GROUP PLC"
+  },
+  {
+    "weight": 0.44,
+    "ticker": "6502 JP",
+    "name": "TOSHIBA CORP"
+  },
+  {
+    "weight": 0.44,
+    "ticker": "SPLK",
+    "name": "SPLUNK INC"
+  },
+  {
+    "weight": 0.43,
+    "ticker": "WIX",
+    "name": "WIX.COM LTD"
+  },
+  {
+    "weight": 0.42,
+    "ticker": "ZBRA",
+    "name": "ZEBRA TECH CORP"
+  },
+  {
+    "weight": 0.42,
+    "ticker": "BAH",
+    "name": "BOOZ ALLEN HAMIL"
+  },
+  {
+    "weight": 0.41,
+    "ticker": "HUBB",
+    "name": "HUBBELL INC"
+  },
+  {
+    "weight": 0.39,
+    "ticker": "STNE",
+    "name": "STONECO LTD-A"
+  },
+  {
+    "weight": 0.38,
+    "ticker": "VSAT",
+    "name": "VIASAT INC"
+  },
+  {
+    "weight": 0.35,
+    "ticker": "2353 TT",
+    "name": "ACER INC"
+  },
+  {
+    "weight": 0.33,
+    "ticker": "STX",
+    "name": "SEAGATE TECHNOLO"
+  },
+  {
+    "weight": 0.32,
+    "ticker": "G",
+    "name": "GENPACT LTD"
+  },
+  {
+    "weight": 0.31,
+    "ticker": "SMAR",
+    "name": "SMARTSHEET INC-CLASS A"
+  },
+  {
+    "weight": 0.3,
+    "ticker": "DXC",
+    "name": "DXC TECHNOLOGY CO"
+  },
+  {
+    "weight": 0.3,
+    "ticker": "AMBA",
+    "name": "AMBARELLA INC"
+  },
+  {
+    "weight": 0.3,
+    "ticker": "AMP IM",
+    "name": "AMPLIFON SPA"
+  },
+  {
+    "weight": 0.3,
+    "ticker": "CCCS",
+    "name": "CCC INTELLIGENT"
+  },
+  {
+    "weight": 0.29,
+    "ticker": "OKTA",
+    "name": "OKTA INC"
+  },
+  {
+    "weight": 0.29,
+    "ticker": "6701 JP",
+    "name": "NEC CORP"
+  },
+  {
+    "weight": 0.28,
+    "ticker": "VRNT",
+    "name": "VERINT SYSTEMS INC"
+  },
+  {
+    "weight": 0.28,
+    "ticker": "2395 TT",
+    "name": "ADVANTECH CO LTD"
+  },
+  {
+    "weight": 0.28,
+    "ticker": "TDC",
+    "name": "TERADATA CORP"
+  },
+  {
+    "weight": 0.26,
+    "ticker": "INFA",
+    "name": "INFORMATICA INC - CLASS A"
+  },
+  {
+    "weight": 0.25,
+    "ticker": "TWLO",
+    "name": "TWILIO INC - A"
+  },
+  {
+    "weight": 0.25,
+    "ticker": "TEMN SW",
+    "name": "TEMENOS AG - REG"
+  },
+  {
+    "weight": 0.24,
+    "ticker": "PEGA",
+    "name": "PEGASYSTEMS INC"
+  },
+  {
+    "weight": 0.21,
+    "ticker": "UPST",
+    "name": "UPSTART HOLDINGS INC"
+  },
+  {
+    "weight": 0.2,
+    "ticker": "AI",
+    "name": "C3.AI INC-A"
+  },
+  {
+    "weight": 0.19,
+    "ticker": "PATH",
+    "name": "UIPATH INC - CLASS A"
+  },
+  {
+    "weight": 0.17,
+    "ticker": "CAN",
+    "name": "CANAAN INC"
+  },
+  {
+    "weight": 0.15,
+    "ticker": "EXAI",
+    "name": "EXSCIENTIA PLC"
+  }
+]

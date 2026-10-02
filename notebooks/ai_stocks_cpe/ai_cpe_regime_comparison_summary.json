@@ -1,0 +1,31 @@
+{
+  "universe_size": 52,
+  "regime_split": "2022-11-30",
+  "avg_pairwise_correlation": 0.31665090829494835,
+  "pre_chatgpt": {
+    "window": [
+      "2019-02-07",
+      "2022-11-29"
+    ],
+    "n_trading_days": 961,
+    "n_surviving_configs": 64059,
+    "n_bullish": 12634,
+    "n_bearish": 51425,
+    "self_referential_share": 0.00966296695234081,
+    "n_unique_Y": 52,
+    "n_unique_X": 52
+  },
+  "post_chatgpt": {
+    "window": [
+      "2022-11-30",
+      "2026-09-30"
+    ],
+    "n_trading_days": 961,
+    "n_surviving_configs": 31436,
+    "n_bullish": 16462,
+    "n_bearish": 14974,
+    "self_referential_share": 0.009765873520804174,
+    "n_unique_Y": 52,
+    "n_unique_X": 52
+  }
+}
