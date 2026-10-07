@@ -43,11 +43,12 @@ echo "dashboard artifact (it can't self-publish from a plain script)."
 echo ""
 echo "[8/10] Resolving football picks whose matches have finished..."
 python football_betting/resolve_football_picks.py || { echo "ERROR: football_betting/resolve_football_picks.py failed."; exit 1; }
+python cpe_signal_ledger.py || { echo "ERROR: cpe_signal_ledger.py failed."; exit 1; }
 python build_performance_monitor.py || { echo "ERROR: build_performance_monitor.py failed."; exit 1; }
 
 echo ""
 echo "[9/10] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html performance_monitor.html predictor_forecasts.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
+git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html performance_monitor.html predictor_forecasts.csv cpe_signal_events.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""

@@ -10,11 +10,11 @@ each dashboard, what it called and what then happened:
                       ibkr_paper_ledger.csv       simulated NAV paths, tilt / neutral / hold-to-horizon
   Predictor           predictor_forecasts.csv     price forecasts vs realised closes
   Football checklist  football_betting/output/qualifying_log.csv  qualifying picks
-  CPE dashboard       (no live ledger yet -- listed so the gap is visible)
+  CPE dashboard       cpe_signal_events.csv       entry events scored against the frozen CPE table
 
 Every panel shows raw levels next to the relevant baseline (an always-long
 call for direction signals, the neutral portfolio for the tilt, a no-change
-forecast for the price forecasts, the odds-implied win rate for football) and
+forecast for the price forecasts, the odds-implied win rate for football, the live unconditional frequency for CPE) and
 always prints n. Nothing is filtered after the fact: every resolved row counts.
 
 Run: python build_performance_monitor.py      Output: performance_monitor.html
@@ -31,6 +31,7 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import predictor_ledger as pled  # noqa: E402
+import cpe_signal_ledger as cled  # noqa: E402
 
 SGT = ZoneInfo("Asia/Singapore")
 NOW_SGT = datetime.now(timezone.utc).astimezone(SGT)
@@ -164,6 +165,7 @@ def build_bundle():
         "portfolio": portfolio_block(),
         "predictor": pled.live_stats(pled.load_ledger()),
         "football": football_block(),
+        "cpe": cled.live_stats(),
     }
 
 
@@ -302,7 +304,10 @@ const PR = D.predictor;
 addOverview('predictor', 'Predictor (22 instruments)', 'live', PR.n_resolved + ' <small>of ' + PR.n_logged.toLocaleString() + ' resolved</small>', '', [PR.n_instruments_resolved + ' of ' + PR.n_instruments + ' instruments have an outcome', 'long horizons resolve from 2027']);
 const F = D.football;
 addOverview('football', 'Football checklist', 'live', F.wins + '/' + F.n_resolved, '<small>picks won</small>', ['odds-implied win rate ' + pct(F.implied), 'S$' + sgn(F.pnl, 2) + ' on S$' + num(F.stake, 2) + ' staked']);
-addOverview('cpe', 'CPE dashboard (161 instruments)', 'gap', '&ndash;', '', ['no live prediction ledger yet', 'scored on backtest only so far']);
+const C = D.cpe, c63 = C.by_horizon.find(r => r.horizon === 63);
+addOverview('cpe', 'CPE dashboard (161 instruments)', 'live', c63 ? pct(c63.hit) : '&ndash;', '<small>63d realised</small>',
+  [c63 ? 'claimed ' + pct(c63.claimed) + ', live base ' + pct(c63.live_base) + ' (n=' + c63.n.toLocaleString() + ')' : 'no 63d outcomes yet',
+   C.n_resolved.toLocaleString() + ' of ' + C.n_rows.toLocaleString() + ' signal rows resolved']);
 
 directionPanel('gold', 'Gold dashboard', [{label:'Gold', b:D.gold}], SCORING);
 directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.metals.Silver}, {label:'Platinum', b:D.metals.Platinum}], SCORING);
@@ -370,11 +375,40 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
     merge({yaxis:{gridcolor:'#1B1E1B', zeroline:true, zerolinecolor:'#3A3F3A', tickprefix:'S$'}}), CFG);
 })();
 
-// ------------------------------------------------------------ CPE gap
-addPanel('cpe', 'CPE dashboard (161 instruments)',
-  'no live ledger yet',
-  '<div class="note">The main CPE dashboard&rsquo;s numbers come from the backtest and out-of-sample studies. Unlike the dashboards above, it does not yet log what it flags each day and score it when the horizon passes, so there is no live record to show here. ' +
-  'Adding one means persisting each day&rsquo;s flagged instrument-horizon-threshold combinations and scoring them against the realised exceedance when the window closes.</div>');
+// ------------------------------------------------------------ CPE
+(function () {
+  const done = C.by_horizon.filter(r => r.n > 0), lab = done.map(r => r.horizon + 'd (n=' + r.n.toLocaleString() + ')');
+  let t = '<div class="table-wrap"><table><tr><th>Horizon</th><th>Call</th><th>Resolved rows</th><th>Claimed CPE</th><th>Realised</th><th>Table base</th><th>Live base</th><th>Pending</th><th>First resolves</th></tr>';
+  C.by_horizon.forEach(r => {
+    if (!r.n) { t += '<tr><td>' + r.horizon + 'd</td><td>all</td><td>0</td><td colspan="4" style="text-align:center;color:var(--text3)">no outcomes yet</td><td>' + r.n_pending.toLocaleString() + '</td><td>~' + r.first_pending + '</td></tr>'; return; }
+    ['bullish', 'bearish'].forEach(d => {
+      const x = r[d]; if (!x) return;
+      t += '<tr><td>' + r.horizon + 'd</td><td>' + d + '</td><td>' + x.n.toLocaleString() + '</td><td>' + pct(x.claimed, 1) + '</td><td>' + pct(x.hit, 1) + '</td><td>' + pct(x.base, 1) + '</td><td>' + pct(x.live_base, 1) + '</td><td>' + (d === 'bullish' ? r.n_pending.toLocaleString() : '') + '</td><td>' + (d === 'bullish' && r.first_pending ? '~' + r.first_pending : '') + '</td></tr>';
+    });
+  });
+  t += '</table></div>';
+  const body = '<div class="charts"><div><div class="c-label">Claimed CPE vs realised exceedance vs live base rate, by horizon (%)</div><div id="cpeBars"></div></div>' +
+    '<div><div class="c-label">By claimed-CPE band, resolved rows (%)</div><div id="cpeCal"></div></div></div>' + t +
+    '<div class="note">Scores the CPE table (frozen at ' + C.table_end + ', sha ' + C.table_sha + ') on the period after it, from ' + C.first_entry + ' to ' + C.last_entry + '. ' +
+    'Each event is a predictor entering its tail for the first time after a day outside it (' + C.n_events.toLocaleString() + ' events); it fans out to every gated table row for that predictor, ' + C.n_rows.toLocaleString() + ' signal rows in all. ' +
+    'A row scores 1 if the target&rsquo;s forward move beyond its horizon landed past the frozen q<sub>Y</sub> threshold, as the table defines it. ' +
+    '<b>Table base</b> is the unconditional frequency the table assumed (1 &minus; q<sub>Y</sub>); <b>live base</b> is how often that same event happened on <i>any</i> day of the live window, so realised above live base is what the signal adds beyond the period&rsquo;s own drift. ' +
+    'Most of the table&rsquo;s claims sit at 126d to 300d, which cannot resolve before December 2026 to 2027; the 21d and 63d rows resolved so far are a small slice of the claim, from a handful of entry dates, and rows from one event are not independent of each other. ' +
+    'Last price bar used: ' + C.last_bar + '.</div>';
+  addPanel('cpe', 'CPE dashboard (161 instruments)', C.n_resolved.toLocaleString() + ' signal rows resolved &middot; ' + C.n_pending.toLocaleString() + ' pending', body);
+  if (!done.length) return;
+  Plotly.newPlot('cpeBars', [
+    {x:lab, y:done.map(r => r.claimed*100), name:'Claimed CPE', type:'bar', marker:{color:'#5B8DBE'}, text:done.map(r => (r.claimed*100).toFixed(0)), textposition:'outside'},
+    {x:lab, y:done.map(r => r.hit*100), name:'Realised', type:'bar', marker:{color:'#7FB08A'}, text:done.map(r => (r.hit*100).toFixed(0)), textposition:'outside'},
+    {x:lab, y:done.map(r => r.live_base*100), name:'Live base', type:'bar', marker:{color:'#B5726A'}, text:done.map(r => (r.live_base*100).toFixed(0)), textposition:'outside'}
+  ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,115]}}), CFG);
+  const cb = C.calibration;
+  Plotly.newPlot('cpeCal', [
+    {x:cb.map(r => r.bin + ' (n=' + r.n.toLocaleString() + ')'), y:cb.map(r => r.claimed*100), name:'Claimed CPE', type:'bar', marker:{color:'#5B8DBE'}, text:cb.map(r => (r.claimed*100).toFixed(0)), textposition:'outside'},
+    {x:cb.map(r => r.bin + ' (n=' + r.n.toLocaleString() + ')'), y:cb.map(r => r.hit*100), name:'Realised', type:'bar', marker:{color:'#7FB08A'}, text:cb.map(r => (r.hit*100).toFixed(0)), textposition:'outside'},
+    {x:cb.map(r => r.bin + ' (n=' + r.n.toLocaleString() + ')'), y:cb.map(r => r.live_base*100), name:'Live base', type:'bar', marker:{color:'#B5726A'}, text:cb.map(r => (r.live_base*100).toFixed(0)), textposition:'outside'}
+  ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,115]}}), CFG);
+})();
 </script>
 </body>
 </html>"""
@@ -389,7 +423,7 @@ def main():
         f.write(html)
     print(f"Saved: {out} ({os.path.getsize(out)/1e3:.0f} KB)")
     g, m, p, fb = bundle["gold"], bundle["metals"], bundle["portfolio"], bundle["football"]
-    print(f"Gold: {g['n_resolved']} resolved, bullish hit {g['bull_hit']}; Metals: "
+    print(f"CPE: {bundle['cpe']['n_resolved']} signal rows resolved; Gold: {g['n_resolved']} resolved, bullish hit {g['bull_hit']}; Metals: "
           f"{m['Silver']['n_resolved'] + m['Platinum']['n_resolved']} resolved; "
           f"Portfolio: {p['all']['n']} windows; Football: {fb['wins']}/{fb['n_resolved']}")
 
