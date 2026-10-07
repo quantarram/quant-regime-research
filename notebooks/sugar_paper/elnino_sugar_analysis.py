@@ -65,7 +65,11 @@ def load_sugar_price():
           f"month-over-month return corr={ret_corr:.4f}, n={len(common)} months")
 
     last_fred = fred.index.max()
-    fill_dates = sb_m.index[sb_m.index > last_fred]
+    # only fully elapsed months: a partial current month (a few trading
+    # days of futures prices) must never "close" a forward window
+    today = pd.Timestamp.today().normalize()
+    month_start_today = pd.Timestamp(today.year, today.month, 1)
+    fill_dates = sb_m.index[(sb_m.index > last_fred) & (sb_m.index < month_start_today)]
     filled = pd.concat([fred, sb_m.reindex(fill_dates)])
     print(f"FRED published through {last_fred.date()}; filled {len(fill_dates)} "
           f"month(s) with SB=F: {[d.date().isoformat() for d in fill_dates]}")
@@ -109,9 +113,11 @@ if __name__ == "__main__":
     print(f"\n{'='*90}\nStep 2: real hit rates / lift, monsoon-month flag vs. forward "
           f"sugar price return (point estimates only, no p-values)\n{'='*90}")
     monsoon_months = [6, 7, 8, 9]
-    flagged_dates = [pd.Timestamp(y, m, 1) for y in flagged_years for m in monsoon_months
-                      if not (y == 2026 and m > 9)]
-    all_dates = price.index[(price.index >= "1990-01-01")]
+    # HISTORICAL baseline only: 2026 months are excluded from the flagged set
+    # and from every threshold/base-rate distribution, so 2026 can be scored
+    # prospectively (Step 4b) against a baseline it did not help build.
+    flagged_dates = [pd.Timestamp(y, m, 1) for y in flagged_years if y != 2026 for m in monsoon_months]
+    all_dates = price.index[(price.index >= "1990-01-01") & (price.index < "2026-01-01")]
 
     for horizon in (1, 2, 3):
         rets = {d: forward_return(price, d, horizon) for d in all_dates}
@@ -153,6 +159,24 @@ if __name__ == "__main__":
             results_2026[month.strftime("%Y-%m")][f"{h}mo"] = r
         print()
 
+    print(f"\n{'='*90}\nStep 4b: prospective test -- each resolved 2026 window vs. thresholds set from pre-2026 data only\n{'='*90}")
+    prospective = []
+    for h in (1, 2, 3):
+        hist_rets = pd.Series({d: forward_return(price, d, h) for d in all_dates}).dropna()
+        for m in monsoon_months:
+            r = results_2026[f"2026-{m:02d}"][f"{h}mo"]
+            if r is None:
+                continue
+            row = {"month": f"2026-{m:02d}", "horizon_months": h, "forward_return_pct": r,
+                   "percentile_in_pre2026_history": float((hist_rets < r).mean() * 100)}
+            for qq in (0.55, 0.60, 0.65):
+                row[f"exceeds_q{int(qq*100)}"] = bool(r > hist_rets.quantile(qq))
+            prospective.append(row)
+            print(f"  2026-{m:02d} +{h}mo: {r:+.1f}%  (pctile {row['percentile_in_pre2026_history']:.0f})  "
+                  f"> q55:{row['exceeds_q55']} q60:{row['exceeds_q60']} q65:{row['exceeds_q65']}")
+    n_pros = len(prospective)
+    print(f"  resolved windows: {n_pros}; exceed q65 threshold: {sum(x['exceeds_q65'] for x in prospective)}/{n_pros}")
+
     # ---- Save results JSON ----
     main_table = []
     for horizon in (1, 2, 3):
@@ -184,6 +208,7 @@ if __name__ == "__main__":
             "main_table": main_table,
             "leave_one_year_out": loyo,
             "results_2026": results_2026,
+            "prospective_2026": prospective,
             "fred_cutoff": str(fred_cutoff.date()),
             "sbf_fred_correlation": {"level": level_corr, "return": ret_corr},
         }, f, indent=2, default=float)
@@ -200,8 +225,8 @@ if __name__ == "__main__":
     for b, v in zip(bars, lifts):
         ax.text(b.get_x() + b.get_width() / 2, v + 0.03, f"{v:.2f}x", ha="center", fontsize=9)
     ax.set_ylabel("Lift (conditional hit rate / unconditional hit rate)")
-    ax.set_title(f"El Nino monsoon flag vs. forward global sugar price, {len(flagged_years)} historical years "
-                 f"(1991-2023, real point estimates)\nNo permutation p-values -- real hit rates only")
+    ax.set_title("El Nino monsoon flag vs. forward global sugar price, historical baseline\n"
+                 "(5 years with price data, 1997-2023, 20 flagged months; real point estimates, 2026 excluded)")
     fig.tight_layout()
     fig.savefig("elnino_sugar_lift_plot.png", dpi=140)
     plt.close(fig)

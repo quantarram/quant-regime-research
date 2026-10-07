@@ -53,10 +53,10 @@ if __name__ == "__main__":
     annotate(1997, 8, "Super\nEl Nino", (pd.Timestamp(1997, 8, 1), 24))
     annotate(2009, 10, "India drought,\n30-yr price high", (pd.Timestamp(2012, 6, 1), 24))
     annotate(2023, 8, "Driest August\nin a century", (pd.Timestamp(2023, 8, 1), 32))
-    annotate(2026, 9, "2026: +29% by Sept\n(June flag, 3mo\nforward, realized)", (pd.Timestamp(2024, 6, 1), 8), color="#2E7D4F")
+    annotate(2026, 9, "2026: +28.8% by Sept\n(June flag, 3mo\nforward, realized)", (pd.Timestamp(2024, 6, 1), 8), color="#2E7D4F")
 
     ax.set_ylabel("Cents / lb (IMF Sugar No. 11, FRED+SB=F)")
-    ax.set_title("Global Sugar Price, 1992-2026 -- El Nino Monsoon Windows Shaded (corrected: 7 years, 2004 dropped)",
+    ax.set_title("Global Sugar Price, 1992-2026 -- El Nino Monsoon Windows Shaded (six historical years + 2026)",
                  fontsize=12.5, fontweight="bold")
     ax.legend(loc="upper left", fontsize=9)
     ax.set_ylim(0, 36)
@@ -70,24 +70,24 @@ if __name__ == "__main__":
     # Figure B: season outcome panel (realized, not forward-looking)
     # ---------------------------------------------------------------
     fig, axes = plt.subplots(1, 3, figsize=(14, 5.5))
-    fig.suptitle("2026 Season Outcome -- Late September 2026 (Resolved, Not a Live Signal)",
+    fig.suptitle("2026 Season Outcome -- Final Monsoon and ONI, Early October 2026",
                  fontsize=14, fontweight="bold")
 
     ax = axes[0]
-    ax.barh(["2026\n(JJA final)"], [1.8], color="#B0492F", height=0.5)
+    ax.barh(["2026\n(JJAS mean)"], [2.0], color="#B0492F", height=0.5)
     ax.axvline(ONI_THRESHOLD, color="#1B2A4A", ls="--", lw=1.5)
-    ax.text(ONI_THRESHOLD / 2.2, 0.92, "NOAA El Nino\nthreshold (0.5C)", fontsize=8.5, color="#1B2A4A",
-            ha="center", va="top", transform=ax.get_xaxis_transform())
-    ax.text(1.8 + 0.05, 0, "+1.8C", fontsize=11, fontweight="bold", va="center")
-    ax.set_xlim(0, 2.2)
-    ax.set_xlabel("JJA Nino 3.4 Index (C), current ONI v6 vintage")
-    ax.set_title("El Nino Status\n(confirmed, not provisional)", fontsize=11, fontweight="bold")
+    ax.text(ONI_THRESHOLD + 0.05, 0.92, "NOAA El Nino\nthreshold (0.5C)", fontsize=8.5, color="white",
+            ha="left", va="top", transform=ax.get_xaxis_transform())
+    ax.text(2.0 + 0.05, 0, "+2.0C", fontsize=11, fontweight="bold", va="center")
+    ax.set_xlim(0, 2.4)
+    ax.set_xlabel("JJAS-mean Nino 3.4 Index (C), (JJA+JAS)/2, ONI v6")
+    ax.set_title("El Nino Status\n(confirmed; JAS now published)", fontsize=11, fontweight="bold")
 
     ax2 = axes[1]
-    bars = ax2.bar(["Start\n(24 Jun)", "Season-end\n(~Sept)", "IMD full-season\nforecast"],
-                    [-42, -13.5, -10], color=["#B0492F", "#c96a3a", "#2E7D4F"])
-    for b, v in zip(bars, [-42, -13.5, -10]):
-        ax2.text(b.get_x() + b.get_width() / 2, v - 2.5, f"{v:.0f}%", ha="center", fontsize=11, fontweight="bold")
+    bars = ax2.bar(["Start\n(24 Jun)", "Season-end\n(final, IMD)", "IMD full-season\nforecast"],
+                    [-42, -12.6, -10], color=["#B0492F", "#c96a3a", "#2E7D4F"])
+    for b, v in zip(bars, [-42, -12.6, -10]):
+        ax2.text(b.get_x() + b.get_width() / 2, v - 2.5, f"{v:.1f}%", ha="center", fontsize=11, fontweight="bold")
     ax2.set_ylabel("% departure from LPA")
     ax2.set_title("Monsoon Rainfall Deficit\n(realized: narrowed close to forecast)", fontsize=11, fontweight="bold")
     ax2.set_ylim(-48, 4)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     ax3 = axes[2]
     # each year's average 3-month-forward return across its flagged monsoon months --
     # same units throughout (% price return), not mixed with a hit-rate percentage
-    per_year_avg = {1997: 2.2, 2002: 21.3, 2009: 20.6, 2015: 20.0, 2023: 3.9, 2026: 29.3}
+    per_year_avg = {1997: 2.2, 2002: 21.3, 2009: 20.6, 2015: 20.0, 2023: 3.9, 2026: 28.8}
     years = list(per_year_avg.keys())
     vals = list(per_year_avg.values())
     colors3 = ["#4a7a9d"] * (len(years) - 1) + ["#2E7D4F"]

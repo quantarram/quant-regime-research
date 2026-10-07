@@ -9,7 +9,9 @@ CPE research series — standalone research note
 
 ## Abstract
 
-In July 2026, with India's monsoon running a severe rainfall deficit under a confirmed El Niño, this program made a specific, checkable prediction before its outcome was known: seven historical El Niño years showed global sugar prices rising over the following one to three months more often than not (3-month hit rate 0.71–0.81 against an unconditional base rate of 0.35–0.45, replicated under leave-one-year-out testing in four of five resolved years), and 2026 was flagged as a live instance of that pattern. That prediction has now been tested against reality, and it held. India's monsoon deficit narrowed from −42% of its Long Period Average in late June to −12% to −15% by season's end, close to what IMD itself forecast in May — the same recovery shape as 2023. Global sugar prices rose sharply and repeatedly: June's flagged month, followed forward three months to September, is up 29.3%, and every one of the seven monsoon-month/horizon windows that has closed so far is a real increase, several of them large. This is the first genuinely prospective test this specific predictor has had, and it has passed on every count that has resolved. One standing caveat travels with this result: 1997, the closest historical analog to a "super" El Niño, was the weakest year in the historical sample — a reason to treat this as a real, elevated frequency rather than a guarantee, not a reason to discount what 2026 has actually done so far. This paper also corrects the historical record behind the original claim: recomputed against NOAA's current Niño 3.4 index vintage, one of the original eight qualifying years (2004) no longer clears the same threshold and is dropped rather than carried forward on an outdated data vintage, leaving seven historical years plus 2026. Two further design iterations — a harvest-season-lag specification, and a cross-asset check against gold and soybean futures — are reported in full in Appendix A, both superseded by the concurrent, sugar-price design used here.
+In July 2026, with India's monsoon running a severe rainfall deficit under a confirmed El Niño, this program made a specific, checkable prediction before its outcome was known: across the five historical El Niño years with usable sugar-price history (1997, 2002, 2009, 2015, 2023), global sugar prices rose over the following one to three months more often than not (3-month hit rate 0.70–0.80 against an unconditional base rate of 0.35–0.45, replicated under leave-one-year-out testing in four of five years), and 2026 was flagged as a live instance of that pattern. That prediction has now been tested against reality, and it held. India's monsoon finished at 87% of its Long Period Average, a −12.6% deficit after starting at −42% in late June — close to the −10% IMD forecast in May and the same recovery shape as 2023 — while El Niño strengthened (JJAS-mean Niño 3.4 anomaly +2.0°C). Global sugar prices rose sharply and repeatedly: June's flagged month, followed three months forward to September, is up 28.8%, and all six monsoon-month/horizon windows that have closed exceed the 65th-percentile threshold set from pre-2026 history alone (82nd–95th percentile of all historical forward moves). This is the first genuinely prospective test this specific predictor has had, and it has passed on every count that has resolved. One standing caveat travels with it: 1997, the closest historical analog to a "super" El Niño, was the weakest year in the historical sample — a reason to read this as a real, elevated frequency rather than a guarantee. Recomputed against NOAA's current Niño 3.4 index vintage, one of the original eight qualifying years (2004) no longer clears the threshold and is dropped. Two superseded design iterations are reported in Appendix A.
+
+**Version note (v2, October 2026).** This version replaces the provisional inputs of v1 with final ones (NOAA's July–September ONI, IMD's end-of-season rainfall total), removes 2026's own months from the historical baseline so the 2026 test is scored against a baseline it did not help build, corrects the historical year count, and revises the June-to-September move from +29.3% to +28.8% now that September's prices have settled.
 
 ---
 
@@ -25,11 +27,11 @@ In late June 2026, India's monsoon was running a severe cumulative rainfall defi
 
 ## 2. Data
 
-**2.1 El Niño classification (ONI).** The predictor uses NOAA's Niño 3.4 region sea-surface-temperature anomaly and NOAA's own standard threshold (≥0.5°C) for declaring an El Niño year, applied to the June–September monsoon window (averaging the JJA and JAS three-month readings; NOAA publishes overlapping 3-month means, not a single 4-month JJAS figure directly). NOAA revised its ENSO monitoring methodology in 2026 — a new Relative Oceanic Niño Index (RONI) is now used alongside a re-based classic ONI on updated ERSSTv6 sea-surface data (NWS Public Information Statement 26-05). This paper uses the current v6 ONI table throughout, for every year from 1990 to 2026, rather than mixing an older vintage for history with a newer one for the live year. Under this consistent definition, seven monsoon years since 1990 qualify: 1991 (0.75), 1997 (1.65), 2002 (0.60), 2009 (0.55), 2015 (1.55), 2023 (1.15), and 2026 (JJA alone already at 1.8, JAS not yet published but not needed to clear the bar). One year from the original version of this analysis, 2004, no longer clears the threshold under the current vintage (0.45 against the 0.5 bar) and is dropped rather than kept on a data vintage that no longer applies.
+**2.1 El Niño classification (ONI).** The predictor uses NOAA's Niño 3.4 region sea-surface-temperature anomaly and NOAA's own standard threshold (≥0.5°C) for declaring an El Niño year, applied to the June–September monsoon window (averaging the JJA and JAS three-month readings; NOAA publishes overlapping 3-month means, not a single 4-month JJAS figure directly). NOAA revised its ENSO monitoring methodology in 2026 — a new Relative Oceanic Niño Index (RONI) is now used alongside a re-based classic ONI on updated ERSSTv6 sea-surface data (NWS Public Information Statement 26-05). This paper uses the current v6 ONI table throughout, for every year from 1990 to 2026, rather than mixing an older vintage for history with a newer one for the live year. Under this consistent definition, six historical monsoon years since 1990 qualify — 1991 (0.75), 1997 (1.65), 2002 (0.60), 2009 (0.55), 2015 (1.55), 2023 (1.15) — plus 2026 (JJA 1.8, JAS 2.2, mean 2.00, now fully published; NOAA flags its most recent values as estimates subject to revision for up to two months, and no earlier value in the table changed between retrievals on 30 September and 7 October). 1991 predates the sugar-price series (which begins in 1992), so five historical years contribute price data. One year from the original version of this analysis, 2004, no longer clears the threshold under the current vintage (0.45 against the 0.5 bar) and is dropped rather than kept on a data vintage that no longer applies.
 
 **2.2 Sugar price.** The target is the IMF Global Sugar No. 11 benchmark (FRED series `PSUGAISAUSDM`, U.S. cents/lb, monthly, 1992–2026), the same physical-market benchmark used in the original version of this analysis, chosen over the CANE ETF because CANE's 2011 listing date covers only two of the available El Niño years (Appendix A.2 documents this in full). FRED had published this series through July 2026 as of this writing; August and September 2026 are filled using ICE Sugar No. 11 futures (`SB=F`) monthly averages, which track the FRED benchmark at 0.997 level correlation and 0.97 month-over-month return correlation over the prior 179 overlapping months — validated before use, not assumed, and re-validated (0.9967 / 0.9695) at the point this paper's figures were generated.
 
-**2.3 Current monsoon status.** IMD's own bulletins show the season opening with a severe deficit (−42% of Long Period Average as of June 24) and narrowing through the season: −12% to −14% by mid-to-late August, −15% cumulative (706.9mm against a normal of 832.4mm, June 1–September 22) by IMD's own count reported September 23, and a season-end estimate of roughly −12% reported September 28. IMD's own second-stage seasonal forecast, issued in May, had projected the full season at 90% of LPA (a −10% deficit) — the actual season landed close to that forecast, following the same June-poor, season-recovers pattern seen in 2023.
+**2.3 Current monsoon status.** IMD's own bulletins show the season opening with a severe deficit (−42% of Long Period Average as of June 24) and narrowing through the season: −12% to −14% by mid-to-late August, −15% cumulative (706.9mm against a normal of 832.4mm, June 1–September 22) by IMD's own count reported September 23, and an end-of-season total of 759.4mm against a Long Period Average of 868.6mm — a −12.6% deficit, 87% of LPA, the lowest since 2015 — in IMD's end-of-season statement as reported by two news outlets (the primary IMD press-conference document was not machine-readable). IMD's own second-stage seasonal forecast, issued in May, had projected the full season at 90% of LPA (a −10% deficit) — the actual season (−12.6%) landed close to that forecast, following the same June-poor, season-recovers pattern seen in 2023.
 
 ---
 
@@ -43,16 +45,16 @@ As in the original version of this analysis, the predictor is timed to the monso
 
 ## 4. Results: The Historical Pattern
 
-![Lift by horizon and quantile, seven historical El Nino years, real point estimates only](elnino_sugar_lift_plot.png)
+![Lift by horizon and quantile, historical baseline (five El Nino years with price data), real point estimates only](elnino_sugar_lift_plot.png)
 
-**Figure 2.** El Niño monsoon flag vs. forward global sugar price return, seven historical years (1991–2023). Lift strengthens with horizon: 1.31–1.55× at one month, 1.70–1.82× at two months, 1.80–2.04× at three months, against an unconditional base rate of 0.35–0.45 at the same thresholds.
+**Figure 2.** El Niño monsoon flag vs. forward global sugar price return, the historical baseline: five El Niño years with price data (1997, 2002, 2009, 2015, 2023; 20 flagged months), 2026 excluded. Lift strengthens with horizon: 1.13–1.44× at one month, 1.63–1.71× at two months, 1.77–2.00× at three months, against an unconditional base rate of 0.35–0.45 at the same thresholds. The one-month result is the weakest (1.13× at q = 0.60).
 
 | Horizon | Quantile | Hit rate | Unconditional | Lift | n (flagged months) |
 |---|---|---|---|---|---|
-| 1 month | 0.55 | 0.70 | 0.45 | 1.55× | 23 |
-| 2 months | 0.55 | 0.77 | 0.45 | 1.71× | 22 |
-| 3 months | 0.55 | 0.81 | 0.45 | 1.80× | 21 |
-| 3 months | 0.65 | 0.71 | 0.35 | 2.04× | 21 |
+| 1 month | 0.55 | 0.65 | 0.45 | 1.44× | 20 |
+| 2 months | 0.55 | 0.75 | 0.45 | 1.66× | 20 |
+| 3 months | 0.55 | 0.80 | 0.45 | 1.77× | 20 |
+| 3 months | 0.65 | 0.70 | 0.35 | 2.00× | 20 |
 
 ![Leave-one-year-out validation, each year held out in turn](elnino_sugar_loyo_plot.png)
 
@@ -66,28 +68,39 @@ As in the original version of this analysis, the predictor is timed to the monso
 
 **Figure 4.** Every monsoon month in 2026, and every forward window that has actually closed, shown individually. Hatched grey bars are windows that have not yet closed — a fixed placeholder height, not a measured value of zero — and are not filled in early.
 
-2026 was flagged from June onward (JJA Niño 3.4 already at +1.8°C, well above the 0.5°C bar, before the July–September reading is even published). Of the twelve monsoon-month/horizon combinations this predictor covers for 2026, seven have actually closed as of this writing, and every one of them is a real increase:
+2026 was flagged from June onward (JJA Niño 3.4 at +1.8°C and JAS, now published, at +2.2°C — a JJAS mean of 2.0°C, four times the 0.5°C bar). Of the twelve monsoon-month/horizon combinations this predictor covers for 2026, seven have actually closed as of this writing, and every one of them is a real increase:
 
 - **June + 1 month:** +6.5%
 - **June + 2 months:** +21.0%
-- **June + 3 months:** +29.3%
+- **June + 3 months:** +28.8%
 - **July + 1 month:** +13.6%
-- **July + 2 months:** +21.4%
-- **August + 1 month:** +6.9%
+- **July + 2 months:** +21.0%
+- **August + 1 month:** +6.5%
 
 July's 3-month window (closes end of October), August's 2- and 3-month windows, and September's windows have not closed and are not reported here as resolved.
 
-This is not just a directional match — the magnitude, particularly June's 29.3% three-month move, is large even against the historical distribution behind Figure 2, in which a q=0.65 threshold (the top third of all historical forward moves) corresponds to roughly a 2.0× lift. The monsoon side of the story resolved the same way the price side did:
+This is scored prospectively: each closed window is compared against thresholds set from pre-2026 data alone (the historical baseline of Section 4, which excludes 2026's own months).
+
+| Window | Forward return | Percentile of all pre-2026 forward moves | Exceeds q = 0.65 threshold |
+|---|---|---|---|
+| June + 1 month | +6.5% | 82nd | yes |
+| June + 2 months | +21.0% | 94th | yes |
+| June + 3 months | +28.8% | 95th | yes |
+| July + 1 month | +13.6% | 95th | yes |
+| July + 2 months | +21.0% | 94th | yes |
+| August + 1 month | +6.5% | 82nd | yes |
+
+**Table 1.** All six closed 2026 windows exceed even the strictest threshold tested (q = 0.65, the top third of historical forward moves), and sit between the 82nd and 95th percentile of every pre-2026 monthly forward return. The six windows overlap (all measure forward returns from adjacent months of the same season), so this is better read as one season's confirmation, not six independent ones. The monsoon side of the story resolved the same way the price side did:
 
 ![India's 2026 monsoon deficit, real trajectory](imd_2026_monsoon_trajectory_plot.png)
 
-**Figure 5.** India's 2026 cumulative monsoon rainfall deficit against its Long Period Average, June through season-end. No public mid-July figure was located; the line between the June and August points is a straight interpolation, not a reported weekly reading.
+**Figure 5.** India's 2026 cumulative monsoon rainfall deficit against its Long Period Average, June through the final season total (−12.6%, IMD's end-of-season statement). No public mid-July figure was located; the line between the June and August points is a straight interpolation, not a reported weekly reading.
 
 ![2026 season outcome, resolved rather than forward-looking](elnino_sugar_current_status_plot.png)
 
-**Figure 6.** The same three-part view this analysis originally published in June — El Niño status, monsoon deficit, and the odds of a price rise — now reported as what actually happened rather than what might. The third panel compares 2026's real move to each historical year's real average move, in the same units (% price return), rather than mixing a hit-rate percentage with a return percentage.
+**Figure 6.** The same three-part view this analysis originally published in June — El Niño status, monsoon deficit, and the odds of a price rise — now reported as what actually happened rather than what might. The third panel compares 2026's real move to each historical year's real average move, in the same units (% price return); each historical bar averages that year's four flagged months, while 2026's bar is June's flag alone, the only month whose three-month window has closed.
 
-None of this converts a seven-historical-year, now eight-with-2026 pattern into a certainty, and 1997 remains the clearest reason not to treat any single year's outcome as guaranteed. But every one of 2026's resolved windows lines up with the pattern rather than against it, which is the first genuinely prospective test this specific predictor has had.
+None of this converts a five-historical-year pattern, now confirmed once prospectively, into a certainty, and 1997 remains the clearest reason not to treat any single year's outcome as guaranteed. But every one of 2026's resolved windows lines up with the pattern rather than against it, which is the first genuinely prospective test this specific predictor has had.
 
 ---
 
@@ -107,7 +120,7 @@ No horizon in the harvest-lag design produces a lift resembling the concurrent d
 
 ## 7. What This Does and Doesn't Establish
 
-A confirmed El Niño monsoon with a severe, active rainfall deficit has historically been followed by a real, elevated frequency of global sugar price increases over the following one to three months — a pattern that has now also held, in every window that has closed, through 2026's own live instance of it. This is drawn from seven historical events plus one prospective one, not hundreds; the size of any single year's move (2026's June-to-September 29.3%, or 1997's near-total miss) varies more than the direction does. 1997 is the standing reason to hold this pattern with real but not maximal confidence, and it should travel with this result wherever it is cited.
+A confirmed El Niño monsoon with a severe, active rainfall deficit has historically been followed by a real, elevated frequency of global sugar price increases over the following one to three months — a pattern that has now also held, in every window that has closed, through 2026's own live instance of it. This is drawn from five historical years with price data plus one prospective one, not hundreds; the size of any single year's move (2026's June-to-September +28.8%, or 1997's near-total miss) varies more than the direction does. 1997 is the standing reason to hold this pattern with real but not maximal confidence, and it should travel with this result wherever it is cited.
 
 Four further points on interpretation, not adjustment:
 
@@ -117,13 +130,13 @@ Four further points on interpretation, not adjustment:
 
 3. **The one-to-three month window this paper identifies corresponds to a period of historically elevated variance in global sugar prices**, conditional on the monsoon-deficit signal being active, relative to unconditional periods — part of why the effect strengthens with horizon in Figure 2 rather than appearing uniformly.
 
-4. **This remains, structurally, a small-sample question** — seven historical events plus one prospective one, not the hundred-plus-signal scale of this program's core CPE framework (Papers 1–5). It is sized appropriately for a rare, real-world conditioning event (a confirmed El Niño monsoon year), not for a claim of precision beyond what eight real observations can support.
+4. **This remains, structurally, a small-sample question** — five historical years with price data plus one prospective one, not the hundred-plus-signal scale of this program's core CPE framework (Papers 1–5). It is sized appropriately for a rare, real-world conditioning event (a confirmed El Niño monsoon year), not for a claim of precision beyond what six real observations can support.
 
 ---
 
 ## 8. Conclusion
 
-Conditioning on the Indian monsoon months themselves, rather than the harvest season that follows them, this pattern held across seven historical El Niño years (hit rate 0.71–0.81 at a 3-month horizon against a 0.35–0.45 unconditional base, lift 1.80–2.04×) and has now held, in every window that has actually closed, through a real, resolved instance of it: 2026's monsoon deficit narrowed as IMD itself forecast, and global sugar prices rose sharply and repeatedly across June, July, and August's flagged months. July's 3-month window and August/September's later windows remain open and are not filled in early. 1997 remains this pattern's clearest counter-example: eight events (seven historical, one prospective) support a real, elevated historical frequency — not a guarantee for any single future instance.
+Conditioning on the Indian monsoon months themselves, rather than the harvest season that follows them, this pattern held across five historical El Niño years with price data (hit rate 0.70–0.80 at a 3-month horizon against a 0.35–0.45 unconditional base, lift 1.77–2.00×) and has now held, in every window that has actually closed, through a real, resolved instance of it: 2026's monsoon finished at −12.6% as IMD itself forecast (−10%), and global sugar prices rose sharply and repeatedly across June, July, and August's flagged months, every closed window sitting between the 82nd and 95th percentile of historical forward moves. July's 3-month window and August/September's later windows remain open and are not filled in early. 1997 remains this pattern's clearest counter-example: six events (five historical, one prospective) support a real, elevated historical frequency — not a guarantee for any single future instance.
 
 ---
 
@@ -154,9 +167,9 @@ This appendix documents the earlier and alternative stages of this analysis in f
 
 **A.1 Crop-zone construction.** An earlier version of this analysis also tested India crop-zone temperature and moisture data directly (the pipeline used in Papers 7–8). The zone inherited from those papers ("India_Sugar," 15–30°N, 73–85°E, described as covering "Maharashtra/Uttar Pradesh") was checked against ISMA's 2025-26 first advance estimate of milled sugar production shares: Maharashtra (42.0%) and Uttar Pradesh (33.3%) are included; Karnataka (20.5%) is only partially captured (north only — Belagavi/Bagalkot; Mandya excluded); all other states, including Tamil Nadu, Gujarat, and Bihar, combine for roughly 4.1% and are excluded entirely. Using Paper 7's heat-stress threshold (tmax > 38°C), the box-averaged zone records zero exceedance days over 2000–2026 — a box-averaging artifact rather than evidence of no field-level heat stress. This is a legitimate future extension (a production-weighted, correctly-bounded multi-zone construction) but does not affect the price-based result in the main text, which does not use this zone data.
 
-**A.2 The CANE sample-truncation problem.** CANE (Teucrium Sugar Fund) was the natural first choice of tradeable instrument, consistent with Papers 6–8. CANE was not listed until 2011-09-20, however, which silently truncates a once-per-year conditioning variable: of the seven El Niño monsoon years used in this paper (excluding 2026), only two (2015, 2023) fall within CANE's trading history — too few for any real replication check to be informative regardless of the true effect. Gold futures (GC=F, history from 2000-08) and soybean futures (ZS=F, history from 2000-09) cover more of the sample (four of the six pre-2026 years each, all since 2000), and broad commodities (DBC, from 2006-02) cover fewer still. This comparison motivated the switch to the real IMF sugar-price benchmark used throughout this paper.
+**A.2 The CANE sample-truncation problem.** CANE (Teucrium Sugar Fund) was the natural first choice of tradeable instrument, consistent with Papers 6–8. CANE was not listed until 2011-09-20, however, which silently truncates a once-per-year conditioning variable: of the six historical El Niño monsoon years used in this paper (excluding 2026), only two (2015, 2023) fall within CANE's trading history — too few for any real replication check to be informative regardless of the true effect. Gold futures (GC=F, history from 2000-08) and soybean futures (ZS=F, history from 2000-09) cover more of the sample (four of the six pre-2026 years each, all since 2000), and broad commodities (DBC, from 2006-02) cover fewer still. This comparison motivated the switch to the real IMF sugar-price benchmark used throughout this paper.
 
-**A.3 Cross-asset check (harvest-lag design).** Before switching to the real sugar-price benchmark, the harvest-lag predictor (Appendix A.4) was tested against two longer-history proxy instruments, recomputed here as real point estimates rather than the permutation p-values originally used:
+**A.3 Cross-asset check (harvest-lag design).** Before switching to the real sugar-price benchmark, the harvest-lag predictor (Appendix A.4) was tested against two longer-history proxy instruments, reported here as real point estimates:
 
 | Instrument | Horizon | Hit rate | Unconditional | Lift |
 |---|---|---|---|---|
@@ -194,4 +207,4 @@ Three of six resolved years are complete misses (0.00), a materially less consis
 
 Full pipeline: `elnino_sugar_analysis.py` (main results, historical/2026 tables, Figures 1–4 data) and `elnino_sugar_original_figures_updated.py` (Figures 1, 6, and the price-history/season-outcome recreations). Raw ONI v6 table: `oni_v6_raw.csv`. IMD 2026 monsoon timeline (as reported across sources, with citations): `imd_2026_monsoon_timeline.csv`. Sugar price data: `sugar_fred_psugaisausdm.csv` (FRED, through 2026-07) with ICE Sugar futures (`SB=F`, via yfinance) filling August–September 2026, validated at 0.997 level correlation before use. Results: `elnino_sugar_results.json`. Figures: `elnino_sugar_price_history_plot.png`, `elnino_sugar_lift_plot.png`, `elnino_sugar_loyo_plot.png`, `elnino_sugar_2026_resolution_plot.png`, `imd_2026_monsoon_trajectory_plot.png`, `elnino_sugar_current_status_plot.png`.
 
-**A note on what remains open as of this writing (2026-09-30):** July's 3-month forward window (closes end of October), August's 2- and 3-month windows, and all of September's windows are not yet resolved. NOAA's July–September ONI reading and IMD's final, official season-total rainfall percentage were also not yet published as of this writing (both expected within days). This paper reports every number as either resolved-and-cited or explicitly marked pending; none of the open items are filled in early with an estimate.
+**A note on what remains open as of this writing (2026-10-07):** July's 3-month forward window (closes end of October), August's 2- and 3-month windows, and all of September's windows are not yet resolved, and October's prices are not used because the month is incomplete. NOAA's July–September ONI and IMD's end-of-season rainfall total, provisional in v1, are now final and reported above. Every number in this paper is either resolved-and-cited or explicitly marked pending; none of the open items are filled in early with an estimate.
