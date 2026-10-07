@@ -17,6 +17,9 @@ call for direction signals, the neutral portfolio for the tilt, a no-change
 forecast for the price forecasts, the odds-implied win rate for football, the live unconditional frequency for CPE) and
 always prints n. Nothing is filtered after the fact: every resolved row counts.
 
+History: each run first writes the latest complete day's snapshot to monitor_history.csv
+(see monitor_history.py); the trend charts read it back.
+
 Run: python build_performance_monitor.py      Output: performance_monitor.html
 """
 import json
@@ -32,6 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import predictor_ledger as pled  # noqa: E402
 import cpe_signal_ledger as cled  # noqa: E402
+import monitor_history as mh  # noqa: E402
 
 SGT = ZoneInfo("Asia/Singapore")
 NOW_SGT = datetime.now(timezone.utc).astimezone(SGT)
@@ -157,7 +161,19 @@ def football_block():
     }
 
 
+def history_block():
+    """monitor_history.csv -> {"dashboard.metric": {dates, values, n}} for the trend charts."""
+    h = mh.load_history()
+    out = {}
+    for (d, m), g in h.groupby(["dashboard", "metric"]):
+        g = g.sort_values("date")
+        out[f"{d}.{m}"] = {"dates": g["date"].tolist(), "values": [round(float(v), 5) for v in g["value"]],
+                           "n": [int(n) for n in g["n"]]}
+    return out
+
+
 def build_bundle():
+    mh.append_today()
     return {
         "generated": NOW_SGT.strftime("%Y-%m-%d %H:%M:%S"),
         "gold": gold_block(),
@@ -166,6 +182,7 @@ def build_bundle():
         "predictor": pled.live_stats(pled.load_ledger()),
         "football": football_block(),
         "cpe": cled.live_stats(),
+        "history": history_block(),
     }
 
 
@@ -245,6 +262,22 @@ const BASE = {paper_bgcolor:'transparent', plot_bgcolor:'transparent', height:24
 const CFG = {displayModeBar:false, responsive:true};
 const merge = (o) => Object.assign({}, BASE, o);
 const panels = document.getElementById('panels'), overview = document.getElementById('overview');
+// trend helpers: history is keyed "dashboard.metric" -> {dates, values, n}
+const H = (k) => D.history[k];
+function diffSeries(a, b, minN) {   // a - b on shared dates, points with n >= minN only
+  const A = H(a), B = H(b); if (!A || !B) return null;
+  const bi = {}; B.dates.forEach((d, i) => bi[d] = i);
+  const x = [], y = [];
+  A.dates.forEach((d, i) => { if (d in bi && A.n[i] >= minN) { x.push(d); y.push(A.values[i] - B.values[bi[d]]); } });
+  return x.length ? {x: x, y: y} : null;
+}
+function lineSeries(k, minN, scale) {
+  const A = H(k); if (!A) return null;
+  const x = [], y = [];
+  A.dates.forEach((d, i) => { if (A.n[i] >= minN) { x.push(d); y.push(A.values[i] * (scale || 1)); } });
+  return x.length ? {x: x, y: y} : null;
+}
+const ZERO = [{type:'line', xref:'paper', x0:0, x1:1, y0:0, y1:0, line:{color:'#3A3F3A', width:1}}];
 
 function addOverview(id, name, status, big, small, lines) {
   const a = document.createElement('a'); a.className = 'ov'; a.href = '#' + id;
@@ -318,7 +351,8 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
   P.rows.forEach(r => { t += '<tr><td>' + r.horizon + 'd</td><td>' + r.n + '</td><td>' + sgn(r.tilt) + '%</td><td>' + sgn(r.neutral) + '%</td><td>' + sgn(r.diff, 3) + ' pts</td><td>' + pct(r.beat) + '</td></tr>'; });
   t += '<tr><td><b>All</b></td><td>' + P.all.n + '</td><td>' + sgn(P.all.tilt) + '%</td><td>' + sgn(P.all.neutral) + '%</td><td>' + sgn(P.all.diff, 3) + ' pts</td><td>' + pct(P.all.beat) + '</td></tr></table></div>';
   const body = '<div class="charts"><div><div class="c-label">Average resolved-window P&amp;L (%), tilt vs neutral, by horizon</div><div id="pfBars"></div></div>' +
-    '<div><div class="c-label">Simulated paper portfolio, cumulative return since ' + P.ledger_start + ' (%)</div><div id="pfNav"></div></div></div>' + t +
+    '<div><div class="c-label">Simulated paper portfolio, cumulative return since ' + P.ledger_start + ' (%)</div><div id="pfNav"></div></div>' +
+    '<div><div class="c-label">Tilt minus neutral, average resolved-window P&amp;L, as the record built up (points; shown from 10 windows)</div><div id="pfTrend"></div></div></div>' + t +
     '<div class="note">The tilt portfolio re-weights daily to the dashboard&rsquo;s bullish tilts; the neutral portfolio keeps constant weights; hold-to-horizon opens a position when a sleeve fires and holds it until the shortest firing horizon elapses. ' +
     'The paper ledger is simulated (no broker), runs from ' + P.ledger_start + ' (' + P.ledger_days + ' daily rows, last ' + P.ledger_last + '), includes estimated trading-cost drag for the tilt and hold-to-horizon tracks, and its bullish-only tilt is a different rule from the resolved-window tilt in the table.</div>';
   addPanel('portfolio', 'Portfolio tilt dashboard', P.all.n + ' resolved windows &middot; ' + P.n_pending + ' pending', body);
@@ -326,6 +360,9 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
     {x:P.rows.map(r => r.horizon + 'd (n=' + r.n + ')'), y:P.rows.map(r => r.tilt), name:'Tilt', type:'bar', marker:{color:'#5B8DBE'}, text:P.rows.map(r => r.tilt.toFixed(2)), textposition:'outside'},
     {x:P.rows.map(r => r.horizon + 'd (n=' + r.n + ')'), y:P.rows.map(r => r.neutral), name:'Neutral', type:'bar', marker:{color:'#B5726A'}, text:P.rows.map(r => r.neutral.toFixed(2)), textposition:'outside'}
   ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0, Math.max(...P.rows.map(r => Math.max(r.tilt, r.neutral))) * 1.2]}}), CFG);
+  const pt = diffSeries('portfolio.tilt_pnl_avg', 'portfolio.neutral_pnl_avg', 10);
+  if (pt) Plotly.newPlot('pfTrend', [{x:pt.x, y:pt.y, mode:'lines', line:{color:'#5B8DBE', width:2}, name:'Tilt minus neutral'}],
+    merge({shapes:ZERO, yaxis:{gridcolor:'#1B1E1B', zeroline:false}, showlegend:false}), CFG);
   Plotly.newPlot('pfNav', [
     {x:P.nav.dates, y:P.nav.tilt, name:'Tilt', mode:'lines', line:{color:'#5B8DBE', width:2}},
     {x:P.nav.dates, y:P.nav.neutral, name:'Neutral', mode:'lines', line:{color:'#B5726A', width:1.5, dash:'dot'}},
@@ -344,11 +381,15 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
   });
   t += '</table></div>';
   const body = '<div class="charts"><div><div class="c-label">Median-forecast error vs no-change, by horizon (MAPE, %)</div><div id="prErr"></div></div>' +
-    '<div><div class="c-label">Share of outcomes inside the forecast band (%)</div><div id="prCov"></div></div></div>' + t +
+    '<div><div class="c-label">Share of outcomes inside the forecast band (%)</div><div id="prCov"></div></div>' +
+    '<div><div class="c-label">Forecast error minus no-change error, as the record built up (points; below zero = forecaster ahead; from 20 outcomes)</div><div id="prTrend"></div></div></div>' + t +
     '<div class="note">Forecasts logged since ' + PR.first_forecast + ', scored on the close each forecast&rsquo;s own horizon (in trading days) after it was made, exactly as first published. ' +
     'Each instrument has one fixed horizon, so the 126d, 189d and 252d instruments show no outcome until 2027. Full instrument-level detail sits on the <a href="predictor_dashboard.html" style="color:var(--accent2)">predictor dashboard</a>.</div>';
   addPanel('predictor', 'Predictor dashboard', PR.n_resolved + ' resolved &middot; ' + PR.n_pending.toLocaleString() + ' pending &middot; ' + PR.n_instruments_resolved + ' of ' + PR.n_instruments + ' instruments with an outcome', body);
   if (!done.length) return;
+  const ptr = [1, 5, 21].map(h => ({h: h, s: diffSeries('predictor.mape_' + h + 'd', 'predictor.no_change_mape_' + h + 'd', 20)})).filter(o => o.s);
+  if (ptr.length) Plotly.newPlot('prTrend', ptr.map((o, i) => ({x:o.s.x, y:o.s.y, mode:'lines', name:o.h + 'd', line:{width:2, color:['#5B8DBE', '#C8A84A', '#7FB08A'][i]}})),
+    merge({shapes:ZERO, yaxis:{gridcolor:'#1B1E1B', zeroline:false}}), CFG);
   Plotly.newPlot('prErr', [
     {x:lab, y:done.map(r => r.mape), name:'Model median', type:'bar', marker:{color:'#5B8DBE'}, text:done.map(r => r.mape.toFixed(2)), textposition:'outside'},
     {x:lab, y:done.map(r => r.naive_mape), name:'No change', type:'bar', marker:{color:'#B5726A'}, text:done.map(r => r.naive_mape.toFixed(2)), textposition:'outside'}
@@ -388,13 +429,15 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
   });
   t += '</table></div>';
   const body = '<div class="charts"><div><div class="c-label">Claimed CPE vs realised exceedance vs live base rate, by horizon (%)</div><div id="cpeBars"></div></div>' +
-    '<div><div class="c-label">By claimed-CPE band, resolved rows (%)</div><div id="cpeCal"></div></div></div>' + t +
+    '<div><div class="c-label">By claimed-CPE band, resolved rows (%)</div><div id="cpeCal"></div></div>' +
+    '<div><div class="c-label">63-day rows as the record built up: claimed, realised, live base (%; from 100 rows)</div><div id="cpeTrend63"></div></div>' +
+    '<div><div class="c-label">Realised minus live base, as the record built up (points; above zero = signal adds beyond the period&rsquo;s drift; from 100 rows)</div><div id="cpeEdge"></div></div></div>' + t +
     '<div class="note">Scores the CPE table (frozen at ' + C.table_end + ', sha ' + C.table_sha + ') on the period after it, from ' + C.first_entry + ' to ' + C.last_entry + '. ' +
     'Each event is a predictor entering its tail for the first time after a day outside it (' + C.n_events.toLocaleString() + ' events); it fans out to every gated table row for that predictor, ' + C.n_rows.toLocaleString() + ' signal rows in all. ' +
     'A row scores 1 if the target&rsquo;s forward move beyond its horizon landed past the frozen q<sub>Y</sub> threshold, as the table defines it. ' +
     '<b>Table base</b> is the unconditional frequency the table assumed (1 &minus; q<sub>Y</sub>); <b>live base</b> is how often that same event happened on <i>any</i> day of the live window, so realised above live base is what the signal adds beyond the period&rsquo;s own drift. ' +
     'Most of the table&rsquo;s claims sit at 126d to 300d, which cannot resolve before December 2026 to 2027; the 21d and 63d rows resolved so far are a small slice of the claim, from a handful of entry dates, and rows from one event are not independent of each other. ' +
-    'Last price bar used: ' + C.last_bar + '.</div>';
+    'Trend charts reconstruct the record as it stood on each date, using only outcomes known by then. Last price bar used: ' + C.last_bar + '.</div>';
   addPanel('cpe', 'CPE dashboard (161 instruments)', C.n_resolved.toLocaleString() + ' signal rows resolved &middot; ' + C.n_pending.toLocaleString() + ' pending', body);
   if (!done.length) return;
   Plotly.newPlot('cpeBars', [
@@ -402,6 +445,13 @@ directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.meta
     {x:lab, y:done.map(r => r.hit*100), name:'Realised', type:'bar', marker:{color:'#7FB08A'}, text:done.map(r => (r.hit*100).toFixed(0)), textposition:'outside'},
     {x:lab, y:done.map(r => r.live_base*100), name:'Live base', type:'bar', marker:{color:'#B5726A'}, text:done.map(r => (r.live_base*100).toFixed(0)), textposition:'outside'}
   ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,115]}}), CFG);
+  const tr = [['cpe.claimed_63d', 'Claimed', '#5B8DBE'], ['cpe.realised_63d', 'Realised', '#7FB08A'], ['cpe.live_base_63d', 'Live base', '#B5726A']]
+    .map(a => ({s: lineSeries(a[0], 100, 100), name: a[1], c: a[2]})).filter(o => o.s);
+  if (tr.length) Plotly.newPlot('cpeTrend63', tr.map(o => ({x:o.s.x, y:o.s.y, mode:'lines', name:o.name, line:{color:o.c, width:2}})),
+    merge({yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,100]}}), CFG);
+  const ed = [21, 63].map(h => ({h: h, s: diffSeries('cpe.realised_' + h + 'd', 'cpe.live_base_' + h + 'd', 100)})).filter(o => o.s);
+  if (ed.length) Plotly.newPlot('cpeEdge', ed.map((o, i) => ({x:o.s.x, y:o.s.y.map(v => v * 100), mode:'lines', name:o.h + 'd', line:{width:2, color:['#C8A84A', '#5B8DBE'][i]}})),
+    merge({shapes:ZERO, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:' pts'}}), CFG);
   const cb = C.calibration;
   Plotly.newPlot('cpeCal', [
     {x:cb.map(r => r.bin + ' (n=' + r.n.toLocaleString() + ')'), y:cb.map(r => r.claimed*100), name:'Claimed CPE', type:'bar', marker:{color:'#5B8DBE'}, text:cb.map(r => (r.claimed*100).toFixed(0)), textposition:'outside'},

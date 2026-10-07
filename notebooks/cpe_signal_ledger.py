@@ -72,11 +72,13 @@ def table_sha():
         return hashlib.sha1(f.read()).hexdigest()[:10]
 
 
-def load_inputs(today_utc=None):
-    """Price history restricted to fully formed bars (dated before today, UTC)."""
+def load_inputs(today_utc=None, asof=None):
+    """Price history restricted to fully formed bars (dated before today, UTC); with `asof`, only bars through that date."""
     today_utc = today_utc or datetime.now(timezone.utc).date()
     prices = pd.read_parquet(PRICES_PATH)
     prices = prices[prices.index.date < today_utc]
+    if asof is not None:
+        prices = prices[prices.index <= pd.Timestamp(asof)]
     table = pd.read_parquet(TABLE_PATH)
     return prices, table
 
@@ -136,10 +138,13 @@ def log_new_events():
     return ev
 
 
-def score(ev=None):
-    """Fan entry events out to the table's rows and score resolved ones. Returns (rows_df, last_bar_date)."""
-    prices, table = load_inputs()
+def score(ev=None, asof=None):
+    """Fan entry events out to the table's rows and score resolved ones. Returns (rows_df, last_bar_date).
+    With `asof`, scores as the ledger stood on that date: only events entered and bars published through it."""
+    prices, table = load_inputs(asof=asof)
     ev = load_events() if ev is None else ev
+    if asof is not None:
+        ev = ev[pd.to_datetime(ev["entry_date"]) <= pd.Timestamp(asof)]
     if ev.empty:
         return pd.DataFrame(), prices.index.max()
     ev = ev.copy()
@@ -184,11 +189,13 @@ def score(ev=None):
     return rows, prices.index.max()
 
 
-def live_stats(rows=None, last_bar=None, ev=None):
+def live_stats(rows=None, last_bar=None, ev=None, asof=None):
     """JSON-safe summary for dashboards."""
     if rows is None:
-        rows, last_bar = score(ev)
+        rows, last_bar = score(ev, asof)
     ev = load_events() if ev is None else ev
+    if asof is not None:
+        ev = ev[pd.to_datetime(ev["entry_date"]) <= pd.Timestamp(asof)]
     out = {"table_end": str(TABLE_END.date()), "table_sha": table_sha(),
            "n_events": int(len(ev)), "n_rows": int(len(rows)),
            "first_entry": str(ev["entry_date"].min()) if len(ev) else None,
