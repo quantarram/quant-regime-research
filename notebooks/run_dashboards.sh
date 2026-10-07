@@ -24,6 +24,7 @@ python build_metals_dashboard.py || { echo "ERROR: build_metals_dashboard.py fai
 echo ""
 echo "[4/10] Building predictor dashboard (22-instrument price forecasts)..."
 python build_predictor_dashboard.py || { echo "ERROR: build_predictor_dashboard.py failed."; exit 1; }
+python predictor_ledger.py || { echo "ERROR: predictor_ledger.py failed."; exit 1; }
 
 echo ""
 echo "[5/10] Logging predictions and resolving expired..."
@@ -45,7 +46,7 @@ python football_betting/resolve_football_picks.py || { echo "ERROR: football_bet
 
 echo ""
 echo "[9/10] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
+git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html predictor_forecasts.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""
