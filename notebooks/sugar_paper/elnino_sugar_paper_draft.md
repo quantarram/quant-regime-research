@@ -68,7 +68,7 @@ As in the original version of this analysis, the predictor is timed to the monso
 
 **Figure 4.** Every monsoon month in 2026, and every forward window that has actually closed, shown individually. Hatched grey bars are windows that have not yet closed — a fixed placeholder height, not a measured value of zero — and are not filled in early.
 
-2026 was flagged from June onward (JJA Niño 3.4 at +1.8°C and JAS, now published, at +2.2°C — a JJAS mean of 2.0°C, four times the 0.5°C bar). Of the twelve monsoon-month/horizon combinations this predictor covers for 2026, seven have actually closed as of this writing, and every one of them is a real increase:
+2026 was flagged from June onward (JJA Niño 3.4 at +1.8°C and JAS, now published, at +2.2°C — a JJAS mean of 2.0°C, four times the 0.5°C bar). Of the twelve monsoon-month/horizon combinations this predictor covers for 2026, six have actually closed as of this writing, and every one of them is a real increase:
 
 - **June + 1 month:** +6.5%
 - **June + 2 months:** +21.0%
