@@ -255,6 +255,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [I Built a Scorecard for My Own Dashboards. The Baselines Were the Interesting Part](https://arunramanathans.substack.com/p/i-built-a-scorecard-for-my-own-dashboards) (the Performance Monitor)
 - [The AI Narrative, Tested Three Ways](https://arunramanathans.substack.com/p/the-ai-narrative)
 - [The El Niño Sugar Prediction, Checked Against What Actually Happened](https://arunramanathans.substack.com/p/the-el-nino-sugar-prediction) (resolves the "Does the 2026 El Niño Move Sugar Prices?" piece below)
 - [Beating a 30-Year-Old Strategy at Its Own Game](https://arunramanathans.substack.com/p/beating-a-30-year-old-strategy-at) (Paper 16 robustness follow-up)
