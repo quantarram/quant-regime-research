@@ -183,6 +183,55 @@ def git_history_rows():
     return rows
 
 
+def _resolved_numeric(df):
+    res = df[df["status"] == "RESOLVED"].copy()
+    for c in ("abs_pct_error_q50", "naive_abs_pct_error", "actual_return_pct", "forecast_return_pct"):
+        res[c] = res[c].astype(float)
+    for c in ("in_80_interval", "in_50_interval", "direction_correct"):
+        res[c] = res[c].astype(str).str.lower() == "true"
+    return res
+
+
+def _score_block(g):
+    return {
+        "n": int(len(g)),
+        "mape": round(float(g["abs_pct_error_q50"].mean()), 3),
+        "naive_mape": round(float(g["naive_abs_pct_error"].mean()), 3),
+        "cov80": round(float(g["in_80_interval"].mean()), 4),
+        "cov50": round(float(g["in_50_interval"].mean()), 4),
+        "direction": round(float(g["direction_correct"].mean()), 4),
+    }
+
+
+def live_stats(df):
+    """JSON-safe summary of the ledger for dashboards (predictor panel, performance monitor)."""
+    res = _resolved_numeric(df)
+    pend = df[df["status"] == "PENDING"]
+    out = {
+        "first_forecast": str(df["forecast_date"].min()) if len(df) else None,
+        "last_forecast": str(df["forecast_date"].max()) if len(df) else None,
+        "last_outcome": str(res["outcome_date"].max()) if len(res) else None,
+        "n_logged": int(len(df)), "n_resolved": int(len(res)), "n_pending": int(len(pend)),
+        "n_instruments": int(df["ticker"].nunique()) if len(df) else 0,
+        "n_instruments_resolved": int(res["ticker"].nunique()) if len(res) else 0,
+        "by_horizon": [], "by_ticker": {},
+    }
+    for h in sorted(df["horizon_days"].unique()) if len(df) else []:
+        gh = res[res["horizon_days"] == h]
+        ph = pend[pend["horizon_days"] == h]
+        row = {"horizon": int(h), "tickers": sorted(df.loc[df["horizon_days"] == h, "ticker"].unique().tolist()),
+               "n_pending": int(len(ph)),
+               "first_pending_target": str(ph["target_date_est"].min()) if len(ph) else None,
+               "n": 0}
+        if len(gh):
+            row.update(_score_block(gh))
+            row["n_instruments"] = int(gh["ticker"].nunique())
+        out["by_horizon"].append(row)
+    for t, g in res.groupby("ticker"):
+        out["by_ticker"][t] = _score_block(g)
+    return out
+
+
 def summary(df):
     res = df[df["status"] == "RESOLVED"].copy()
     print(f"\nLedger: {len(df)} forecasts logged, {len(res)} resolved, {len(df) - len(res)} pending")

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Performance Monitor — Dashboards Scored</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#5B8DBE;--accent2:#7FAAD1;--bg:#0C0E0D;--s1:#141614;--s2:#1B1E1B;--s3:#222522;
+--bdr:#2C302C;--bdr2:#3A3F3A;--text:#DDE8DD;--text2:#7A8F7A;--text3:#4A5A4A;--warn:#C8A84A;--rose:#B5726A;--ok:#7FB08A;
+--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--r:10px;--gap:16px;--pad:20px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;}
+header{background:linear-gradient(160deg,#0C0E0D,#141a1e,#0C0E0D);border-bottom:1px solid var(--bdr);padding:18px var(--pad);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+.h-title{font-family:var(--mono);font-size:clamp(13px,2vw,17px);font-weight:600;color:var(--accent2);}
+.h-sub{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+.h-meta{font-family:var(--mono);font-size:11px;color:var(--text2);text-align:right;line-height:1.8;}
+main{max-width:1180px;margin:0 auto;padding:20px var(--pad) 10px;}
+.intro{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:18px;max-width:900px;}
+.intro b{color:var(--text);}
+.overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--gap);margin-bottom:26px;}
+.ov{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;display:block;text-decoration:none;color:inherit;}
+.ov:hover{border-color:var(--bdr2);}
+.ov-name{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.05em;}
+.ov-big{font-family:var(--mono);font-size:24px;font-weight:600;margin-top:8px;}
+.ov-big small{font-size:11px;color:var(--text2);font-weight:400;}
+.ov-line{font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:4px;line-height:1.6;}
+.pill{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:99px;border:1px solid var(--bdr2);color:var(--text2);margin-left:8px;vertical-align:1px;}
+.pill.live{color:var(--ok);border-color:#2F4A36;}
+.pill.gap{color:var(--warn);border-color:#5A4D22;}
+section{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:var(--pad);margin-bottom:20px;}
+.s-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;}
+.s-sub{font-family:var(--mono);font-size:11px;color:var(--text2);margin:4px 0 14px;line-height:1.7;}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--gap);}
+.c-label{font-family:var(--mono);font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px;}
+th,td{text-align:right;padding:6px 10px;border-bottom:1px solid var(--bdr);font-family:var(--mono);}
+th:first-child,td:first-child{text-align:left;}
+th{color:var(--text2);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.05em;}
+.note{font-size:12px;color:var(--text2);margin-top:12px;line-height:1.7;}
+.table-wrap{overflow-x:auto;}
+footer{padding:24px var(--pad) 40px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="h-title">Performance Monitor</div>
+  <div class="h-sub">Every dashboard, scored against what happened</div></div>
+  <div class="h-meta" id="hmeta"></div>
+</header>
+<main>
+<p class="intro">Each panel below takes one dashboard's own prediction ledger and reports <b>what it called and what then happened</b>,
+next to the baseline that gives the number meaning: an always-long call for the direction signals, the neutral-weight
+portfolio for the tilt, a no-change forecast for the price forecasts, the odds-implied win rate for the football picks.
+Sample sizes are printed everywhere; every resolved row counts.</p>
+<div class="overview" id="overview"></div>
+<div id="panels"></div>
+</main>
+<footer>performance monitor &mdash; quantarram/quant-regime-research &mdash; research record, not investment advice</footer>
+<script>
+const D = {"generated": "2026-10-07 19:03:03", "gold": {"label": "Gold", "n_resolved": 136, "rows": [{"horizon": 21, "direction": "BULLISH", "n": 52, "hit": 0.5385, "baseline": 0.4045, "baseline_n": 89, "mean_return": 2.9}, {"horizon": 21, "direction": "NEUTRAL", "n": 37, "hit": 0.5946, "baseline": 0.5506, "baseline_n": 89, "mean_return": -1.88}, {"horizon": 63, "direction": "BULLISH", "n": 42, "hit": 1.0, "baseline": 1.0, "baseline_n": 47, "mean_return": 7.07}, {"horizon": 63, "direction": "NEUTRAL", "n": 5, "hit": 0.0, "baseline": 0.0638, "baseline_n": 47, "mean_return": 13.59}], "series": {"hit_dates": ["2026-07-09", "2026-07-10", "2026-07-11", "2026-07-12", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-18", "2026-07-19", "2026-07-20", "2026-07-25", "2026-07-26", "2026-07-27", "2026-07-28", "2026-07-30", "2026-07-31", "2026-08-01", "2026-08-02", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-20", "2026-08-21", "2026-08-21", "2026-08-22", "2026-08-22", "2026-08-23", "2026-08-23", "2026-08-24", "2026-08-24", "2026-08-25", "2026-08-25", "2026-08-26", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-29", "2026-08-30", "2026-08-30", "2026-08-31", "2026-08-31", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25", "2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "hit": [null, null, null, null, null, null, null, null, null, 0.0, 0.0, 0.0, 0.0769, 0.0714, 0.0667, 0.0625, 0.0588, 0.0556, 0.0526, 0.1, 0.0952, 0.0909, 0.1304, 0.1667, 0.2, 0.2308, 0.2593, 0.2857, 0.3103, 0.3333, 0.3548, 0.375, 0.3939, 0.4118, 0.4286, 0.4444, 0.4595, 0.4737, 0.4872, 0.5, 0.5122, 0.5238, 0.5349, 0.5455, 0.5556, 0.5652, 0.5745, 0.5833, 0.5918, 0.6, 0.6078, 0.6154, 0.6226, 0.6296, 0.6364, 0.6429, 0.6491, 0.6552, 0.661, 0.6667, 0.6721, 0.6774, 0.6825, 0.6875, 0.6923, 0.697, 0.7015, 0.7059, 0.7101, 0.7143, 0.7183, 0.7222, 0.726, 0.7297, 0.7333, 0.7368, 0.7403, 0.7436, 0.7468, 0.75, 0.7531, 0.7561, 0.759, 0.7619, 0.7647, 0.7674, 0.7701, 0.7614, 0.764, 0.7556, 0.7582, 0.75, 0.7527, 0.7447], "rose_dates": ["2026-07-09", "2026-07-10", "2026-07-11", "2026-07-12", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19", "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-25", "2026-07-26", "2026-07-27", "2026-07-28", "2026-07-30", "2026-07-31", "2026-08-01", "2026-08-02", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-20", "2026-08-21", "2026-08-21", "2026-08-22", "2026-08-22", "2026-08-23", "2026-08-23", "2026-08-24", "2026-08-24", "2026-08-25", "2026-08-25", "2026-08-26", "2026-08-26", "2026-08-27", "2026-08-27", "2026-08-28", "2026-08-28", "2026-08-29", "2026-08-29", "2026-08-30", "2026-08-30", "2026-08-31", "2026-08-31", "2026-09-01", "2026-09-01", "2026-09-02", "2026-09-02", "2026-09-03", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-05", "2026-09-06", "2026-09-06", "2026-09-07", "2026-09-07", "2026-09-08", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-10", "2026-09-11", "2026-09-11", "2026-09-12", "2026-09-12", "2026-09-13", "2026-09-13", "2026-09-14", "2026-09-14", "2026-09-15", "2026-09-15", "2026-09-16", "2026-09-16", "2026-09-17", "2026-09-17", "2026-09-18", "2026-09-18", "2026-09-19", "2026-09-19", "2026-09-20", "2026-09-20", "2026-09-21", "2026-09-21", "2026-09-22", "2026-09-22", "2026-09-23", "2026-09-23", "2026-09-24", "2026-09-24", "2026-09-25", "2026-09-25", "2026-09-26", "2026-09-26", "2026-09-27", "2026-09-27", "2026-09-28", "2026-09-28", "2026-09-29", "2026-09-29", "2026-09-30", "2026-09-30", "2026-10-01", "2026-10-01", "2026-10-02", "2026-10-02", "2026-10-03", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "rose": [null, null, null, null, null, null, null, null, null, 0.1, 0.0909, 0.0833, 0.0769, 0.0714, 0.0667, 0.0625, 0.0588, 0.1111, 0.1053, 0.1, 0.0952, 0.0909, 0.087, 0.0833, 0.12, 0.1154, 0.1111, 0.1429, 0.1724, 0.2, 0.2258, 0.25, 0.2727, 0.2941, 0.3143, 0.3333, 0.3514, 0.3684, 0.3846, 0.4, 0.4146, 0.4286, 0.4419, 0.4545, 0.4667, 0.4783, 0.4894, 0.5, 0.5102, 0.52, 0.5294, 0.5385, 0.5472, 0.5556, 0.5636, 0.5714, 0.5789, 0.5862, 0.5932, 0.6, 0.6066, 0.6129, 0.619, 0.625, 0.6308, 0.6364, 0.6418, 0.6471, 0.6522, 0.6571, 0.662, 0.6667, 0.6712, 0.6622, 0.6667, 0.6579, 0.6623, 0.6667, 0.6709, 0.675, 0.679, 0.6707, 0.6627, 0.6667, 0.6588, 0.6628, 0.6552, 0.6591, 0.6517, 0.6556, 0.6484, 0.6522, 0.6452, 0.6489, 0.6421, 0.6458, 0.6495, 0.6429, 0.6364, 0.64, 0.6337, 0.6373, 0.6311, 0.6346, 0.6286, 0.6321, 0.6355, 0.6389, 0.633, 0.6364, 0.6396, 0.6339, 0.6283, 0.6316, 0.6261, 0.6293, 0.6239, 0.6271, 0.6303, 0.625, 0.6281, 0.623, 0.626, 0.621, 0.624, 0.619, 0.6142, 0.6172, 0.6124, 0.6154, 0.6183, 0.6136, 0.6165, 0.6119, 0.6148, 0.6103]}, "bull_n": 94, "bull_hit": 0.7447, "overall_rose": 0.6103, "last_outcome": "2026-10-07", "n_pending": 304}, "metals": {"Silver": {"label": "Silver", "n_resolved": 90, "rows": [{"horizon": 21, "direction": "BULLISH", "n": 66, "hit": 0.5303, "baseline": 0.5303, "baseline_n": 66, "mean_return": 2.44}, {"horizon": 63, "direction": "BULLISH", "n": 24, "hit": 1.0, "baseline": 1.0, "baseline_n": 24, "mean_return": 9.88}], "series": {"hit_dates": ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-14", "2026-09-15", "2026-09-15", "2026-09-16", "2026-09-16", "2026-09-17", "2026-09-17", "2026-09-18", "2026-09-18", "2026-09-19", "2026-09-19", "2026-09-20", "2026-09-20", "2026-09-21", "2026-09-21", "2026-09-22", "2026-09-22", "2026-09-23", "2026-09-23", "2026-09-24", "2026-09-24", "2026-09-25", "2026-09-25", "2026-09-26", "2026-09-26", "2026-09-27", "2026-09-27", "2026-09-28", "2026-09-28", "2026-09-29", "2026-09-29", "2026-09-30", "2026-09-30", "2026-10-01", "2026-10-01", "2026-10-02", "2026-10-02", "2026-10-03", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "hit": [null, null, null, null, null, null, null, null, null, 0.7, 0.7273, 0.75, 0.7692, 0.7857, 0.8, 0.8125, 0.8235, 0.8333, 0.8421, 0.85, 0.8571, 0.8636, 0.8696, 0.875, 0.88, 0.8846, 0.8889, 0.8929, 0.8966, 0.9, 0.9032, 0.9062, 0.9091, 0.9118, 0.8857, 0.8611, 0.8649, 0.8684, 0.8462, 0.825, 0.8049, 0.7857, 0.7907, 0.7727, 0.7778, 0.7609, 0.7447, 0.75, 0.7551, 0.74, 0.7451, 0.7308, 0.7358, 0.7222, 0.7091, 0.7143, 0.7193, 0.7069, 0.6949, 0.7, 0.7049, 0.7097, 0.7143, 0.7188, 0.7077, 0.7121, 0.7164, 0.7059, 0.6957, 0.7, 0.6901, 0.6944, 0.6986, 0.6892, 0.6933, 0.6842, 0.6883, 0.6795, 0.6709, 0.675, 0.679, 0.6707, 0.6627, 0.6667, 0.6706, 0.6628, 0.6667, 0.6591, 0.6629, 0.6556], "rose_dates": ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-14", "2026-09-15", "2026-09-15", "2026-09-16", "2026-09-16", "2026-09-17", "2026-09-17", "2026-09-18", "2026-09-18", "2026-09-19", "2026-09-19", "2026-09-20", "2026-09-20", "2026-09-21", "2026-09-21", "2026-09-22", "2026-09-22", "2026-09-23", "2026-09-23", "2026-09-24", "2026-09-24", "2026-09-25", "2026-09-25", "2026-09-26", "2026-09-26", "2026-09-27", "2026-09-27", "2026-09-28", "2026-09-28", "2026-09-29", "2026-09-29", "2026-09-30", "2026-09-30", "2026-10-01", "2026-10-01", "2026-10-02", "2026-10-02", "2026-10-03", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "rose": [null, null, null, null, null, null, null, null, null, 0.7, 0.7273, 0.75, 0.7692, 0.7857, 0.8, 0.8125, 0.8235, 0.8333, 0.8421, 0.85, 0.8571, 0.8636, 0.8696, 0.875, 0.88, 0.8846, 0.8889, 0.8929, 0.8966, 0.9, 0.9032, 0.9062, 0.9091, 0.9118, 0.8857, 0.8611, 0.8649, 0.8684, 0.8462, 0.825, 0.8049, 0.7857, 0.7907, 0.7727, 0.7778, 0.7609, 0.7447, 0.75, 0.7551, 0.74, 0.7451, 0.7308, 0.7358, 0.7222, 0.7091, 0.7143, 0.7193, 0.7069, 0.6949, 0.7, 0.7049, 0.7097, 0.7143, 0.7188, 0.7077, 0.7121, 0.7164, 0.7059, 0.6957, 0.7, 0.6901, 0.6944, 0.6986, 0.6892, 0.6933, 0.6842, 0.6883, 0.6795, 0.6709, 0.675, 0.679, 0.6707, 0.6627, 0.6667, 0.6706, 0.6628, 0.6667, 0.6591, 0.6629, 0.6556]}, "bull_n": 90, "bull_hit": 0.6556, "overall_rose": 0.6556, "last_outcome": "2026-10-07", "n_pending": 258}, "Platinum": {"label": "Platinum", "n_resolved": 90, "rows": [{"horizon": 21, "direction": "BULLISH", "n": 66, "hit": 0.6364, "baseline": 0.6364, "baseline_n": 66, "mean_return": 2.36}, {"horizon": 63, "direction": "BULLISH", "n": 24, "hit": 0.9583, "baseline": 0.9583, "baseline_n": 24, "mean_return": 8.7}], "series": {"hit_dates": ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-14", "2026-09-15", "2026-09-15", "2026-09-16", "2026-09-16", "2026-09-17", "2026-09-17", "2026-09-18", "2026-09-18", "2026-09-19", "2026-09-19", "2026-09-20", "2026-09-20", "2026-09-21", "2026-09-21", "2026-09-22", "2026-09-22", "2026-09-23", "2026-09-23", "2026-09-24", "2026-09-24", "2026-09-25", "2026-09-25", "2026-09-26", "2026-09-26", "2026-09-27", "2026-09-27", "2026-09-28", "2026-09-28", "2026-09-29", "2026-09-29", "2026-09-30", "2026-09-30", "2026-10-01", "2026-10-01", "2026-10-02", "2026-10-02", "2026-10-03", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "hit": [null, null, null, null, null, null, null, null, null, 0.8, 0.8182, 0.8333, 0.8462, 0.8571, 0.8667, 0.875, 0.8824, 0.8889, 0.8947, 0.9, 0.9048, 0.9091, 0.913, 0.9167, 0.92, 0.9231, 0.9259, 0.9286, 0.931, 0.9333, 0.9355, 0.9375, 0.9394, 0.9412, 0.9429, 0.9444, 0.9459, 0.9474, 0.9487, 0.95, 0.9268, 0.9048, 0.907, 0.9091, 0.9111, 0.8913, 0.8723, 0.875, 0.8776, 0.86, 0.8627, 0.8462, 0.8491, 0.8333, 0.8182, 0.8214, 0.8246, 0.8103, 0.7966, 0.8, 0.8033, 0.8065, 0.8095, 0.8125, 0.8, 0.803, 0.806, 0.7941, 0.7971, 0.8, 0.7887, 0.7917, 0.7945, 0.7838, 0.7867, 0.7763, 0.7792, 0.7692, 0.7595, 0.7625, 0.7654, 0.7561, 0.747, 0.75, 0.7529, 0.7442, 0.7471, 0.7386, 0.7303, 0.7222], "rose_dates": ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-14", "2026-09-15", "2026-09-15", "2026-09-16", "2026-09-16", "2026-09-17", "2026-09-17", "2026-09-18", "2026-09-18", "2026-09-19", "2026-09-19", "2026-09-20", "2026-09-20", "2026-09-21", "2026-09-21", "2026-09-22", "2026-09-22", "2026-09-23", "2026-09-23", "2026-09-24", "2026-09-24", "2026-09-25", "2026-09-25", "2026-09-26", "2026-09-26", "2026-09-27", "2026-09-27", "2026-09-28", "2026-09-28", "2026-09-29", "2026-09-29", "2026-09-30", "2026-09-30", "2026-10-01", "2026-10-01", "2026-10-02", "2026-10-02", "2026-10-03", "2026-10-03", "2026-10-04", "2026-10-04", "2026-10-05", "2026-10-05", "2026-10-06", "2026-10-06", "2026-10-07", "2026-10-07"], "rose": [null, null, null, null, null, null, null, null, null, 0.8, 0.8182, 0.8333, 0.8462, 0.8571, 0.8667, 0.875, 0.8824, 0.8889, 0.8947, 0.9, 0.9048, 0.9091, 0.913, 0.9167, 0.92, 0.9231, 0.9259, 0.9286, 0.931, 0.9333, 0.9355, 0.9375, 0.9394, 0.9412, 0.9429, 0.9444, 0.9459, 0.9474, 0.9487, 0.95, 0.9268, 0.9048, 0.907, 0.9091, 0.9111, 0.8913, 0.8723, 0.875, 0.8776, 0.86, 0.8627, 0.8462, 0.8491, 0.8333, 0.8182, 0.8214, 0.8246, 0.8103, 0.7966, 0.8, 0.8033, 0.8065, 0.8095, 0.8125, 0.8, 0.803, 0.806, 0.7941, 0.7971, 0.8, 0.7887, 0.7917, 0.7945, 0.7838, 0.7867, 0.7763, 0.7792, 0.7692, 0.7595, 0.7625, 0.7654, 0.7561, 0.747, 0.75, 0.7529, 0.7442, 0.7471, 0.7386, 0.7303, 0.7222]}, "bull_n": 90, "bull_hit": 0.7222, "overall_rose": 0.7222, "last_outcome": "2026-10-07", "n_pending": 258}}, "portfolio": {"rows": [{"horizon": 21, "n": 8, "tilt": 0.9, "neutral": 0.792, "diff": 0.107, "beat": 0.75}, {"horizon": 63, "n": 41, "tilt": 8.204, "neutral": 8.007, "diff": 0.198, "beat": 1.0}], "all": {"n": 49, "tilt": 7.012, "neutral": 6.829, "diff": 0.183, "beat": 0.9592}, "n_pending": 61, "nav": {"dates": ["2026-07-11", "2026-07-12", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19", "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25", "2026-07-26", "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-01", "2026-08-02", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25", "2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07"], "tilt": [0.0, 0.065, 0.071, -1.525, -0.477, -0.277, -0.965, -1.006, -1.078, -1.127, -0.903, 0.891, 0.621, -0.885, -0.943, -0.921, -0.949, -0.37, -1.027, -1.889, -1.032, -2.001, -1.609, -1.944, -1.911, -0.582, 1.214, 0.839, 1.571, 1.97, 1.967, 1.538, 1.37, 1.579, 1.498, 1.244, 1.625, 1.027, 1.403, 1.269, 3.055, 4.461, 6.75, 7.137, 6.851, 7.482, 7.626, 7.392, 8.067, 8.405, 7.489, 7.335, 6.507, 5.193, 5.022, 7.62, 7.46, 6.409, 6.361, 6.552, 5.95, 5.25, 4.506, 4.648, 4.848, 5.164, 5.32, 5.558, 4.685, 5.661, 7.281, 7.346, 7.133, 9.343, 9.371, 8.271, 8.154, 7.954, 7.959, 8.064, 7.634, 6.514, 6.624, 7.203, 6.961, 6.961, 7.192, 7.707, 7.99], "neutral": [0.0, 0.066, 0.071, -1.524, -0.475, -0.276, -0.964, -1.004, -1.076, -1.125, -0.9, 0.894, 0.624, -0.882, -0.94, -0.917, -0.946, -0.366, -1.023, -1.885, -1.028, -1.996, -1.603, -1.938, -1.905, -0.576, 1.221, 0.846, 1.578, 1.977, 1.975, 1.546, 1.379, 1.587, 1.506, 1.252, 1.634, 1.036, 1.412, 1.278, 3.065, 4.472, 6.763, 7.15, 6.864, 7.497, 7.642, 7.391, 8.066, 8.405, 7.488, 7.335, 6.507, 5.193, 5.024, 7.638, 7.475, 6.414, 6.366, 6.557, 5.955, 5.247, 4.491, 4.64, 4.834, 5.151, 5.289, 5.527, 4.64, 5.643, 7.264, 7.328, 7.119, 9.367, 9.391, 8.307, 8.193, 8.019, 8.024, 8.128, 7.695, 6.591, 6.701, 7.28, 7.039, 7.039, 7.27, 7.784, 8.072], "hth": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, 2.347, 2.185, 1.222, 1.177, 1.379, 0.765, 0.165, -0.528, -0.373, -0.213, 0.088, 0.146, 0.369, -0.344, 0.609, 1.98, 2.045, 1.834, 3.786, 3.813, 2.833, 2.729, 2.562, 2.567, 2.667, 2.291, 1.17, 1.278, 1.807, 1.559, 1.559, 1.778, 2.21, 2.482]}, "ledger_start": "2026-07-11", "ledger_last": "2026-10-07", "ledger_days": 89}, "predictor": {"first_forecast": "2026-07-17", "last_forecast": "2026-10-06", "last_outcome": "2026-10-06", "n_logged": 1120, "n_resolved": 162, "n_pending": 958, "n_instruments": 22, "n_instruments_resolved": 4, "by_horizon": [{"horizon": 1, "tickers": ["XLV"], "n_pending": 1, "first_pending_target": "2026-10-07", "n": 50, "mape": 0.833, "naive_mape": 0.83, "cov80": 0.76, "cov50": 0.46, "direction": 0.5, "n_instruments": 1}, {"horizon": 5, "tickers": ["XLI"], "n_pending": 5, "first_pending_target": "2026-10-07", "n": 46, "mape": 1.779, "naive_mape": 1.705, "cov80": 0.7826, "cov50": 0.3913, "direction": 0.5217, "n_instruments": 1}, {"horizon": 21, "tickers": ["IWM", "QQQ"], "n_pending": 36, "first_pending_target": "2026-10-08", "n": 66, "mape": 3.1, "naive_mape": 3.441, "cov80": 0.9394, "cov50": 0.6515, "direction": 0.6061, "n_instruments": 2}, {"horizon": 63, "tickers": ["XOM"], "n_pending": 51, "first_pending_target": "2026-10-13", "n": 0}, {"horizon": 126, "tickers": ["DIA", "XLB", "XLU"], "n_pending": 152, "first_pending_target": "2027-01-09", "n": 0}, {"horizon": 189, "tickers": ["EURUSD=X", "GLD", "IYR", "MSFT", "SPY", "VTI", "XLF", "XLK"], "n_pending": 407, "first_pending_target": "2027-04-07", "n": 0}, {"horizon": 252, "tickers": ["AAPL", "JPM", "VOX", "XLE", "XLP", "XLY"], "n_pending": 306, "first_pending_target": "2027-07-04", "n": 0}], "by_ticker": {"IWM": {"n": 33, "mape": 3.94, "naive_mape": 3.758, "cov80": 0.9394, "cov50": 0.5455, "direction": 0.4545}, "QQQ": {"n": 33, "mape": 2.26, "naive_mape": 3.125, "cov80": 0.9394, "cov50": 0.7576, "direction": 0.7576}, "XLI": {"n": 46, "mape": 1.779, "naive_mape": 1.705, "cov80": 0.7826, "cov50": 0.3913, "direction": 0.5217}, "XLV": {"n": 50, "mape": 0.833, "naive_mape": 0.83, "cov80": 0.76, "cov50": 0.46, "direction": 0.5}}}, "football": {"n_picks": 9, "n_resolved": 7, "n_pending": 2, "wins": 7, "hit": 1.0, "implied": 0.8468, "odds_min": 1.05, "odds_max": 1.65, "n_placed_resolved": 7, "stake": 314.38, "pnl": 42.52, "series": {"dates": ["2026-08-27", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-12", "2026-09-14", "2026-09-18"], "cum_pnl": [1.7, 12.75, 14.28, 16.93, 21.0, 35.73, 42.52], "labels": ["Barcelona vs Athletic Bilbao", "Hearts vs St Johnstone", "Real Madrid vs Malaga", "Barcelona vs Vallecano", "Real Madrid vs Vallecano", "Inter vs Udinese", "Bayern Munich vs Union Berlin"]}}};
+const pct = (v, d) => (v === null || v === undefined) ? '&ndash;' : (v * 100).toFixed(d === undefined ? 0 : d) + '%';
+const num = (v, d) => (v === null || v === undefined) ? '&ndash;' : v.toFixed(d === undefined ? 2 : d);
+const sgn = (v, d) => (v === null || v === undefined) ? '&ndash;' : (v >= 0 ? '+' : '') + v.toFixed(d === undefined ? 2 : d);
+document.getElementById('hmeta').innerHTML = 'Generated ' + D.generated + ' SGT';
+const BASE = {paper_bgcolor:'transparent', plot_bgcolor:'transparent', height:240,
+  margin:{l:42,r:10,t:6,b:44}, font:{family:'IBM Plex Mono', size:10, color:'#7A8F7A'},
+  xaxis:{tickfont:{size:9}, gridcolor:'#1B1E1B'}, yaxis:{gridcolor:'#1B1E1B', zeroline:false},
+  legend:{orientation:'h', y:-0.3, font:{size:9}}};
+const CFG = {displayModeBar:false, responsive:true};
+const merge = (o) => Object.assign({}, BASE, o);
+const panels = document.getElementById('panels'), overview = document.getElementById('overview');
+
+function addOverview(id, name, status, big, small, lines) {
+  const a = document.createElement('a'); a.className = 'ov'; a.href = '#' + id;
+  a.innerHTML = '<div class="ov-name">' + name + '<span class="pill ' + (status === 'gap' ? 'gap' : 'live') + '">' +
+    (status === 'gap' ? 'not tracked live' : 'tracked live') + '</span></div>' +
+    '<div class="ov-big">' + big + ' <small>' + small + '</small></div>' +
+    lines.map(l => '<div class="ov-line">' + l + '</div>').join('');
+  overview.appendChild(a);
+}
+function addPanel(id, title, sub, bodyHtml) {
+  const s = document.createElement('section'); s.id = id;
+  s.innerHTML = '<div class="s-title">' + title + '</div><div class="s-sub">' + sub + '</div>' + bodyHtml;
+  panels.appendChild(s); return s;
+}
+
+// ------------------------------------------------------------ direction signals (gold, metals)
+function directionTable(b) {
+  let t = '<div class="table-wrap"><table><tr><th>Horizon</th><th>Call</th><th>Resolved</th><th>Hit rate</th>' +
+    '<th>Baseline</th><th>Mean realised move</th></tr>';
+  b.rows.forEach(r => {
+    const bl = r.direction === 'BULLISH' ? 'price rose, all ' + r.baseline_n + ' windows' : 'within &plusmn;3%, all ' + r.baseline_n + ' windows';
+    t += '<tr><td>' + r.horizon + 'd</td><td>' + r.direction + '</td><td>' + r.n + '</td><td>' + pct(r.hit) + '</td>' +
+      '<td>' + pct(r.baseline) + ' <span style="color:var(--text3)">(' + bl + ')</span></td><td>' + sgn(r.mean_return) + '%</td></tr>';
+  });
+  return t + '</table></div>';
+}
+function directionPanel(id, title, blocks, scoring) {
+  // blocks: list of {label, b}
+  let body = '<div class="charts">';
+  blocks.forEach((x, i) => { body += '<div><div class="c-label">' + x.label + ' &mdash; BULLISH-call hit rate vs share of all windows where price rose, cumulative by outcome date, shown once 10 outcomes are in</div><div id="' + id + 'c' + i + '"></div></div>'; });
+  body += '</div>';
+  blocks.forEach(x => { body += '<div class="c-label" style="margin-top:14px">' + x.label + '</div>' + directionTable(x.b); });
+  body += '<div class="note">' + scoring + '</div>';
+  const nres = blocks.reduce((a, x) => a + x.b.n_resolved, 0), npend = blocks.reduce((a, x) => a + x.b.n_pending, 0);
+  addPanel(id, title, nres + ' resolved &middot; ' + npend + ' pending', body);
+  blocks.forEach((x, i) => {
+    const s = x.b.series;
+    Plotly.newPlot(id + 'c' + i, [
+      {x:s.hit_dates, y:s.hit.map(v => v*100), name:'Bullish hit rate', mode:'lines', line:{color:'#5B8DBE', width:2}},
+      {x:s.rose_dates, y:s.rose.map(v => v*100), name:'Price rose (all)', mode:'lines', line:{color:'#B5726A', width:1.5, dash:'dot'}}
+    ], merge({yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,100]}}), CFG);
+  });
+}
+const SCORING = 'Scoring (as logged): a BULLISH call is correct if the price is higher at the horizon; a NEUTRAL call is correct if the move stays within &plusmn;3%. ' +
+  'The baseline for a BULLISH call is how often the price rose over all resolved windows of that horizon, whatever the signal said; ' +
+  'for NEUTRAL it is how often the move stayed within &plusmn;3%. Hit rate above its baseline is the signal adding something beyond the market&rsquo;s own drift.';
+
+addOverview('gold', 'Gold', 'live', pct(D.gold.bull_hit), 'bullish-call hit', [D.gold.bull_n + ' bullish of ' + D.gold.n_resolved + ' resolved (' + D.gold.n_pending + ' pending)', 'price rose in ' + pct(D.gold.overall_rose) + ' of all windows']);
+const metN = D.metals.Silver.n_resolved + D.metals.Platinum.n_resolved;
+const metBull = D.metals.Silver.bull_n + D.metals.Platinum.bull_n;
+const metHit = (D.metals.Silver.bull_hit * D.metals.Silver.bull_n + D.metals.Platinum.bull_hit * D.metals.Platinum.bull_n) / metBull;
+const metRose = (D.metals.Silver.overall_rose * D.metals.Silver.n_resolved + D.metals.Platinum.overall_rose * D.metals.Platinum.n_resolved) / metN;
+addOverview('metals', 'Precious metals', 'live', pct(metHit), 'bullish-call hit', [metBull + ' bullish of ' + metN + ' resolved (Silver, Platinum)', 'price rose in ' + pct(metRose) + ' of all windows']);
+const P = D.portfolio;
+addOverview('portfolio', 'Portfolio tilt', 'live', sgn(P.all.diff, 2) + ' <small>pts vs neutral</small>', '', [P.all.n + ' resolved windows, tilt avg ' + sgn(P.all.tilt, 2) + '%', 'neutral avg ' + sgn(P.all.neutral, 2) + '%']);
+const PR = D.predictor;
+addOverview('predictor', 'Predictor (22 instruments)', 'live', PR.n_resolved + ' <small>of ' + PR.n_logged.toLocaleString() + ' resolved</small>', '', [PR.n_instruments_resolved + ' of ' + PR.n_instruments + ' instruments have an outcome', 'long horizons resolve from 2027']);
+const F = D.football;
+addOverview('football', 'Football checklist', 'live', F.wins + '/' + F.n_resolved, '<small>picks won</small>', ['odds-implied win rate ' + pct(F.implied), 'S$' + sgn(F.pnl, 2) + ' on S$' + num(F.stake, 2) + ' staked']);
+addOverview('cpe', 'CPE dashboard (161 instruments)', 'gap', '&ndash;', '', ['no live prediction ledger yet', 'scored on backtest only so far']);
+
+directionPanel('gold', 'Gold dashboard', [{label:'Gold', b:D.gold}], SCORING);
+directionPanel('metals', 'Precious metals dashboard', [{label:'Silver', b:D.metals.Silver}, {label:'Platinum', b:D.metals.Platinum}], SCORING);
+
+// ------------------------------------------------------------ portfolio
+(function () {
+  let t = '<div class="table-wrap"><table><tr><th>Dominant horizon</th><th>Resolved</th><th>Tilt avg P&amp;L</th><th>Neutral avg P&amp;L</th><th>Tilt &minus; neutral</th><th>Tilt ahead in</th></tr>';
+  P.rows.forEach(r => { t += '<tr><td>' + r.horizon + 'd</td><td>' + r.n + '</td><td>' + sgn(r.tilt) + '%</td><td>' + sgn(r.neutral) + '%</td><td>' + sgn(r.diff, 3) + ' pts</td><td>' + pct(r.beat) + '</td></tr>'; });
+  t += '<tr><td><b>All</b></td><td>' + P.all.n + '</td><td>' + sgn(P.all.tilt) + '%</td><td>' + sgn(P.all.neutral) + '%</td><td>' + sgn(P.all.diff, 3) + ' pts</td><td>' + pct(P.all.beat) + '</td></tr></table></div>';
+  const body = '<div class="charts"><div><div class="c-label">Average resolved-window P&amp;L (%), tilt vs neutral, by horizon</div><div id="pfBars"></div></div>' +
+    '<div><div class="c-label">Simulated paper portfolio, cumulative return since ' + P.ledger_start + ' (%)</div><div id="pfNav"></div></div></div>' + t +
+    '<div class="note">The tilt portfolio re-weights daily to the dashboard&rsquo;s bullish tilts; the neutral portfolio keeps constant weights; hold-to-horizon opens a position when a sleeve fires and holds it until the shortest firing horizon elapses. ' +
+    'The paper ledger is simulated (no broker), runs from ' + P.ledger_start + ' (' + P.ledger_days + ' daily rows, last ' + P.ledger_last + '), includes estimated trading-cost drag for the tilt and hold-to-horizon tracks, and its bullish-only tilt is a different rule from the resolved-window tilt in the table.</div>';
+  addPanel('portfolio', 'Portfolio tilt dashboard', P.all.n + ' resolved windows &middot; ' + P.n_pending + ' pending', body);
+  Plotly.newPlot('pfBars', [
+    {x:P.rows.map(r => r.horizon + 'd (n=' + r.n + ')'), y:P.rows.map(r => r.tilt), name:'Tilt', type:'bar', marker:{color:'#5B8DBE'}, text:P.rows.map(r => r.tilt.toFixed(2)), textposition:'outside'},
+    {x:P.rows.map(r => r.horizon + 'd (n=' + r.n + ')'), y:P.rows.map(r => r.neutral), name:'Neutral', type:'bar', marker:{color:'#B5726A'}, text:P.rows.map(r => r.neutral.toFixed(2)), textposition:'outside'}
+  ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0, Math.max(...P.rows.map(r => Math.max(r.tilt, r.neutral))) * 1.2]}}), CFG);
+  Plotly.newPlot('pfNav', [
+    {x:P.nav.dates, y:P.nav.tilt, name:'Tilt', mode:'lines', line:{color:'#5B8DBE', width:2}},
+    {x:P.nav.dates, y:P.nav.neutral, name:'Neutral', mode:'lines', line:{color:'#B5726A', width:1.5, dash:'dot'}},
+    {x:P.nav.dates, y:P.nav.hth, name:'Hold-to-horizon', mode:'lines', line:{color:'#C8A84A', width:1.5}}
+  ], merge({yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%'}}), CFG);
+})();
+
+// ------------------------------------------------------------ predictor
+(function () {
+  const done = PR.by_horizon.filter(r => r.n > 0), lab = done.map(r => r.horizon + 'd (n=' + r.n + ')');
+  let t = '<div class="table-wrap"><table><tr><th>Horizon</th><th>Instruments</th><th>Resolved</th><th>Model MAPE</th><th>No-change MAPE</th><th>In 80% band</th><th>In 50% band</th><th>Direction</th><th>Pending</th><th>First resolves</th></tr>';
+  PR.by_horizon.forEach(r => {
+    const h = r.n > 0;
+    t += '<tr><td>' + r.horizon + 'd</td><td>' + r.tickers.join(', ') + '</td><td>' + r.n + '</td><td>' + (h ? r.mape.toFixed(2) + '%' : '&ndash;') + '</td><td>' + (h ? r.naive_mape.toFixed(2) + '%' : '&ndash;') +
+      '</td><td>' + (h ? pct(r.cov80) : '&ndash;') + '</td><td>' + (h ? pct(r.cov50) : '&ndash;') + '</td><td>' + (h ? pct(r.direction) : '&ndash;') + '</td><td>' + r.n_pending + '</td><td>' + (r.first_pending_target || '&ndash;') + '</td></tr>';
+  });
+  t += '</table></div>';
+  const body = '<div class="charts"><div><div class="c-label">Median-forecast error vs no-change, by horizon (MAPE, %)</div><div id="prErr"></div></div>' +
+    '<div><div class="c-label">Share of outcomes inside the forecast band (%)</div><div id="prCov"></div></div></div>' + t +
+    '<div class="note">Forecasts logged since ' + PR.first_forecast + ', scored on the close each forecast&rsquo;s own horizon (in trading days) after it was made, exactly as first published. ' +
+    'Each instrument has one fixed horizon, so the 126d, 189d and 252d instruments show no outcome until 2027. Full instrument-level detail sits on the <a href="predictor_dashboard.html" style="color:var(--accent2)">predictor dashboard</a>.</div>';
+  addPanel('predictor', 'Predictor dashboard', PR.n_resolved + ' resolved &middot; ' + PR.n_pending.toLocaleString() + ' pending &middot; ' + PR.n_instruments_resolved + ' of ' + PR.n_instruments + ' instruments with an outcome', body);
+  if (!done.length) return;
+  Plotly.newPlot('prErr', [
+    {x:lab, y:done.map(r => r.mape), name:'Model median', type:'bar', marker:{color:'#5B8DBE'}, text:done.map(r => r.mape.toFixed(2)), textposition:'outside'},
+    {x:lab, y:done.map(r => r.naive_mape), name:'No change', type:'bar', marker:{color:'#B5726A'}, text:done.map(r => r.naive_mape.toFixed(2)), textposition:'outside'}
+  ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0, Math.max(...done.map(r => Math.max(r.mape, r.naive_mape))) * 1.25]}}), CFG);
+  Plotly.newPlot('prCov', [
+    {x:lab, y:done.map(r => r.cov80*100), name:'q10-q90 (nominal 80%)', type:'bar', marker:{color:'#5B8DBE'}, text:done.map(r => (r.cov80*100).toFixed(0)), textposition:'outside'},
+    {x:lab, y:done.map(r => r.cov50*100), name:'q25-q75 (nominal 50%)', type:'bar', marker:{color:'#7FAAD1'}, text:done.map(r => (r.cov50*100).toFixed(0)), textposition:'outside'}
+  ], merge({barmode:'group', xaxis:{type:'category', tickfont:{size:9}}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,115]},
+    shapes:[80,50].map(v => ({type:'line', xref:'paper', x0:0, x1:1, y0:v, y1:v, line:{color:'#C8A84A', width:1, dash:'dot'}}))}), CFG);
+})();
+
+// ------------------------------------------------------------ football
+(function () {
+  const s = F.series;
+  const body = '<div class="charts"><div><div class="c-label">Win rate vs odds-implied win rate (%)</div><div id="fbBars"></div></div>' +
+    '<div><div class="c-label">Cumulative profit on bets actually placed (S$), by match date</div><div id="fbPnl"></div></div></div>' +
+    '<div class="table-wrap"><table><tr><th>Resolved picks</th><th>Won</th><th>Win rate</th><th>Odds-implied win rate</th><th>Odds range</th><th>Bets placed (resolved)</th><th>Staked</th><th>Profit</th></tr>' +
+    '<tr><td>' + F.n_resolved + '</td><td>' + F.wins + '</td><td>' + pct(F.hit) + '</td><td>' + pct(F.implied, 1) + '</td><td>' + num(F.odds_min) + '&ndash;' + num(F.odds_max) + '</td><td>' + F.n_placed_resolved + '</td><td>S$' + num(F.stake) + '</td><td>S$' + sgn(F.pnl) + '</td></tr></table></div>' +
+    '<div class="note">The checklist flags short-priced home favourites that clear its form thresholds; at these odds a bet wins small and loses large, so the win rate has to be read against the odds-implied rate, and the sample is still small (' + F.n_resolved + ' resolved picks, ' + F.n_pending + ' pending).</div>';
+  addPanel('football', 'Football checklist', F.n_resolved + ' resolved &middot; ' + F.n_pending + ' pending', body);
+  Plotly.newPlot('fbBars', [{x:['Actual win rate', 'Odds-implied'], y:[F.hit*100, F.implied*100], type:'bar', marker:{color:['#5B8DBE', '#B5726A']},
+    text:[(F.hit*100).toFixed(0) + '%', (F.implied*100).toFixed(1) + '%'], textposition:'outside'}], merge({xaxis:{type:'category'}, yaxis:{gridcolor:'#1B1E1B', zeroline:false, ticksuffix:'%', range:[0,115]}}), CFG);
+  Plotly.newPlot('fbPnl', [{x:s.dates, y:s.cum_pnl, text:s.labels, mode:'lines+markers', line:{color:'#7FB08A', width:2}, marker:{size:6}, name:'Cumulative profit', hovertemplate:'%{text}<br>S$%{y}<extra></extra>'}],
+    merge({yaxis:{gridcolor:'#1B1E1B', zeroline:true, zerolinecolor:'#3A3F3A', tickprefix:'S$'}}), CFG);
+})();
+
+// ------------------------------------------------------------ CPE gap
+addPanel('cpe', 'CPE dashboard (161 instruments)',
+  'no live ledger yet',
+  '<div class="note">The main CPE dashboard&rsquo;s numbers come from the backtest and out-of-sample studies. Unlike the dashboards above, it does not yet log what it flags each day and score it when the horizon passes, so there is no live record to show here. ' +
+  'Adding one means persisting each day&rsquo;s flagged instrument-horizon-threshold combinations and scoring them against the realised exceedance when the window closes.</div>');
+</script>
+</body>
+</html>

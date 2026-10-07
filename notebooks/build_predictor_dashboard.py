@@ -32,6 +32,8 @@ import live_data as ld  # noqa: E402
 import live_features as lfeat  # noqa: E402
 import live_train_predict as ltp  # noqa: E402
 import feature_lib as fl  # noqa: E402
+sys.path.insert(0, REPO_DIR)
+import predictor_ledger as pled  # noqa: E402
 
 # SGT-user-facing display timestamps -- explicit UTC->SGT conversion, not bare
 # datetime.now(), so it's correct whether run on the owner's SGT Mac or a UTC
@@ -130,6 +132,8 @@ data = {
     "data_stale": main_meta["stale"],
     "n_instruments": len(instruments),
     "instruments": instruments,
+    # live track record, read from predictor_forecasts.csv (as of the previous ledger run)
+    "live": pled.live_stats(pled.load_ledger()),
 }
 data_json = json.dumps(data, allow_nan=False)
 print(f"  Data bundle: {len(data_json)/1e3:.1f} KB")
@@ -193,6 +197,19 @@ main{padding:var(--pad);max-width:1440px;margin:0 auto;}
   font-family:var(--mono);font-size:11px;color:var(--text2);display:flex;justify-content:space-between;}
 .model-detail{font-family:var(--mono);font-size:10.5px;color:var(--text3);margin-top:8px;line-height:1.5;}
 .chart{height:120px;margin-top:10px;}
+.live{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:var(--pad);margin-bottom:20px;}
+.live-title{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;}
+.live-sub{font-family:var(--mono);font-size:11px;color:var(--text2);margin:4px 0 14px;line-height:1.7;}
+.live-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--gap);}
+.live-chart-label{font-family:var(--mono);font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.live table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px;}
+.live th,.live td{text-align:right;padding:6px 10px;border-bottom:1px solid var(--bdr);font-family:var(--mono);}
+.live th:first-child,.live td:first-child{text-align:left;}
+.live th{color:var(--text2);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.05em;}
+.live td.dim{color:var(--text3);}
+.live-note{font-family:var(--sans);font-size:12px;color:var(--text2);margin-top:12px;line-height:1.7;}
+.live-row{font-family:var(--mono);font-size:11px;color:var(--text2);display:flex;justify-content:space-between;margin-top:4px;}
+.live-row .good{color:#7FB08A;}
 footer{padding:24px var(--pad) 40px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
 .methodology{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r);padding:var(--pad);margin-bottom:20px;}
 .methodology summary{cursor:pointer;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent2);
@@ -279,6 +296,16 @@ footer{padding:24px var(--pad) 40px;text-align:center;font-family:var(--mono);fo
       <a href="predictor_v1_paper_draft.md">draft preprint</a>. Code: <code>notebooks/predictor_v1/</code>.
     </div>
   </details>
+  <section class="live" id="live">
+    <div class="live-title">Live track record</div>
+    <div class="live-sub" id="liveSub"></div>
+    <div class="live-charts">
+      <div><div class="live-chart-label">Median-forecast error vs no-change benchmark, by horizon (MAPE, %)</div><div id="liveErr"></div></div>
+      <div><div class="live-chart-label">Share of outcomes inside the forecast band, by horizon (%)</div><div id="liveCov"></div></div>
+    </div>
+    <table id="liveTable"></table>
+    <div class="live-note" id="liveNote"></div>
+  </section>
   <div class="grid" id="cards"></div>
 </main>
 <footer>predictor_v1 &mdash; quantarram/quant-regime-research</footer>
@@ -288,6 +315,73 @@ const D = """ + data_json + """;
 document.getElementById('hmeta').innerHTML =
   'Generated ' + D.generated + '<br>Data as of ' + D.latest_date +
   (D.data_stale ? ' (STALE, ' + D.data_age_days + 'd old)' : '');
+
+// ---- live track record panel --------------------------------------------
+(function () {
+  const L = D.live, fmt = (v, d) => (v === undefined || v === null) ? '&ndash;' : v.toFixed(d);
+  document.getElementById('liveSub').innerHTML =
+    L.n_logged.toLocaleString() + ' forecasts logged since ' + L.first_forecast + ' &middot; ' +
+    L.n_resolved.toLocaleString() + ' resolved (' + L.n_instruments_resolved + ' of ' + L.n_instruments +
+    ' instruments) &middot; ' + L.n_pending.toLocaleString() + ' pending. Each forecast is scored on the close ' +
+    'its own horizon (in trading days) after the forecast date, exactly as first published. Ledger through ' +
+    (L.last_outcome || L.last_forecast) + '.';
+  const done = L.by_horizon.filter(r => r.n > 0);
+  const lab = done.map(r => r.horizon + 'd (n=' + r.n + ')');
+  const dark = {paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', height: 220,
+    margin: {l: 36, r: 8, t: 6, b: 40}, font: {family: 'IBM Plex Mono', size: 10, color: '#7A8F7A'},
+    xaxis: {type: 'category', tickfont: {size: 9}}, yaxis: {gridcolor: '#1B1E1B', zeroline: false, ticksuffix: '%'},
+    legend: {orientation: 'h', y: -0.28, font: {size: 9}}, barmode: 'group'};
+  if (done.length) {
+    Plotly.newPlot('liveErr', [
+      {x: lab, y: done.map(r => r.mape), name: 'Model median', type: 'bar', marker: {color: '#5B8DBE'},
+       text: done.map(r => r.mape.toFixed(2)), textposition: 'outside'},
+      {x: lab, y: done.map(r => r.naive_mape), name: 'No change', type: 'bar', marker: {color: '#B5726A'},
+       text: done.map(r => r.naive_mape.toFixed(2)), textposition: 'outside'}
+    ], Object.assign({}, dark, {yaxis: {gridcolor: '#1B1E1B', zeroline: false, ticksuffix: '%',
+         range: [0, Math.max(...done.map(r => Math.max(r.mape, r.naive_mape))) * 1.25]}}),
+    {displayModeBar: false, responsive: true});
+    Plotly.newPlot('liveCov', [
+      {x: lab, y: done.map(r => r.cov80 * 100), name: 'q10-q90 (nominal 80%)', type: 'bar', marker: {color: '#5B8DBE'},
+       text: done.map(r => (r.cov80 * 100).toFixed(0)), textposition: 'outside'},
+      {x: lab, y: done.map(r => r.cov50 * 100), name: 'q25-q75 (nominal 50%)', type: 'bar', marker: {color: '#7FAAD1'},
+       text: done.map(r => (r.cov50 * 100).toFixed(0)), textposition: 'outside'}
+    ], Object.assign({}, dark, {
+      yaxis: {gridcolor: '#1B1E1B', zeroline: false, ticksuffix: '%', range: [0, 115]},
+      shapes: [80, 50].map(v => ({type: 'line', xref: 'paper', x0: 0, x1: 1, y0: v, y1: v,
+        line: {color: '#C8A84A', width: 1, dash: 'dot'}}))
+    }), {displayModeBar: false, responsive: true});
+  } else {
+    document.getElementById('liveErr').innerHTML = '<div class="live-note">No forecasts have resolved yet.</div>';
+  }
+  let rows = '<tr><th>Horizon</th><th>Instruments</th><th>Resolved</th><th>Model MAPE</th><th>No-change MAPE</th>' +
+    '<th>In 80% band</th><th>In 50% band</th><th>Direction</th><th>Pending</th><th>First resolves</th></tr>';
+  L.by_horizon.forEach(r => {
+    const has = r.n > 0;
+    rows += '<tr><td>' + r.horizon + 'd</td><td>' + r.tickers.join(', ') + '</td>' +
+      '<td>' + r.n + '</td>' +
+      '<td>' + (has ? r.mape.toFixed(2) + '%' : '&ndash;') + '</td>' +
+      '<td>' + (has ? r.naive_mape.toFixed(2) + '%' : '&ndash;') + '</td>' +
+      '<td>' + (has ? (r.cov80 * 100).toFixed(0) + '%' : '&ndash;') + '</td>' +
+      '<td>' + (has ? (r.cov50 * 100).toFixed(0) + '%' : '&ndash;') + '</td>' +
+      '<td>' + (has ? (r.direction * 100).toFixed(0) + '%' : '&ndash;') + '</td>' +
+      '<td>' + r.n_pending + '</td>' +
+      '<td class="' + (has ? 'dim' : '') + '">' + (r.first_pending_target || '&ndash;') + '</td></tr>';
+  });
+  document.getElementById('liveTable').innerHTML = rows;
+  document.getElementById('liveNote').innerHTML =
+    'Every instrument is forecast at one fixed horizon, so the long-horizon instruments (126d, 189d, 252d) ' +
+    'cannot show a live outcome until 2027; their rows fill in as each horizon passes. ' +
+    '&ldquo;No change&rdquo; predicts the price stays where it was at forecast time. Direction counts how often the ' +
+    'sign of the median forecast matched the sign of the realised move.';
+})();
+
+function liveCardRow(inst) {
+  const t = D.live.by_ticker[inst.ticker];
+  if (!t) return '<div class="live-row"><span>Live record</span><span>pending, first outcome ~' +
+    (D.live.by_horizon.find(r => r.horizon === inst.horizon) || {}).first_pending_target + '</span></div>';
+  return '<div class="live-row"><span>Live MAPE (n=' + t.n + ')</span><span>' + t.mape.toFixed(2) +
+    '% vs ' + t.naive_mape.toFixed(2) + '% no-change</span></div>';
+}
 
 const cardsEl = document.getElementById('cards');
 D.instruments.forEach((inst, i) => {
@@ -307,6 +401,7 @@ D.instruments.forEach((inst, i) => {
     ' &nbsp;(median <span class="pred-median">$' + inst.q50.toFixed(2) + '</span>)</div>' +
     '<div class="chart" id="chart' + i + '"></div>' +
     '<div class="mape-row"><span>Backtest MAPE (2022+ holdout)</span><span>' + inst.mape_deployed.toFixed(1) + '%</span></div>' +
+    liveCardRow(inst) +
     '<div class="model-detail">' + inst.model_detail + ppDetail + '</div>';
   cardsEl.appendChild(div);
 
