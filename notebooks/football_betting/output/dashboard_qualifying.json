@@ -1,3 +1,18 @@
 [
-
+  {
+    "fixture":"Inter vs Parma",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-10-10T16:00:00Z",
+    "pick":"Inter",
+    "home_team_matched":"Inter",
+    "away_team_matched":"Parma",
+    "ppg_diff":1.1666666667,
+    "home_ppg_home_only":2.4333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.09,
+    "qualifies":true
+  }
 ]
