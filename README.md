@@ -210,6 +210,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 - [Precious Metals Dashboard (Gold/Silver/Platinum)](https://quantarram.github.io/quant-regime-research/notebooks/precious_metals_dashboard.html)
 - [CPE Atlas Explorer (169K signals)](https://quantarram.github.io/quant-regime-research/notebooks/cpe_dashboard.html)
 - [Predictor Dashboard (22-instrument price forecasts, Paper 12)](https://quantarram.github.io/quant-regime-research/notebooks/predictor_dashboard.html) — forecast-accuracy tool only, deliberately no buy/sell signal (see Paper 12's limitations above)
+- [Performance Monitor](https://quantarram.github.io/quant-regime-research/notebooks/performance_monitor.html) — scores every dashboard above against what actually happened, rebuilt daily from their own ledgers: direction calls vs an always-long baseline (gold, metals), the tilt vs neutral weights (portfolio), price forecasts vs a no-change forecast (predictor, with a live track-record panel on its own page), football picks vs the odds-implied win rate, and the CPE table's claims vs realised outcomes on the period after it was frozen, next to the live unconditional rate. Sample sizes and pending counts are shown throughout; the long-horizon rows (CPE 126d-300d, predictor 126d-252d) cannot resolve until late 2026 to 2027
 
 ---
 
@@ -440,6 +441,9 @@ https://doi.org/10.5281/zenodo.23092634
 │   ├── build_metals_dashboard.py    # Precious metals dashboard
 │   ├── build_predictor_dashboard.py # Paper 12 live price-forecast dashboard
 │   ├── ibkr_paper_ledger.py         # IBKR paper-trading ledger
+│   ├── predictor_ledger.py          # Live forecast ledger for the predictor dashboard (git-backfilled, scored daily)
+│   ├── cpe_signal_ledger.py         # CPE live ledger: tail-entry events scored against the frozen CPE table
+│   ├── build_performance_monitor.py # Performance monitor: every dashboard scored against outcomes
 │   ├── temperature/                 # Papers 6-9 climate-finance pipelines
 │   ├── rein/                        # Paper 10 hurricane/reinsurer event study
 │   ├── predictability_paper/        # Paper 11 multifractal analysis pipeline

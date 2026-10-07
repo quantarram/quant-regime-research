@@ -18,11 +18,13 @@ Moisture-stress variables (VPD, dry heat, combined heat+drought) with the series
 
 A sugar-price call made before the outcome was known, confirmed once the monsoon resolved (+29%)
 
+A public monitor scoring every dashboard against what actually happened
+
 github.com/quantarram/quant-regime-research
 
 Beyond CPE:
 
-I've also extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. That runs live as a 22-instrument price-forecasting dashboard: real skill for half the panel, zero demonstrated tradeable alpha across five strategy tests. The same machinery yields a general AI/ML training-window rule. Five further attempts to beat that ceiling — architecture, depth, data, loss functions, uncertainty — all failed. A sixth, at the decision layer, hit the same wall — but using the predictability limit to pick which instruments a classic momentum strategy trades beat the unfiltered version, an edge that held up across ten tests. A companion study tests hurricane landfalls against reinsurer equity.
+I've also extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. That runs live as a 22-instrument price-forecasting dashboard: real skill for half the panel, zero demonstrated tradeable alpha across five strategy tests. The same machinery yields a general AI/ML training-window rule. Five further attempts to beat that ceiling — architecture, depth, data, loss functions, uncertainty — all failed. A sixth, at the decision layer, hit the same wall — but using the predictability limit to pick which instruments a classic momentum strategy trades beat the unfiltered version, an edge that held up across ten tests.
 
 Negative Results:
 
