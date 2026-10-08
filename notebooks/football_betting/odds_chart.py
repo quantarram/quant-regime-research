@@ -15,6 +15,7 @@ says so instead of implying a trend.
 
 Used by daily_dashboard.render_html via odds_section_html().
 """
+import math
 from datetime import timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -41,6 +42,23 @@ def load_history(path=None):
     return h
 
 
+def _nice_ticks(lo, hi, target=5):
+    """Round-number tick values inside [lo, hi] (step from 1/2/5 x 10^k), plus the decimals
+    needed to label them exactly. The axis domain itself is NOT stretched to the ticks, so each
+    label is the true value of its gridline."""
+    raw = (hi - lo) / target
+    mag = 10 ** math.floor(math.log10(raw))
+    step = next(m * mag for m in (1, 2, 5, 10) if m * mag >= raw * (1 - 1e-6))  # tolerate float noise
+    first = math.ceil(lo / step - 1e-9)
+    ticks = []
+    k = first
+    while k * step <= hi + 1e-9:
+        ticks.append(round(k * step, 6))
+        k += 1
+    decimals = max(2, -math.floor(math.log10(step) + 1e-9))
+    return ticks, decimals
+
+
 def fixture_chart_svg(series, cutoff, now, bet_odds=None):
     """series: DataFrame (snapshot_utc tz-aware, odds_h), already limited to <= cutoff."""
     W, H, PL, PR, PT, PB = 560, 200, 46, 16, 14, 30
@@ -56,22 +74,26 @@ def fixture_chart_svg(series, cutoff, now, bet_odds=None):
 
     vals = list(pts["odds_h"]) + ([bet_odds] if bet_odds else [])
     lo, hi = min(vals), max(vals)
-    pad = max(0.02, 0.2 * (hi - lo))
+    pad = 0.25 * (hi - lo)
     lo, hi = lo - pad, hi + pad
-    if hi - lo < 0.06:
-        mid = (hi + lo) / 2
-        lo, hi = mid - 0.03, mid + 0.03
+    # Minimum visible span (10 cents, or 6% of the price for longer odds) so a 0.01 move on a
+    # 1.10 price looks as small as it is instead of filling the plot.
+    mid = (lo + hi) / 2
+    min_span = max(0.10, 0.06 * mid)
+    if hi - lo < min_span:
+        lo, hi = mid - min_span / 2, mid + min_span / 2
+    y_ticks, y_dec = _nice_ticks(lo, hi)
 
     def y_at(v):
         return H - PB - (v - lo) / (hi - lo) * (H - PT - PB)
 
     p = [f'<svg viewBox="0 0 {W} {H}" style="width:100%;height:auto;max-width:640px;" role="img" '
          f'aria-label="Home-win odds on each daily run">']
-    for v in (lo, (lo + hi) / 2, hi):
+    for v in y_ticks:
         y = y_at(v)
         p.append(f'<line x1="{PL}" x2="{W-PR}" y1="{y:.1f}" y2="{y:.1f}" stroke="var(--border)" stroke-width="1"/>')
         p.append(f'<text x="{PL-6}" y="{y+3:.1f}" text-anchor="end" font-size="10" fill="var(--muted)" '
-                 f'font-family="var(--mono)">{v:.2f}</text>')
+                 f'font-family="var(--mono)">{v:.{y_dec}f}</text>')
     # day ticks at SGT midnights
     d = t0.astimezone(SGT).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
     ticks = []
@@ -93,17 +115,29 @@ def fixture_chart_svg(series, cutoff, now, bet_odds=None):
         x = x_at(now)
         p.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{PT}" y2="{H-PB}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1 3"/>')
         p.append(f'<text x="{x+4:.1f}" y="{H-PB-4}" font-size="9" fill="var(--muted)" font-family="var(--mono)">now</text>')
+    xy = [(x_at(r.snapshot_utc), y_at(r.odds_h)) for r in pts.itertuples()]
     if bet_odds:
         y = y_at(bet_odds)
         p.append(f'<line x1="{PL}" x2="{W-PR}" y1="{y:.1f}" y2="{y:.1f}" stroke="var(--green)" stroke-width="1.4" stroke-dasharray="6 4"/>')
-        p.append(f'<text x="{PL+4}" y="{y-5:.1f}" font-size="10" fill="var(--green)" '
+        # put the label at whichever corner of the line is clear of the data points and their value labels
+        lw, lh = 104, 12
+        spots = [("end", W - PR - 6, y + 13), ("end", W - PR - 6, y - 5),
+                 ("start", PL + 4, y + 13), ("start", PL + 4, y - 5)]
+        def clear(anchor, tx, ty):
+            x0, x1 = (tx - lw, tx) if anchor == "end" else (tx, tx + lw)
+            return not any(x0 - 12 <= px <= x1 + 12 and ty - lh - 2 <= py + 8 and py - 16 <= ty
+                           for px, py in xy)
+        anchor, tx, ty = next(((a, x, yy) for a, x, yy in spots if clear(a, x, yy)), spots[0])
+        p.append(f'<text x="{tx:.1f}" y="{ty:.1f}" text-anchor="{anchor}" font-size="10" fill="var(--green)" '
                  f'font-family="var(--mono)">your bet @ {bet_odds:.2f}</text>')
-    xy = [(x_at(r.snapshot_utc), y_at(r.odds_h)) for r in pts.itertuples()]
     if len(xy) > 1:
         p.append('<polyline points="' + " ".join(f"{x:.1f},{y:.1f}" for x, y in xy) +
                  '" fill="none" stroke="var(--gold)" stroke-width="2"/>')
-    for x, y in xy:
+    for (x, y), v in zip(xy, pts["odds_h"]):
         p.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.2" fill="var(--gold)"/>')
+        if len(xy) <= 8:
+            p.append(f'<text x="{x:.1f}" y="{y-8:.1f}" text-anchor="middle" font-size="9" fill="var(--gold)" '
+                     f'font-family="var(--mono)">{v:.2f}</text>')
     p.append("</svg>")
     return "".join(p)
 
