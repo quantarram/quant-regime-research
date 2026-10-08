@@ -48,7 +48,7 @@ python build_performance_monitor.py || { echo "ERROR: build_performance_monitor.
 
 echo ""
 echo "[9/10] Committing to git..."
-git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html performance_monitor.html predictor_forecasts.csv cpe_signal_events.csv monitor_history.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
+git add gold_predictions.csv portfolio_predictions.csv metals_predictions.csv gold_dashboard.html portfolio_dashboard.html precious_metals_dashboard.html predictor_dashboard.html performance_monitor.html predictor_forecasts.csv cpe_signal_events.csv monitor_history.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json football_betting/output/qualifying_log.csv football_betting/output/odds_history.csv football_betting/data/matches.parquet football_betting/data/season_cache/*_last_good.parquet
 git commit -m "CPE daily update $(date +%Y-%m-%d)"
 
 echo ""

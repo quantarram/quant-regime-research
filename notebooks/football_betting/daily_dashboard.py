@@ -530,8 +530,6 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
 
 {odds_html}
 
-<div style="font-size:11px;color:var(--muted);margin:-8px 0 22px;">Live odds tracker (refreshed every ~3 hours): <a href="odds_tracker.html">odds_tracker.html</a></div>
-
 <div class="section">
   <div class="section-title">Real-World Track Record</div>
   <div class="card">
@@ -575,6 +573,14 @@ def main():
     print("Fetching Singapore Pools upcoming football odds...")
     events = fetch_upcoming()
     print(f"  {len(events)} events returned")
+
+    # One odds reading per fixture per day, from this daily run only (feeds the odds charts).
+    try:
+        from odds_snapshot import snapshot_rows, append_history
+        _hist = append_history(snapshot_rows(events, datetime.now(timezone.utc), COMPETITION_MAP))
+        print(f"  odds history: {len(_hist)} rows over {_hist['snapshot_utc'].str[:10].nunique()} day(s)")
+    except Exception as _e:
+        print(f"  (odds history skipped: {_e})")
 
     seen_competitions = {(ev["type"]["sportClass"]["name"], ev["type"]["name"]) for ev in events}
     unmapped = seen_competitions - set(COMPETITION_MAP.keys()) - KNOWN_EXCLUDED

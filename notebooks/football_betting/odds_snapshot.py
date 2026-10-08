@@ -1,34 +1,27 @@
 """
-Odds snapshot tracker -- how do Singapore Pools' 1X2 odds move as kickoff approaches?
-=====================================================================================
-The daily pipeline sees each fixture's odds at one moment a day, which can't answer
-"would I have got better odds betting closer to kickoff?". This script is run every few
-hours by its own workflow; it appends one row per (snapshot, fixture) for every fixture
-on the board in a validated league that kicks off within the next 10 days, with the
-home/draw/away decimal odds and the hours remaining to kickoff, to
-output/odds_history.csv. Every snapshot carries its own timestamp, so irregular run
-times (GitHub's scheduler is often hours late) don't matter -- the analysis is by
-hours-to-kickoff, not by clock time.
+Daily odds log -- what did Singapore Pools quote for each fixture on each daily run?
+====================================================================================
+Called by daily_dashboard.py on every daily pipeline run (nothing runs more often than
+that). Appends one row per fixture on the board in a validated league that kicks off
+within the next 10 days -- home/draw/away decimal odds and hours to kickoff -- to
+output/odds_history.csv. At most ONE reading per fixture per SGT calendar day is kept
+(the first of the day), so the history is a day-by-day series, never intraday movement.
 
-Read-only against the odds feed; it never places or touches a bet. The last snapshot
-before kickoff is the best available proxy for closing odds.
-
-Run: python football_betting/odds_snapshot.py
-Report: python football_betting/odds_drift_report.py
+odds_chart.py plots it on the football dashboard; odds_drift_report.py summarises it.
+Read-only against the odds feed; never places or touches a bet.
 """
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
-
-sys.path.insert(0, str(Path(__file__).parent))
-from daily_dashboard import COMPETITION_MAP, fetch_upcoming  # noqa: E402
 
 OUT = Path(__file__).parent / "output" / "odds_history.csv"
 COLS = ["snapshot_utc", "fixture", "league", "start_time", "hours_to_kickoff",
         "odds_h", "odds_d", "odds_a"]
 HORIZON_DAYS = 10
+SGT = ZoneInfo("Asia/Singapore")
 
 
 def _price(outcomes, code):
@@ -41,10 +34,10 @@ def _price(outcomes, code):
         return None
 
 
-def snapshot_rows(events, now_utc):
+def snapshot_rows(events, now_utc, competition_map):
     rows = []
     for ev in events:
-        league = COMPETITION_MAP.get((ev["type"]["sportClass"]["name"], ev["type"]["name"]))
+        league = competition_map.get((ev["type"]["sportClass"]["name"], ev["type"]["name"]))
         if league is None or not ev.get("startTime"):
             continue
         start = datetime.fromisoformat(ev["startTime"].replace("Z", "+00:00"))
@@ -66,22 +59,31 @@ def snapshot_rows(events, now_utc):
     return pd.DataFrame(rows, columns=COLS)
 
 
+def append_history(snap, path=OUT):
+    """Append a snapshot, keeping only the first reading per fixture per SGT day. Returns the
+    full history frame."""
+    path = Path(path)
+    hist = pd.concat([pd.read_csv(path), snap], ignore_index=True) if path.exists() else snap.copy()
+    if hist.empty:
+        return hist
+    hist = hist.sort_values("snapshot_utc", kind="stable")
+    day = pd.to_datetime(hist["snapshot_utc"], utc=True).dt.tz_convert(SGT).dt.date
+    hist = hist[~pd.DataFrame({"f": hist["fixture"].values, "s": hist["start_time"].values, "d": day.values})
+                .duplicated(keep="first").values]
+    hist.to_csv(path, index=False)
+    return hist
+
+
 def main():
+    """Manual one-off: fetch the board and append today's reading (the daily run does this itself)."""
+    sys.path.insert(0, str(Path(__file__).parent))
+    from daily_dashboard import COMPETITION_MAP, fetch_upcoming
     now = datetime.now(timezone.utc)
     events = fetch_upcoming()
-    snap = snapshot_rows(events, now)
-    print(f"{len(events)} events on the board; {len(snap)} fixtures in validated leagues within {HORIZON_DAYS} days")
-    if snap.empty:
-        print("Nothing to record.")
-        return
-    if OUT.exists():
-        hist = pd.read_csv(OUT)
-        hist = pd.concat([hist, snap], ignore_index=True)
-        hist = hist.drop_duplicates(subset=["snapshot_utc", "fixture", "start_time"], keep="first")
-    else:
-        hist = snap
-    hist.to_csv(OUT, index=False)
-    print(f"Saved -> {OUT} ({len(hist)} rows, {hist['snapshot_utc'].nunique()} snapshots)")
+    snap = snapshot_rows(events, now, COMPETITION_MAP)
+    hist = append_history(snap)
+    print(f"{len(snap)} fixtures in validated leagues within {HORIZON_DAYS} days; "
+          f"history now {len(hist)} rows over {hist['snapshot_utc'].str[:10].nunique()} day(s)")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 """
 Odds drift report -- do home-win odds get better or worse as kickoff approaches?
 ================================================================================
-Reads output/odds_history.csv (written by odds_snapshot.py) and, for fixtures that have
-kicked off and whose last snapshot is within CLOSE_WITHIN_H hours of kickoff (so it is a
-fair proxy for closing odds), compares the home-win odds seen at each hours-to-kickoff
-bucket with that closing odds:
+Reads output/odds_history.csv (one reading per fixture per day from the daily pipeline run,
+see odds_snapshot.py) and, for fixtures that have kicked off and whose last daily reading is
+within CLOSE_WITHIN_H hours of kickoff (the nearest-to-close price a once-a-day log can give),
+compares the home-win odds seen at each hours-to-kickoff bucket with that last reading:
 
     ratio = odds_h(at snapshot) / odds_h(closing proxy)
 
@@ -24,9 +24,8 @@ import numpy as np
 import pandas as pd
 
 OUT = Path(__file__).parent / "output"
-CLOSE_WITHIN_H = 4.0
-BUCKETS = [(72, 1e9, ">72h"), (48, 72, "48-72h"), (24, 48, "24-48h"),
-           (12, 24, "12-24h"), (6, 12, "6-12h"), (0, 6, "<6h")]
+CLOSE_WITHIN_H = 36.0
+BUCKETS = [(72, 1e9, ">72h"), (48, 72, "48-72h"), (24, 48, "24-48h"), (0, 24, "<24h")]
 
 
 def bucket_of(h):
@@ -68,20 +67,20 @@ def main():
             b = bucket_of(r["hours_to_kickoff"])
             if b and pd.notna(r["odds_h"]):
                 rows.append(dict(fixture=fixture, bucket=b, ratio=r["odds_h"] / close, close=close))
-    print(f"Kicked off: {n_done} | with a closing-proxy snapshot (<= {CLOSE_WITHIN_H:.0f}h before kickoff): {n_complete}")
+    print(f"Kicked off: {n_done} | with a last daily reading <= {CLOSE_WITHIN_H:.0f}h before kickoff: {n_complete}")
 
     if rows:
         d = pd.DataFrame(rows)
         order = [b[2] for b in BUCKETS]
-        for label, sub in [("ALL fixtures", d), ("Short-priced favourites (closing odds <= 1.65)", d[d.close <= 1.65])]:
-            print(f"\n{label}: odds at bucket / closing odds  (>1 = earlier odds were better)")
+        for label, sub in [("ALL fixtures", d), ("Short-priced favourites (last reading <= 1.65)", d[d.close <= 1.65])]:
+            print(f"\n{label}: odds at bucket / last daily reading  (>1 = earlier odds were better)")
             t = sub.groupby("bucket").agg(n=("ratio", "size"), fixtures=("fixture", "nunique"),
                                           median=("ratio", "median"), mean=("ratio", "mean"),
                                           share_better=("ratio", lambda x: float((x > 1.0005).mean())),
                                           share_worse=("ratio", lambda x: float((x < 0.9995).mean())))
             print(t.reindex([o for o in order if o in t.index]).round(4).to_string())
     else:
-        print("\nNo completed fixtures yet -- the by-hours drift table fills in once tracked fixtures kick off.")
+        print("\nNo completed fixtures yet -- the table fills in once tracked fixtures kick off.")
 
     # bets actually placed vs the odds seen since
     log_path = OUT / "qualifying_log.csv"
