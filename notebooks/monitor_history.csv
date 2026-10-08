@@ -852,7 +852,7 @@ date,dashboard,metric,value,n
 2026-10-07,cpe,claimed_21d,0.813,236
 2026-10-07,cpe,claimed_63d,0.8411,4215
 2026-10-07,cpe,live_base_1d,0.4892,324
-2026-10-07,cpe,live_base_21d,0.5339,236
+2026-10-07,cpe,live_base_21d,0.5341,236
 2026-10-07,cpe,live_base_63d,0.6172,4215
 2026-10-07,cpe,realised_1d,0.9012,324
 2026-10-07,cpe,realised_21d,0.4873,236
