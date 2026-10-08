@@ -419,6 +419,15 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
           several runs in a row.
         </td></tr>"""
 
+    # Odds-movement charts for qualifying fixtures (odds_history.csv from odds_snapshot.py).
+    # Never let a charting problem break the dashboard itself.
+    try:
+        from odds_chart import odds_section_html
+        odds_html = odds_section_html(log_df)
+    except Exception as _e:
+        print(f"  (odds charts skipped: {_e})")
+        odds_html = ""
+
     html = f"""<title>Football Checklist &mdash; CPE Framework</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -518,6 +527,10 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     </table>
   </div>
 </div>
+
+{odds_html}
+
+<div style="font-size:11px;color:var(--muted);margin:-8px 0 22px;">Live odds tracker (refreshed every ~3 hours): <a href="odds_tracker.html">odds_tracker.html</a></div>
 
 <div class="section">
   <div class="section-title">Real-World Track Record</div>
