@@ -599,6 +599,22 @@ NEUTRAL_WEIGHTS = {
 }
 
 
+def _close_at(hist, last=False):
+    """First (or last) valid Close in a yfinance frame, or None if the download came back empty
+    or has no usable close. Resolution lookups must never raise on a transient Yahoo failure --
+    a skipped row simply stays PENDING and is retried on the next run (outcome prices are keyed
+    to the outcome date, so waiting does not change the result)."""
+    try:
+        if hist is None or hist.empty:
+            return None
+        s = hist["Close"].squeeze().dropna()
+        if len(s) == 0:
+            return None
+        return float(s.iloc[-1] if last else s.iloc[0])
+    except Exception:
+        return None
+
+
 def resolve_gold():
     if not os.path.exists(GOLD_CSV):
         print("[GOLD] No CSV found to resolve.")
@@ -613,8 +629,11 @@ def resolve_gold():
     import yfinance as yf
     # Fetch current GC=F price
     gcf = yf.download("GC=F", period="5d", auto_adjust=True, progress=False)
-    current_price = float(gcf["Close"].squeeze().dropna().iloc[-1])
-    print(f"\n[GOLD RESOLVE] Current GC=F price: ${current_price:,.2f}")
+    current_price = _close_at(gcf, last=True)  # informational only (printed, never used for resolution)
+    if current_price is None:
+        print("\n[GOLD RESOLVE] Current GC=F price unavailable (Yahoo returned no data); continuing.")
+    else:
+        print(f"\n[GOLD RESOLVE] Current GC=F price: ${current_price:,.2f}")
 
     resolved = 0
     for idx, row in pending.iterrows():
@@ -632,7 +651,10 @@ def resolve_gold():
                 print(f"  [SKIP] No price data for outcome date {outcome_date}")
                 continue
 
-            out_price   = float(hist["Close"].squeeze().dropna().iloc[0])
+            out_price   = _close_at(hist)
+            if out_price is None:
+                print(f"  [SKIP] No usable close for outcome date {outcome_date}; stays PENDING")
+                continue
             entry_price = float(row["gcf_price_usd"])
             actual_ret  = (out_price / entry_price - 1) * 100
             direction   = row["direction"]
@@ -697,7 +719,10 @@ def resolve_metals():
                     print(f"  [SKIP] No price data for {name} outcome date {outcome_date}")
                     continue
 
-                out_price   = float(hist["Close"].squeeze().dropna().iloc[0])
+                out_price   = _close_at(hist)
+                if out_price is None:
+                    print(f"  [SKIP] No usable close for {name} outcome date {outcome_date}; stays PENDING")
+                    continue
                 entry_price = float(row["spot_price_usd_oz"])
                 actual_ret  = (out_price / entry_price - 1) * 100
                 direction   = row["direction"]
@@ -743,7 +768,7 @@ def resolve_portfolio():
     current = {}
     for cls, tk in tickers.items():
         hist = yf.download(tk, period="5d", auto_adjust=True, progress=False)
-        current[cls] = float(hist["Close"].squeeze().dropna().iloc[-1])
+        current[cls] = _close_at(hist, last=True)  # informational only; None if Yahoo returned nothing
 
     print(f"\n[PORTFOLIO RESOLVE] Current prices fetched.")
     resolved = 0
@@ -761,10 +786,16 @@ def resolve_portfolio():
                 end   = outcome_date + timedelta(days=5)
                 hist  = yf.download(tk, start=str(start), end=str(end),
                                    auto_adjust=True, progress=False)
-                if not hist.empty:
-                    out_prices[cls] = float(hist["Close"].squeeze().dropna().iloc[0])
-                else:
-                    out_prices[cls] = np.nan
+                px = _close_at(hist)
+                out_prices[cls] = px if px is not None else np.nan
+
+            # Never resolve on partial data: with one asset missing, tilt/neutral P&L would be
+            # computed from the remaining assets only and written permanently. Leave PENDING and
+            # retry next run (the outcome-date window is fixed, so the answer won't change).
+            missing = [c for c, v in out_prices.items() if np.isnan(v)]
+            if missing:
+                print(f"  [SKIP] {pred_date} -> {outcome_date}: no outcome price for {missing}; stays PENDING")
+                continue
 
             # Compute returns
             returns = {}
