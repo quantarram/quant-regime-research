@@ -125,5 +125,15 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "CPE daily update $(date -u +%Y-%m-%d) [automated]"
-            git push origin main
+            # football-odds-snapshots.yml also pushes to main every few hours; if it
+            # landed between our pull and this push, merge its commit (different
+            # files) and retry instead of failing the whole daily run.
+            for i in 1 2 3 4; do
+              if git push origin main; then
+                exit 0
+              fi
+              git pull --no-rebase --no-edit origin main
+            done
+            echo "Push failed after retries" >&2
+            exit 1
           fi
