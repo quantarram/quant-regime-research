@@ -6,7 +6,7 @@ I currently work as a quantitative research scientist at the Centre for Climate 
 
 The CPE Framework:
 
-Alongside this, I lead an independent quant finance programme built around Conditional Probability of Exceedance (CPE) — a live signal system spanning 161 instruments (equities, fixed income, gold, crypto, commodities, volatility, FX). Zenodo preprints:
+Alongside this, I lead an independent quant finance programme built around Conditional Probability of Exceedance (CPE) — a live signal system spanning 161 instruments (equities, bonds, gold, crypto, commodities, volatility, FX). Zenodo preprints:
 
 A 97.0% out-of-sample calibration hit rate across 103,983 resolved instances
 
@@ -14,11 +14,13 @@ A gold dashboard that called the 2025 bull run (+102%) and pivoted bearish in Fe
 
 A portfolio tilt achieving Sharpe 1.43 vs 1.03 for a 60/40 benchmark
 
-Moisture-stress variables (VPD, dry heat, combined heat+drought) with the series' highest lift (2.02×)
+Moisture-stress variables with the series' highest lift (2.02×)
 
 A sugar-price call made before the outcome was known, confirmed once the monsoon resolved (+29%)
 
-A public monitor scoring every dashboard against what actually happened
+A public monitor scoring every dashboard against outcomes
+
+A daily weather-to-energy dashboard, forecasts scored against climatology
 
 github.com/quantarram/quant-regime-research
 
@@ -28,7 +30,7 @@ I've also extended my doctoral multifractal cascade work into finance, finding r
 
 Negative Results:
 
-They get equal billing: Paper 7's Sugar Reversal traced a strong climate-finance signal to a geographic artefact, gone once city proxies became crop-zone data; the hurricane study found one of two hypotheses unsupported; a three-part check of common AI-stock assumptions came back empty on all three.
+Paper 7's Sugar Reversal traced a strong climate-finance signal to a geographic artefact, gone once city proxies became crop-zone data; the hurricane study found one of two hypotheses unsupported; a three-part check of common AI-stock assumptions came back empty on all three.
 
 Background:
 
