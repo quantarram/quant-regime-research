@@ -1,5 +1,21 @@
 [
   {
+    "fixture":"Hearts vs St Mirren",
+    "league":"SC0",
+    "country":"Scotland",
+    "competition":"Scottish League",
+    "start_time":"2026-10-10T14:00:00Z",
+    "pick":"Hearts",
+    "home_team_matched":"Hearts",
+    "away_team_matched":"St Mirren",
+    "ppg_diff":1.0333333333,
+    "home_ppg_home_only":2.4333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.42,
+    "qualifies":true
+  },
+  {
     "fixture":"Inter vs Parma",
     "league":"I1",
     "country":"Italy",
@@ -28,7 +44,7 @@
     "home_ppg_home_only":2.8333333333,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.03,
+    "odds":1.05,
     "qualifies":true
   }
 ]
