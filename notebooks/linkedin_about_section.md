@@ -20,7 +20,7 @@ A sugar-price call made before the outcome was known, confirmed once the monsoon
 
 A public monitor scoring every dashboard against outcomes
 
-A daily weather-to-energy dashboard, forecasts scored against climatology
+A daily weather impacts dashboard (energy, crops), forecasts scored against climatology
 
 github.com/quantarram/quant-regime-research
 
