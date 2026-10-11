@@ -1,0 +1,93 @@
+{
+ "PJM West": {
+  "n": 2186,
+  "pct_per_10hdd": 19.9924917239043,
+  "pct_per_10cdd": 64.44415767403669,
+  "gas_elasticity": 0.882269582674707,
+  "oos": {
+   "with_weather": 0.6581446452686384,
+   "with_weather_mae_pct": 22.46581062927544,
+   "no_weather": 0.5244284607780703,
+   "no_weather_mae_pct": 25.545545366867824
+  },
+  "mean_price": 44.91477210426503
+ },
+ "Mass Hub": {
+  "n": 1957,
+  "pct_per_10hdd": 30.779918724776934,
+  "pct_per_10cdd": 60.671754140489575,
+  "gas_elasticity": 0.9116825791154864,
+  "oos": {
+   "with_weather": 0.684812828861426,
+   "with_weather_mae_pct": 24.70889922995726,
+   "no_weather": 0.5184444598970804,
+   "no_weather_mae_pct": 29.345386381931498
+  },
+  "mean_price": 50.533546244251404
+ },
+ "Palo Verde": {
+  "n": 2167,
+  "pct_per_10hdd": 46.57870080388459,
+  "pct_per_10cdd": 42.04600234069093,
+  "gas_elasticity": 0.8108774537583191,
+  "oos": {
+   "with_weather": 0.40620910670293897,
+   "with_weather_mae_pct": 39.003380317112125,
+   "no_weather": 0.28828873638666563,
+   "no_weather_mae_pct": 41.942488688243735
+  },
+  "mean_price": 51.52544131966448
+ },
+ "SP15": {
+  "n": 2079,
+  "pct_per_10hdd": 43.24096227686548,
+  "pct_per_10cdd": 68.46737694778048,
+  "gas_elasticity": 0.7016378461132708,
+  "oos": {
+   "with_weather": 0.42268153793138374,
+   "with_weather_mae_pct": 38.95336606825776,
+   "no_weather": 0.3319824316857223,
+   "no_weather_mae_pct": 42.22852656190383
+  },
+  "mean_price": 49.78504856094812
+ },
+ "NP15": {
+  "n": 611,
+  "pct_per_10hdd": 45.117475803754026,
+  "pct_per_10cdd": 102.06963519776203,
+  "gas_elasticity": 0.5410367843016892,
+  "oos": {
+   "with_weather": 0.32033608101050015,
+   "with_weather_mae_pct": 38.907053232640926,
+   "no_weather": 0.21383636243234982,
+   "no_weather_mae_pct": 42.42586313544805
+  },
+  "mean_price": 63.49540098199673
+ },
+ "Mid-C": {
+  "n": 2169,
+  "pct_per_10hdd": 33.021367567231344,
+  "pct_per_10cdd": 122.94583724378936,
+  "gas_elasticity": 0.6821574207938685,
+  "oos": {
+   "with_weather": 0.10720838171594405,
+   "with_weather_mae_pct": 52.859829983084325,
+   "no_weather": -0.006357404418605217,
+   "no_weather_mae_pct": 56.057814397616255
+  },
+  "mean_price": 52.554204702627935
+ },
+ "Indiana Hub": {
+  "n": 478,
+  "pct_per_10hdd": 15.592175963828439,
+  "pct_per_10cdd": 57.139147111291,
+  "gas_elasticity": 0.7142269177922455,
+  "oos": {
+   "with_weather": 0.36811675200931926,
+   "with_weather_mae_pct": 27.84396264738777,
+   "no_weather": 0.09585608370593868,
+   "no_weather_mae_pct": 31.801820585228143
+  },
+  "mean_price": 48.56433054393305
+ }
+}

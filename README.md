@@ -20,6 +20,7 @@ The work here spans three methodologically distinct threads, all documented as n
 8. **Predictability-informed momentum, and the ceiling holds at the decision layer too** (Paper 16) — asks whether decision-layer sophistication (position sizing, instrument selection, signal combination) can buy past the same measured limit rather than better prediction itself. A large-scale reinforcement-learning and genetic-algorithm policy search, predictability-informed conviction weighting, and breadth expansion all fail, extending the wall to a sixth lever. But testing two published momentum strategies the same way this program tests its own methods reveals a general lesson: the replication unit has to match the phenomenon's own claimed mechanism — Time-Series Momentum's real, decades-old edge is invisible on arbitrary calendar blocks (0 of 5) but clear on real crisis episodes (9 of 13). Applied to this program's own instrument selection, restricting standard TSMOM to only the instruments it can actually predict well (via Paper 11's measured predictability limit) beats the unfiltered version in 3 of 5 real historical periods, full-sample Sharpe 0.32 vs. 0.29 — the paper's central result. A narrower, secondary finding survives the same scrutiny on two individual instruments (JPM, XLB), once recomputed as a real point estimate rather than the industry-standard, beta-adjusted statistic that had inflated four other candidates.
 9. **A genuinely prospective test: does an El Niño-driven Indian monsoon deficit predict global sugar prices?** (standalone research note, not part of the numbered series) — a specific, checkable claim published in July 2026 before its outcome was known: five historical El Niño years with price data (1997–2023; 2004 no longer clears NOAA's revised index threshold and is dropped, and 1991 predates the price series) show global sugar prices rising over the following 1–3 months more often than not (3-month hit rate 0.70–0.80 vs. an unconditional 0.35–0.45, replicated across held-out years). 2026 has since resolved: India's monsoon finished at −12.6% of normal (from −42% in June), close to the −10% IMD forecast, El Niño strengthened (JJAS-mean +2.0°C), and every price window that has closed so far is a real increase (June's 3-month window: +28.8%), all six sitting above the 65th-percentile threshold set from pre-2026 history alone. 1997 remains the standing counter-example. The published version reports real point estimates and genuine leave-one-year-out replication throughout, matching the standard used in Papers 12–16.
 10. **The AI Narrative, Tested Three Ways** (standalone research note, not part of the numbered series) — tests three common assumptions about AI-exposed stocks against real data: that they now move together more than before ChatGPT, that NVIDIA reliably rallies on its own earnings, and that a theme with this much capital flowing into it should carry exploitable intraday structure. All three fail. Daily tail co-movement in a real, dated AI basket (AIQ ETF holdings as of December 2022) falls after ChatGPT's launch, not rises, and NVIDIA, Microsoft, Meta, Amazon, and Apple each show zero surviving tail-level predictability from the rest of the basket post-launch. NVIDIA's real excess return across all 71 of its quarterly earnings reports since 2006 beats the market and its sector peers on only 44–55% of occasions, and its sector-relative performance has not improved during the 2023–2026 AI earnings supercycle. And applying the exact two methods that already found nothing in crypto intraday data (naive conditional-exceedance, multifractal/structure-function machine learning) to real 1-minute NVDA/AMD/SPY data finds the same result, extending this program's "signals only at long horizons" finding to equities for the first time.
+11. **Why Everyday Weather Does Not Move Markets, and Where Rare Extremes Might** (Paper 17) — tests the framework's own claim that rare, extreme conditioning events give better signals than frequent, day-to-day ones, using everyday weather as the frequent-event case. A free ECMWF-based pipeline is physically skilful for about a week but earns nothing (12,824 weather-and-price pairs, about 630,000 walk-forward rules, machine learning and a weather-to-gas-to-storage chain all fail out of sample); 32 slow climate series in four batches show a rarity gradient inside the CPE framework's own admission (-3.7 to +12.1 points over base, a causal walk-forward) that disappears under a gate-free rule, and a decision rule on the rarest rows lost 1.4% a year. Two registered live experiments began scoring on 12 October 2026.
 
 ### The CPE framework
 
@@ -129,6 +130,13 @@ All probability tables are computed using pre-2025 data and remain frozen during
 - **Method:** three independent tests. (1) This program's core conditional-exceedance methodology applied within the AI basket, length-matched windows immediately before and after ChatGPT's launch, thresholds computed separately within each regime; robustness-checked by excluding the COVID crash from the pre-window (the decline survives, and sharpens). (2) A real mean-difference excess-return event study on NVIDIA's own earnings reports against the S&P 500, AMD, and the semiconductor sector, no regression-based market model. (3) The identical naive-conditional-exceedance and multifractal/structure-function machine-learning methods already used to test crypto intraday feasibility, applied unchanged to real equities data
 - Full pipeline documented in `notebooks/ai_stocks_cpe/` and `notebooks/ai_stocks_cpe/ai_narrative_three_tests_paper_draft.md` (PDF also available, published: zenodo.org/records/23092634)
 
+
+**Why Everyday Weather Does Not Move Markets, and Where Rare Extremes Might (Paper 17):**
+- **Data:** ECMWF open IFS forecasts (2 m temperature, 100 m wind, surface solar radiation), ERA5 and ERA5-Land observed weather (via Open-Meteo), EIA-930 hourly demand and generation, EIA weekly gas storage, USDA NASS crop condition; 32 free slow climate series (NOAA CPC and PSL ocean and polar indices, NCEI regional drought, NASA GISTEMP, Rutgers snow cover, NSIDC sea ice, HURDAT2) in four batches; the program's own 161-instrument price panel
+- **Method:** a self-scoring weather pipeline tested against prices (pre-specified gas rules, a 12,824-configuration weather-tail scan, a walk-forward search of about 630,000 decision rules, machine-learning models, a translation chain from weather to gas burn to storage); then the CPE engine run unchanged on the slow climate series with economic channels registered before each batch; a causal walk-forward (rows admitted each 1 January from outcomes already resolved) by the rarity of the conditioning tail; a gate-free horizon ladder and season-matched walk-forward applied identically to weather, climate and market predictors; and a registered decision rule scored forward
+- **Live:** the [Climate Signals dashboard](https://quantarram.github.io/weather-impacts-dashboard/) holds four frozen tables of climate conditions (97 conditions) and a registered paper-portfolio experiment, scored from 12 October 2026
+- Full pipeline documented in `notebooks/weather_finance/` and `notebooks/paper17_*.py`; the paper is `notebooks/weather_impacts_paper_draft.md` (PDF also available, published: zenodo.org/records/23301263), rebuilt by `notebooks/paper17_build.sh`. Large intermediate files (price panels, ladder and walk-forward result tables) are regenerated by the scripts and are not committed
+
 ---
 
 ## Limitations
@@ -210,7 +218,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 - [Precious Metals Dashboard (Gold/Silver/Platinum)](https://quantarram.github.io/quant-regime-research/notebooks/precious_metals_dashboard.html)
 - [CPE Atlas Explorer (169K signals)](https://quantarram.github.io/quant-regime-research/notebooks/cpe_dashboard.html)
 - [Predictor Dashboard (22-instrument price forecasts, Paper 12)](https://quantarram.github.io/quant-regime-research/notebooks/predictor_dashboard.html) — forecast-accuracy tool only, deliberately no buy/sell signal (see Paper 12's limitations above)
-- [Weather Impacts Dashboard](https://quantarram.github.io/weather-impacts-dashboard/) — a separate, daily-updated pipeline ([repo](https://github.com/quantarram/weather-impacts-dashboard)): ECMWF's free IFS forecast turned into electricity-demand, wind and solar forecasts for six US grid regions and heat/dryness/rainfall stress for ten US corn and soybean states, each logged and scored against observed weather, EIA demand and generation, and USDA crop condition, with climatology (the 30-year average for that date for temperature, 11-year for wind, solar and crops) as the baseline. It is not part of the Performance Monitor, which covers the finance dashboards only; any trading dashboard built on these forecasts would be added there
+- [Climate Signals Dashboard (formerly the Weather Impacts Dashboard)](https://quantarram.github.io/weather-impacts-dashboard/) — a separate, daily-updated pipeline ([repo](https://github.com/quantarram/weather-impacts-dashboard)), Paper 17's live counterpart. The front page tracks only slow climate states: four frozen tables of CPE conditions (97 conditions on ENSO, Atlantic, Pacific and regional drought series, thresholds fixed from data through 2012) with where each stands against its threshold, the log of entry events and a forward-scored live record, plus a registered paper-portfolio experiment that converts the strong-evidence conditions into implied positions, scored from 12 October 2026 against holding the same targets and SPY. An archive page keeps the daily ECMWF-based weather panels (electricity demand, wind and solar, crop stress, gas burn, storage), still scored for a second registered experiment. It is not part of the Performance Monitor, which covers the finance dashboards only
 - [Performance Monitor](https://quantarram.github.io/quant-regime-research/notebooks/performance_monitor.html) — scores every dashboard above against what actually happened, rebuilt daily from their own ledgers: direction calls vs an always-long baseline (gold, metals), the tilt vs neutral weights (portfolio), price forecasts vs a no-change forecast (predictor, with a live track-record panel on its own page), football picks vs the odds-implied win rate, and the CPE table's claims vs realised outcomes on the period after it was frozen, next to the live unconditional rate. Sample sizes and pending counts are shown throughout; the long-horizon rows (CPE 126d-300d, predictor 126d-252d) cannot resolve until late 2026 to 2027
 
 ---
@@ -233,6 +241,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Research Papers
 
+- [Paper 17: Why Everyday Weather Does Not Move Markets, and Where Rare Extremes Might](https://zenodo.org/records/23301263)
 - [The AI Narrative, Tested Three Ways (standalone research note)](https://zenodo.org/records/23092634)
 - [Does the 2026 El Niño Move Sugar Prices? (standalone research note)](https://zenodo.org/records/23053552)
 - [Paper 16: Predictability-Informed TSMOM Beats the Standard Momentum Trading Strategy](https://zenodo.org/records/21842311)
@@ -256,6 +265,7 @@ Updated daily via automated pipeline. All predictions are publicly timestamped a
 
 ## Substack Articles
 
+- [Why Everyday Weather Does Not Move Markets, and Where Rare Extremes Might](https://arunramanathans.substack.com/p/why-everyday-weather-does-not-move) (Paper 17)
 - [I Built a Scorecard for My Own Dashboards. The Baselines Were the Interesting Part](https://arunramanathans.substack.com/p/i-built-a-scorecard-for-my-own-dashboards) (the Performance Monitor)
 - [The AI Narrative, Tested Three Ways](https://arunramanathans.substack.com/p/the-ai-narrative)
 - [The El Niño Sugar Prediction, Checked Against What Actually Happened](https://arunramanathans.substack.com/p/the-el-nino-sugar-prediction) (resolves the "Does the 2026 El Niño Move Sugar Prices?" piece below)
@@ -421,12 +431,20 @@ Against a Real AI-Stock Universe. Zenodo.
 https://doi.org/10.5281/zenodo.23092634
 ```
 
+
+**Paper 17 — Everyday Weather and Rare Extremes**
+```
+RAMANATHAN S, A. (2026). Why Everyday Weather Does Not Move Markets, and Where Rare Extremes Might. Zenodo.
+https://doi.org/10.5281/zenodo.23301263
+```
+
 ---
 
 ## LinkedIn
 
 - [Author Profile](https://www.linkedin.com/in/arun-rs)
 - [LinkedIn Posts on CPE Research](https://www.linkedin.com/in/arun-rs/recent-activity/all/)
+- [Paper 17 post: why everyday weather does not move markets](https://lnkd.in/p/gsrUrvnc)
 
 ---
 
@@ -486,6 +504,16 @@ https://doi.org/10.5281/zenodo.23092634
 │   │                                 # (md/html/pdf, published:
 │   │                                 # zenodo.org/records/23092634), and its
 │   │                                 # LinkedIn/Substack posts
+│   ├── weather_finance/             # Paper 17 research: weather-to-price tests, four climate
+│   │                                 # batches through the CPE engine (cpe_climate/ holds the
+│   │                                 # registered economic prior, results, frozen tables),
+│   │                                 # horizon ladder, causal walk-forward, rarity tests
+│   ├── weather_impacts_paper_draft.md  # Paper 17 preprint (published: zenodo.org/records/23301263)
+│   ├── weather_impacts_paper_draft.pdf # Paper 17 PDF, as submitted to Zenodo
+│   ├── paper17_build.sh             # Paper 17 build (paper17_build*.py assemble the text)
+│   ├── paper17_new_figures.py       # Paper 17 climate figures and graphical abstract
+│   ├── paper17_substack_post.md     # Paper 17 Substack post
+│   ├── paper17_linkedin_post.md     # Paper 17 LinkedIn post
 │   ├── dash_back/                   # Paper 5 dashboard backtest analysis
 │   └── *.html                       # Live dashboard outputs (GitHub Pages)
 ├── src/                            # Core probability estimation and trading logic

@@ -1,0 +1,10 @@
+event,instr,date,class,weather,pre 60d to -1,pre 60d to -1 pct,announcement -1..+1,announcement -1..+1 pct,post +2..+20,post +2..+20 pct,post +21..+120,post +21..+120 pct,pre 3m,pre 3m pct,event month,event month pct,post +1..+3m,post +1..+3m pct,post +4..+6m,post +4..+6m pct
+RU-GRAIN-2010,ZW=F,2010-08-05,restrict,strong,40.8,99.0,0.0,51.0,-6.4,19.0,23.0,90.0,,,,,,,,
+IN-DROUGHT-2009,SB=F,2009-08-01,relax_imports,strong,19.2,88.0,3.9,92.0,23.1,99.0,20.0,82.0,,,,,,,,
+IN-WHEAT-2022,ZW=F,2022-05-13,restrict,strong,41.0,99.0,6.0,98.0,-15.3,3.0,-24.2,5.0,,,,,,,,
+IN-SUGAR-2022,SB=F,2022-05-24,restrict,none,9.4,71.0,-0.5,43.0,-6.8,19.0,7.6,65.0,,,,,,,,
+IN-RICE-2022,ZR=F (monthly Thai 5% / palm),2022-09-01,restrict,partial,,,,,,,,,-1.7,42.0,3.8,84.0,4.0,73.0,2.1,66.0
+ID-PALM-2022,ZL=F (monthly Thai 5% / palm),2022-04-01,restrict,none,,,,,,,,,22.1,93.0,-2.4,31.0,-58.0,0.0,-12.5,14.0
+IN-RICE-2023,ZR=F (monthly Thai 5% / palm),2023-07-01,restrict,partial,,,,,,,,,6.6,80.0,4.0,85.0,11.5,89.0,9.1,85.0
+IN-SUGAR-2023,SB=F,2023-10-01,restrict,strong,12.2,77.0,-2.3,17.0,4.1,69.0,-20.2,12.0,,,,,,,,
+IN-RICE-2024,ZR=F (monthly Thai 5% / palm),2024-09-01,relax,none,,,,,,,,,-8.7,16.0,-1.6,33.0,-11.3,9.0,-17.3,1.0
