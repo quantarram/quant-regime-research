@@ -105,8 +105,11 @@ jobs:
         working-directory: notebooks
         run: python cpe_signal_ledger.py
 
+      # Display-only panel: if it ever fails, still commit the day's core data and ledgers
+      # (2026-10-11: a text-vs-number bug here discarded an entire day's run).
       - name: Build performance monitor
         working-directory: notebooks
+        continue-on-error: true
         run: python build_performance_monitor.py
 
       - name: Commit and push

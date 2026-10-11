@@ -28,6 +28,11 @@ LOG_PATH = OUT_DIR / "qualifying_log.csv"
 STAKE_SGD = 50.0
 
 
+def _won(col):
+    """Read the 'won' column as 1.0/0.0 whatever mix of 1.0 / True / '1.0' / 'True' it holds."""
+    return col.replace({"True": 1.0, "False": 0.0, True: 1.0, False: 0.0}).astype(float)
+
+
 def main():
     if not LOG_PATH.exists():
         print("No qualifying_log.csv found -- nothing to resolve.")
@@ -62,7 +67,7 @@ def main():
 
         log.loc[idx, "status"] = "RESOLVED"
         log.loc[idx, "actual_result"] = f"{int(r['fthg'])}-{int(r['ftag'])} ({r['ftr']})"
-        log.loc[idx, "won"] = won
+        log.loc[idx, "won"] = 1.0 if won else 0.0  # numeric, not bool: a bool turns the column into text on pandas 2.3
         log.loc[idx, "pnl"] = pnl
 
         # actual_pnl (real money): only set when record_bet.py marked this row bet_placed,
@@ -85,7 +90,7 @@ def main():
     resolved = log[log["status"] == "RESOLVED"]
     still_pending = (log["status"] == "PENDING").sum()
     if len(resolved):
-        hit_rate = resolved["won"].mean()
+        hit_rate = _won(resolved["won"]).mean()
         total_pnl = resolved["pnl"].sum()
         roi = total_pnl / (STAKE_SGD * len(resolved))
         print(f"\n=== Signal track record (every qualifying pick, theoretical S$50 stake) ===")
@@ -97,7 +102,7 @@ def main():
 
     real_bets = resolved[resolved.get("bet_placed", False) == True] if len(resolved) else resolved
     if len(real_bets):
-        real_hit_rate = real_bets["won"].mean()
+        real_hit_rate = _won(real_bets["won"]).mean()
         real_pnl = real_bets["actual_pnl"].sum()
         real_staked = real_bets["actual_stake_sgd"].sum()
         real_roi = real_pnl / real_staked if real_staked else float("nan")

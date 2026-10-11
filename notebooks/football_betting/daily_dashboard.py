@@ -355,7 +355,7 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
     total_staked_all = float(log_df.loc[log_df["bet_placed"], "actual_stake_sgd"].astype(float).sum()) if len(log_df) and "bet_placed" in log_df.columns else 0.0
 
     if n_real_bets:
-        real_hit_rate = real_bets["won"].astype(bool).mean()
+        real_hit_rate = real_bets["won"].replace({"True": 1.0, "False": 0.0, True: 1.0, False: 0.0}).astype(float).mean()
         real_staked_resolved = real_bets["actual_stake_sgd"].astype(float).sum()
         real_pnl = real_bets["actual_pnl"].astype(float).sum()
         real_roi = real_pnl / real_staked_resolved if real_staked_resolved else float("nan")

@@ -141,7 +141,7 @@ def portfolio_block():
 def football_block():
     q = _csv(os.path.join("football_betting", "output", "qualifying_log.csv"))
     res = q[q["status"] == "RESOLVED"].copy()
-    res["won"] = res["won"].astype(float)
+    res["won"] = res["won"].replace({"True": 1.0, "False": 0.0, True: 1.0, False: 0.0}).astype(float)
     res["start"] = pd.to_datetime(res["start_time"])
     res = res.sort_values("start")
     placed = res[res["bet_placed"].astype(str).str.lower() == "true"].copy()
