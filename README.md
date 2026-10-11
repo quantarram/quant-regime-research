@@ -1,6 +1,6 @@
 # Conditional Exceedance Probabilities for Event-Driven Trading
 
-This repository contains the full code, notebooks, and experiments for an independent quantitative research program built around the **Conditional Probability of Exceedance (CPE)** framework — a live, production-deployed nonparametric signal system covering 161 instruments across equities, fixed income, gold, cryptocurrencies, commodities, volatility, and FX — plus two further research threads that test complementary angles on the same underlying question of what is predictable in financial markets, and over what horizon.
+This repository contains the full code, notebooks, and experiments for an independent quantitative research program built around the **Conditional Probability of Exceedance (CPE)** framework — a live, production-deployed nonparametric signal system covering 161 instruments across equities, fixed income, gold, cryptocurrencies, commodities, volatility, and FX — plus further research threads that test complementary angles on the same underlying question: what is predictable in financial markets, and over what horizon. The latest, Paper 17, turns the framework's own claim on weather and climate: does a rare, extreme conditioning event give a better signal than a frequent, everyday one, and does anything in weather pay?
 
 **Author:** Arun Ramanathan, PhD (Independent Researcher | Singapore)
 
@@ -8,7 +8,7 @@ This repository contains the full code, notebooks, and experiments for an indepe
 
 ## Overview
 
-The work here spans three methodologically distinct threads, all documented as numbered papers below:
+The work here spans four lines of research, documented as 17 numbered papers and two standalone research notes: (a) the CPE framework and its live dashboards (Papers 1–5); (b) climate-finance and event-study extensions, from temperature and moisture predictors to the test of everyday weather against rare extremes (Papers 6–10 and 17); (c) predictability limits and AI/ML forecasting (Papers 11–16); and (d) standalone research notes (the El Niño sugar test and the AI narrative). The list is in the order the work was published:
 
 1. **The CPE framework** (Papers 1–5) — a nonparametric tail-co-movement signal system, described in full below, that powers the live dashboards.
 2. **Climate-finance and event-study extensions** (Papers 6–10) — apply CPE's tail-exceedance logic to physical/weather predictors (temperature extremes, vapour pressure deficit, growing-season geography), plus one event study of hurricane landfalls against reinsurer equity using a different, CAR-based methodology.
