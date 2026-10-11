@@ -55,7 +55,7 @@ I would rather the future settle it than a clever backtest. A live dashboard now
 
 It also turns the strong-evidence conditions into implied *paper* positions with one fixed rule, registered before anything was scored. Today that means long the South African rand, long base metals and short heating oil. These are research positions, not advice. Reviews come at 125, 250 and 500 trading days, and the verdict rule ("evidence of an edge" or "no evidence of an edge") is written down in advance.
 
-Rare events are rare, so the first outcomes arrive around April 2027 and the longest in late 2027 and 2028. Whatever happens, I will report it.
+Rare events are rare, so the first outcomes arrive from mid-December 2026 and most of the rest through 2027. Whatever happens, I will report it.
 
 **Paper:** https://zenodo.org/records/23301263
 **Live dashboard:** https://quantarram.github.io/weather-impacts-dashboard/
