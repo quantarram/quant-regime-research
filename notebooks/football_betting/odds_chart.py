@@ -24,7 +24,6 @@ import pandas as pd
 
 OUT_DIR = Path(__file__).parent / "output"
 SGT = ZoneInfo("Asia/Singapore")
-SHOW_AFTER_KICKOFF_H = 36   # keep a finished fixture's chart visible for a day and a half
 CHART_CUTOFF_H = 24         # chart runs "until 1 day before the game"
 
 
@@ -191,8 +190,9 @@ def fixture_card_html(row, series, now):
 
 
 def odds_section_html(log_df, hist=None, now=None):
-    """Section of per-fixture charts for qualifying fixtures (upcoming, or finished within
-    SHOW_AFTER_KICKOFF_H hours). Returns '' if there is nothing to show."""
+    """Section of per-fixture charts for qualifying fixtures that are still AHEAD: the charts exist to
+    help decide when to bet, so a fixture drops off as soon as it kicks off or is resolved (its readings
+    stay in odds_history.csv for the drift report). Returns '' if there is nothing to show."""
     hist = load_history() if hist is None else hist
     now = pd.Timestamp(now) if now is not None else pd.Timestamp.now(tz="UTC")
     if log_df is None or len(log_df) == 0:
@@ -201,7 +201,10 @@ def odds_section_html(log_df, hist=None, now=None):
     if q.empty:
         return ""
     q["_ko"] = pd.to_datetime(q["start_time"], utc=True)
-    q = q[q["_ko"] > now - pd.Timedelta(hours=SHOW_AFTER_KICKOFF_H)].sort_values("_ko")
+    q = q[q["_ko"] > now]
+    if "status" in q.columns:
+        q = q[q["status"].astype(str).str.upper() != "RESOLVED"]
+    q = q.sort_values("_ko")
     if q.empty:
         return ""
     cards = []
