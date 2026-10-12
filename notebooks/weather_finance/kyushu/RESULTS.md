@@ -1,0 +1,10 @@
+# Kyushu: irradiance and the midday price discount (2026-10-12, exploratory)
+
+Data: JEPX day-ahead spot, half-hourly, FY2016-FY2026 (to 2026-09-30); ERA5 shortwave radiation and temperature, mean of five Kyushu points (Fukuoka, Kumamoto, Oita, Miyazaki, Kagoshima), equal weights (not capacity-weighted).
+Window: slots 21-30 (10:00-15:00 JST). Spread = Kyushu minus system price. 3,835 days (2,191 formation to 2022-03, 1,644 test).
+Plan fixed before results: oracle relation with controls; chronological rarity test with thresholds frozen on formation; persistence. Scripts: `fetch_era5.py`, `kyushu_study.py`. Downloaded data not committed.
+
+A. Oracle relation. A one-sd brighter midday lowers the Kyushu midday price relative to the system price by about 0.8 yen/kWh (controls: month-year, weekday, temperature, temperature squared); irradiance explains about 5% of day-to-day variance (weekdays -0.97 yen, 6.4%; weekends and holidays -0.37, 2.1%; by season -0.50 spring, -0.77 summer, -0.76 autumn, -0.83 winter). Out of sample (fit 2016-2021, test 2022-2026, within month-year): R2 0.050.
+B. Rarity test (event: Kyushu midday price <= 1 yen). Base rate rose from 8.7% (formation) to 26.1% (test). P(event | bright tail) in the test: 44.5% (top 20%), 42.0% (10%), 42.0% (5%), 44.1% (2%, n = 34); lift against the raw base 1.7, 1.6, 1.6, 1.7; against a base matched to month and day type 1.9, 2.1, 2.3, 3.3 (the matched base falls because the brightest days sit in low-event months and weekdays). No gradient in the probability itself: a price floor saturates the effect. Event spread <= -3 yen: lift 1.2-1.4, flat.
+C. Knowability from persistence. Correlation of a day's anomaly with the mean of the seven days ending k days earlier: +0.19 (1 d), +0.10 (3 d), +0.03 (7 d), +0.02 (14 d), +0.07 (28 d); month on previous month +0.17.
+Limits: ERA5 grid, not station or capacity-weighted; no fuel, curtailment, outage or interconnector data; demand proxied by temperature and day type; day-ahead forecasts not used (public forecasts are available to the market before gate closure, so the day-ahead price already reflects them).
