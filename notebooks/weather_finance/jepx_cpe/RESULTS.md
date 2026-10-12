@@ -15,3 +15,10 @@ The 20 August 2026 state: over the past 30 and 60 days Tokyo irradiance stood at
 Earlier note: the 80th percentile quoted in the first reply was for 1-19 August only.
 
 Limits: ten years of prices; the windows overlap and conditions are highly correlated, so 720 rows are far fewer independent findings; no seasonal irradiance forecast; ERA5 grid cells.
+
+## Midday-only rerun (slots 21-30, 10:00-15:00 JST; `python jepx_cpe_scan.py midday`, outputs `*_midday.*`)
+Same 720 conditions, same frozen thresholds, targets built from the mean of the ten midday slots.
+- Gate: 0 of 720 pass; 0 survivors. Lift-only admission: 82 conditions; test lift mean 1.04, 17% keep lift >= 1.5.
+- Test excess over season-matched base: mechanism direction -4.1 points (198 conditions), opposite direction +4.2. The sign is reversed: dull spells are followed by LOWER midday prices, bright spells by HIGHER ones. Fourteen conditions hold lift >= 1.5 in both windows, all short (p = 7), with 30-49 episodes each, e.g. Kyushu dull 7 days -> price falls over the next 7 days: CPE 0.59 against base 0.29 in test.
+- Diagnosis (`midday_contemporaneous_check.py`): the weather effect is real but contemporaneous. Same-week midday price against same-week irradiance anomaly: Kyushu -0.34, Tokyo -0.10. The 'move' target measures the next f days against the previous f days, and with p = f the previous days are the dull or bright days themselves, so the effect reverses the following week (correlation of this week's irradiance anomaly with next week's change +0.31 Kyushu, +0.19 Tokyo). Measured against the week before the weather (next week vs previous week) it is +0.09 for both: nothing left to forecast.
+- Reading: irradiance moves the midday price in the same week, mainly in Kyushu; it does not predict the price a week or a month later, which is why nothing passes a forward-looking gate. The 20 August 2026 conclusion is unchanged.

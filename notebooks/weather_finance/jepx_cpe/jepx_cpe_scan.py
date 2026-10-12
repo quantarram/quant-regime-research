@@ -9,17 +9,20 @@ Base rate is season matched: the exceedance frequency of Y inside the same windo
 Episodes: conditioning days separated by more than f days start a new episode.
 Gates as in the program: CPE >= 0.80, lift >= 1.5, n >= 100 days (formation); survivor test-side: >= 3 test episodes, test CPE >= base + 0.10.
 """
-import glob, io, json, os, warnings
+import glob, io, json, os, sys, warnings
 warnings.filterwarnings('ignore')
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 HERE=os.path.dirname(os.path.abspath(__file__)); D=os.path.join(HERE,'data')
+MID=len(sys.argv)>1 and sys.argv[1]=='midday'; TAG='_midday' if MID else ''   # midday = slots 21-30 (10:00-15:00 JST), all ten required
 FORM=('2016-04-01','2020-12-31'); TEST=('2021-01-01','2026-09-30')
 fr=[]
 for f in sorted(glob.glob(os.path.join(D,'spot_*.csv'))):
     df=pd.read_csv(io.StringIO(open(f,encoding='utf-8').read())); df.columns=['date','slot','sell','buy','vol','system','hokkaido','tohoku','tokyo','chubu','hokuriku','kansai','chugoku','shikoku','kyushu','a','b','c','d']; fr.append(df[['date','slot','system','tokyo','kyushu']])
-J=pd.concat(fr); J['date']=pd.to_datetime(J['date'],format='%Y/%m/%d'); J=J.drop_duplicates(['date','slot'])
-day=J.groupby('date').agg(system=('system','mean'),tokyo=('tokyo','mean'),kyushu=('kyushu','mean'),n=('slot','count')); day=day[day.n==48].drop(columns='n')
+J=pd.concat(fr)
+if MID: J=J[(J.slot>=21)&(J.slot<=30)]
+J['date']=pd.to_datetime(J['date'],format='%Y/%m/%d'); J=J.drop_duplicates(['date','slot'])
+day=J.groupby('date').agg(system=('system','mean'),tokyo=('tokyo','mean'),kyushu=('kyushu','mean'),n=('slot','count')); day=day[day.n==(10 if MID else 48)].drop(columns='n')
 idx=pd.date_range('2016-04-01','2026-09-30'); day=day.reindex(idx)
 def era(fn):
     d=json.load(open(os.path.join(D,fn)))['daily']; return pd.Series(d['shortwave_radiation_sum'],index=pd.to_datetime(d['time'])).astype(float)
@@ -60,7 +63,7 @@ R=pd.DataFrame(rows)
 R['gate_form']=(R.cpe_form>=0.80)&(R.lift_form>=1.5)&(R.n_form>=100)
 R['lift_ok_form']=(R.lift_form>=1.5)&(R.n_form>=100)&(R.ep_form>=3)
 R['survivor']=R.gate_form&(R.ep_test>=3)&(R.cpe_test>=R.base_test+0.10)
-R.to_csv(os.path.join(HERE,'jepx_cpe_scan.csv'),index=False)
+R.to_csv(os.path.join(HERE,'jepx_cpe_scan'+TAG+'.csv'),index=False)
 print('conditions scanned',len(R),'| distinct (area,ytype,f,p,tail,qx,dir)')
 print('pass the program gate on formation (CPE>=0.80, lift>=1.5, n>=100 days):',int(R.gate_form.sum()))
 print('survivors (gate + >=3 test episodes + test CPE >= base+0.10):',int(R.survivor.sum()))
@@ -97,5 +100,5 @@ ax[0].set_xlim(0,5); ax[0].set_ylim(0,5); ax[0].set_xlabel('lift on formation wi
 ax[0].set_title('Every irradiance-extreme condition vs JEPX (blue: mechanism direction; orange: opposite)',fontsize=9)
 g=S.assign(ex=(S.cpe_test-S.base_test)*100,mech=np.where(col=='tab:blue','mechanism','opposite')).groupby(['xtail','mech']).ex.mean().unstack()
 g.plot.bar(ax=ax[1],color=['tab:blue','tab:orange'],rot=0); ax[1].axhline(0,color='k',lw=.6); ax[1].set_ylabel('test CPE minus season-matched base (points)'); ax[1].set_xlabel('irradiance extreme'); ax[1].set_title('Average excess in the test window (2021-2026)',fontsize=9)
-plt.tight_layout(); plt.savefig(os.path.join(HERE,'jepx_cpe_figure.png'),dpi=140)
-print('wrote jepx_cpe_scan.csv, jepx_cpe_figure.png')
+plt.tight_layout(); plt.savefig(os.path.join(HERE,'jepx_cpe_figure'+TAG+'.png'),dpi=140)
+print('wrote scan and figure',TAG)
