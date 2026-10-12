@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 HERE=os.path.dirname(os.path.abspath(__file__)); D=os.path.join(HERE,'data')
-MID=len(sys.argv)>1 and sys.argv[1]=='midday'; TAG='_midday' if MID else ''   # midday = slots 21-30 (10:00-15:00 JST), all ten required
+MID='midday' in sys.argv; DIFF='diff' in sys.argv; TAG=('_diff' if DIFF else '')+('_midday' if MID else '')   # diff = X is the CHANGE over the past p days (mean anomaly of the last p days minus that of the p days before), as the engine does for climate series   # midday = slots 21-30 (10:00-15:00 JST), all ten required
 FORM=('2016-04-01','2020-12-31'); TEST=('2021-01-01','2026-09-30')
 fr=[]
 for f in sorted(glob.glob(os.path.join(D,'spot_*.csv'))):
@@ -38,7 +38,9 @@ rows=[]
 for area in ['tokyo','kyushu','system']:
     z=zser(SITE[area]); zz=z.reindex(pd.date_range('1996-01-01','2026-09-30'))
     for p in PS:
-        xs=zz.rolling(p,min_periods=p).mean(); pre=xs[:'2015-12-31'].dropna(); xs=xs.reindex(idx)
+        xs=zz.rolling(p,min_periods=p).mean()
+        if DIFF: xs=xs-xs.shift(p)
+        pre=xs[:'2015-12-31'].dropna(); xs=xs.reindex(idx)
         for tail in ['dull','bright']:
             for q in QX:
                 th=pre.quantile(q) if tail=='dull' else pre.quantile(1-q); cond=(xs<=th) if tail=='dull' else (xs>=th)
@@ -89,7 +91,9 @@ print(top.head(15)[['area','ytype','f','p','xtail','qx','ydir','n_form','n_test'
 for area in ['tokyo','kyushu']:
     z=zser(SITE[area]); zz=z.reindex(pd.date_range('1996-01-01','2026-09-30'))
     for p in PS:
-        xs=zz.rolling(p,min_periods=p).mean(); pre=xs[:'2015-12-31'].dropna(); v=xs.loc['2026-08-19']
+        xs=zz.rolling(p,min_periods=p).mean()
+        if DIFF: xs=xs-xs.shift(p)
+        pre=xs[:'2015-12-31'].dropna(); v=xs.loc['2026-08-19']
         print('%s p=%d on 19-Aug-2026: state %.2f sd, percentile of 1996-2015 distribution %.0f; dull 10%% cut %.2f, bright 10%% cut %.2f'%(area,p,v,(pre<v).mean()*100,pre.quantile(.10),pre.quantile(.90)))
 # figure
 fig,ax=plt.subplots(1,2,figsize=(13,5.2))
