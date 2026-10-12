@@ -71,3 +71,11 @@ CPE(q_X) = P(midday price response in its top decile | day's irradiance in the q
 - Season (Tokyo, test): October-May dull days CPE 0.55-0.57 against base 0.12-0.14 (lift 4.2-4.7); June-September weak (lift 2.2 at 10%, 1.1 at 5%, 11-25 days), consistent with lower cooling demand offsetting lost solar. The season split was suggested by the dose-response and is not a pre-registered cut.
 - Temperature control (Kyushu, test): with the day's temperature within 0.75 sd of normal the lift stays at 2.5, 2.9, 3.2 for the 20%, 10%, 5% tails (CPE 0.59, 0.74, 0.74 against 0.24, 0.25, 0.23), so the response is not simply cold-weather demand.
 - Reading: the magnitude of dullness matters, same day, out of sample. It is a risk measure (how likely an extreme midday price on a dull day), not a forecast: nothing in it is known a month ahead.
+
+### Does a dull day change the price on the following days? (`cpe_daily_lags.py`, clean baseline)
+Same frozen CPE, price outcome k working days after the dull day (test 2021-2026). Lift at k = 0, 1, 2, 3, 5, 7, 14: Tokyo 10% tail 3.81, 1.01, 0.60, 0.85, 0.74, 0.72, 0.86; Tokyo 5% tail 4.12, 1.37, 0.87, 0.74, 1.13, 0.16, 0.87; Kyushu 10% tail 2.98, 1.20, 0.84, 1.14, 0.96, 0.99, 1.05; Kyushu 5% tail 3.24, 1.37, 1.07, 0.77, 0.88, 1.05, 0.80. The effect is gone from the next working day on; the small lift at k = 1 matches the chance that the next day is also dull (12-18% against 10%).
+### What is and is not established (added)
+- The design of the daily CPE (midday, percent response against +/-15 weekdays, mechanism direction) was chosen after the full-sample dose-response, which included the test years; the thresholds are frozen on 2016-2020 and the scoring is on 2021-2026, and Kyushu and Tokyo dull days show the effect on the formation window alone (lift 2.1-3.2), but the design itself was not fixed in advance.
+- The irradiance forecastability check measures persistence only; seasonal forecast systems (e.g. ECMWF seasonal) were not tested, so it does not show that no forecast could have flagged September 2026.
+- That the day-ahead price already carries the weather is an inference from the market design (day-ahead auction on the day before), not tested with forecast data.
+- Small cells: Tokyo 2% tail has 15 formation and 20 test days; the Tokyo summer exception is post hoc.
