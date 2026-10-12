@@ -47,3 +47,9 @@ Perfect foresight is an upper bound that cannot be reached: ERA5 is a reanalysis
 - Chronological halves: Tokyo 2019-05..2022-12 slope +0.15 (wrong sign), 11 trades, hit 0.27; 2023-01..2026-09 slope -0.44, 19 trades, hit 0.63. Kyushu keeps the sign in both halves (slope -1.15 and -0.61, hit 0.56 and 0.64, mean +1.23 and +1.04).
 - Month price level against irradiance with no reference price at all, each year's average removed: Tokyo correlation -0.02, Kyushu -0.08.
 Reading: Tokyo shows nothing under any specification; Kyushu midday shows a weak, consistent-sign effect (t 1.5-2.2), not proven on ten years.
+
+### Is September 2026 paying because it is the most extreme month? (checked)
+- Tokyo midday, all 88 months by |anomaly|: no gradient. Direction-adjusted P&L (long dull, short bright): |z| 1.5-2: +2.0 (hit 89%, 9 months); 2-2.5: -2.8 (hit 20%, 5 months); above 2.5: -1.3 (hit 40%, 10 months, mostly bright months, which do not pay).
+- Dull side beyond -2 sd: Sep 2026 (-3.6) paid +7.9 yen/kWh; Jan 2020 (-2.7) -1.0; Jul 2020 (-2.0) -5.7.
+- The only other month beyond -3 sd is September 2016 (-3.05, outside the scan because it has no two earlier years). Against 1-19 August, Tokyo midday moved -0.96 yen/kWh (-7%), the other nine Septembers a median -2.9 (-24%), 2026 +5.2 (+27%). Right direction in 2016, but about 1.7 yen better than usual against about 8 in 2026; fifth highest of the ten non-2026 Septembers.
+- Two comparable events, one strong and one weak. In 2026 the price level was also high (19-24 yen against 10-15 in most Septembers), so lost solar displaces costlier fuel; that is a possible reason for the size and is untested.
