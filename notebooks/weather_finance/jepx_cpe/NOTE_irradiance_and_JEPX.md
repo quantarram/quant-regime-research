@@ -10,7 +10,7 @@ Rare extremes in irradiance are the kind of event the CPE framework looks for. T
 
 1. **A CPE scan.** 720 conditions: irradiance extremes over 7 to 60 days, as levels and as changes, against Tokyo, Kyushu and system price moves and premiums, on full-day and midday (10:00 to 15:00) prices. Thresholds were frozen before the test period. No condition passes the framework's gates, and the short-horizon patterns that did survive run against the physical mechanism: a same-week effect reverses the following week.
 2. **A perfect-foresight trade.** For each month from May 2019 to September 2026, assume the month's actual irradiance is known on the 20th of the month before. Go long if the month is in the dullest tenth of 1996 to 2015, short if it is in the brightest tenth, against the average price of the first 19 days of the previous month, after removing the usual seasonal drift.
-3. **A check that this is even possible.** ERA5 describes what happened. Irradiance in the first 19 days of a month explains about 0.3% of the next month's anomaly, and the resulting forecast never reaches an extreme. For September 2026, 20 August pointed to an ordinary month (+0.03 sd) and the outcome was −3.6 sd, the dullest in the record. So step 2 is a ceiling, not something a forecaster could have run.
+3. **How to read it.** ERA5 describes what actually happened, so step 2 is a ceiling: no real forecast of a month's irradiance made on the 20th can do better than knowing it exactly.
 
 ## What was found
 
