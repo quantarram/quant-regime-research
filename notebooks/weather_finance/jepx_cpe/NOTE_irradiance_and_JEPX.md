@@ -14,10 +14,9 @@ Rare extremes in irradiance are the kind of event the CPE framework looks for. T
 
 ## What was found
 
-- **Tokyo:** nothing, even with perfect foresight. September 2026 was a win, the other dull months were not, and the result depends on the sub-period.
-- **Kyushu, midday:** a weak effect with the expected sign (dull months, higher prices), present in both halves of the sample and in most variations, but not conclusive on ten years.
-- **Mechanism:** irradiance moves the midday price on the day itself. That is already in the day-ahead price when it happens, which is why it does not forecast anything a week or a month ahead.
-- **The size of the dullness matters, on the day.** In the CPE form (a dull day against the usual top-decile midday price, thresholds frozen on 2016 to 2020, scored on 2021 to 2026) the probability rises with rarity in every area. In Kyushu a dull day (dullest 10% of days) brings a top-decile midday price about 70% of the time against a 24% base, and the dullest 2% about the same. In Tokyo the lift grows from 3 to nearly 5 as days get rarer, but only outside the summer months, when cooler weather offsets lost solar. In Kyushu the result holds with temperature held near normal. This is a measure of risk on the day, not a forecast.
+- **With perfect foresight of the coming week, a dull week pays in Kyushu and nowhere else.** For the dullest tenth of 7-day windows, the Kyushu midday price rose into its top decile about half the time against a quarter normally, and a long position earned about 3 yen/kWh per week with a 90% hit rate, in both halves of 2021 to 2026. The rarer the window, the higher the odds. Tokyo and the system price show nothing stable, and windows of 30 days are too few to test. In 2016 to 2020 the Kyushu effect was small.
+- **This is a ceiling.** ERA5 is what actually happened; no real forecast does better. The entry price is a trailing average of spot prices, not a forward price, so what is left after the market uses the same forecasts is not known.
+- **It is also a same-day effect.** On the day itself, dull days raise the midday price, and the effect grows with rarity (Kyushu even with temperature held normal; Tokyo outside summer). It is gone from the next working day on, and the day-ahead price already uses the day's forecast.
 
 ## Why Kyushu is the place to look
 
