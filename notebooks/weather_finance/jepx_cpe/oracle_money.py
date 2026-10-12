@@ -1,6 +1,7 @@
 """If we KNEW a month's irradiance on the 20th of the month before, would it make money in JEPX? (perfect-foresight upper bound; ERA5 stands in for the forecast; only irradiance and JEPX are used)
 
-For every target month M from 2018-05 to 2026-09 (so that at least two earlier years of the same calendar month exist):
+ORACLE: the signal is the month's ACTUAL irradiance (ERA5 reanalysis, an after-the-fact estimate of what happened), which cannot be known on the 20th of the previous month. This is an upper bound; see forecastability_check.py.
+For every target month M with at least two earlier years of the same calendar month (first target month 2019-05; 89 months to 2026-09):
   reference R  = mean price over days 1-19 of month M-1 (what is known on the 20th; the 'forward' we would trade against)
   outcome  O   = mean price over month M;  change = O - R  (yen/kWh)
   expected     = mean of (O - R) for the same calendar month in EARLIER years only (the seasonal drift, no look-ahead);  surprise = change - expected
@@ -55,11 +56,12 @@ print('\nSeptember 2026:'); print(A[(A.month=='2026-09-01')][['price','area','z'
 fig,ax=plt.subplots(1,3,figsize=(15,4.8))
 for a,(pk,area) in zip(ax,[('midday','kyushu'),('midday','tokyo'),('day','tokyo')]):
     g=A[(A.price==pk)&(A.area==area)]; c=np.where(g.pos==1,'tab:red',np.where(g.pos==-1,'tab:blue','lightgray')); a.scatter(g.z,g.surprise,c=c,s=22); a.axhline(0,color='k',lw=.6); a.axvline(0,color='k',lw=.6)
-    k=np.polyfit(g.z,g.surprise,1); xs=np.linspace(g.z.min(),g.z.max(),10); a.plot(xs,k[0]*xs+k[1],color='gray',lw=1)
+    gx=g[g.month!='2021-02-01']; k=np.polyfit(gx.z,gx.surprise,1); xs=np.linspace(g.z.min(),g.z.max(),10); a.plot(xs,k[0]*xs+k[1],color='gray',lw=1)
     for _,r in g[g.pos!=0].iterrows():
         if abs(r.surprise)>np.nanpercentile(abs(g.surprise),90): a.annotate(r.month.strftime('%y-%m'),(r.z,r.surprise),fontsize=7)
-    a.set_title(f'{area} {pk}: corr {g.z.corr(g.surprise):.2f}, slope {k[0]:.2f} yen/kWh per sd',fontsize=9); a.set_xlabel('irradiance anomaly of the month (sd; red = dull extreme, blue = bright extreme)'); a.set_ylabel('price change surprise vs the 1-19 of the prior month (yen/kWh)')
-plt.tight_layout(); plt.savefig(os.path.join(HERE,'oracle_money_figure.png'),dpi=140); print('wrote oracle_money_months.csv, oracle_money_figure.png')
+    a.set_title(f'{area} {pk}: Spearman {gx.z.corr(gx.surprise,method="spearman"):.2f}, slope {k[0]:.2f} yen/kWh per sd (fit excludes 21-02)',fontsize=9); a.set_xlabel('irradiance anomaly of the month (sd)',fontsize=9); a.set_ylabel('price surprise (yen/kWh)',fontsize=9)
+fig.suptitle('PERFECT-FORESIGHT UPPER BOUND: uses each month\'s actual irradiance, which cannot be known on the 20th of the previous month. Red = dull extreme (long), blue = bright extreme (short).',fontsize=9.5,y=0.99)
+plt.tight_layout(rect=(0,0,1,0.95)); plt.savefig(os.path.join(HERE,'oracle_money_figure.png'),dpi=140); print('wrote oracle_money_months.csv, oracle_money_figure.png')
 # robust view: drop 2021-02 (its reference days, Jan 2021, are the winter price crisis: 50-65 yen, a fuel/supply spike, not weather)
 rows=[]
 for (pk,ar),g in A.groupby(['price','area']):
