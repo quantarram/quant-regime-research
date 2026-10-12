@@ -16,7 +16,8 @@ Rare extremes in irradiance are the kind of event the CPE framework looks for. T
 
 - **Tokyo:** nothing, even with perfect foresight. September 2026 was a win, the other dull months were not, and the result depends on the sub-period.
 - **Kyushu, midday:** a weak effect with the expected sign (dull months, higher prices), present in both halves of the sample and in most variations, but not conclusive on ten years.
-- **Mechanism:** irradiance moves the midday price within the same week, mainly in Kyushu. That is already in the day-ahead price when it happens, which is why it does not forecast anything a week or a month ahead.
+- **Mechanism:** irradiance moves the midday price on the day itself. That is already in the day-ahead price when it happens, which is why it does not forecast anything a week or a month ahead.
+- **The size of the dullness matters, on the day.** In the CPE form (a dull day against the usual top-decile midday price, thresholds frozen on 2016 to 2020, scored on 2021 to 2026) the probability rises with rarity in every area. In Kyushu a dull day (dullest 10% of days) brings a top-decile midday price about 70% of the time against a 24% base, and the dullest 2% about the same. In Tokyo the lift grows from 3 to nearly 5 as days get rarer, but only outside the summer months, when cooler weather offsets lost solar. In Kyushu the result holds with temperature held near normal. This is a measure of risk on the day, not a forecast.
 
 ## Why Kyushu is the place to look
 
@@ -24,7 +25,7 @@ Kyushu has a lot of solar and limited transmission out, so midday prices can sin
 
 ## Next steps
 
-1. Model the floor explicitly: the probability that midday price falls to the floor given irradiance and demand, by year, rather than a linear slope.
+1. Model the response by size of dullness and year, and the floor explicitly: the probability that midday price falls to the floor given irradiance and demand, by year, rather than a linear slope.
 2. Let the sensitivity change with installed solar capacity.
 3. Use station irradiance (JMA) in place of ERA5 grid cells, and the other solar-heavy areas (Kyushu neighbours, Shikoku, Chugoku) as a check on whether Kyushu is special.
 4. Bring in forward or futures prices, which are what a trader would deal against. They are not in this data set.
