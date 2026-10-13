@@ -54,7 +54,7 @@ GOLD_CSV   = os.path.join(BASE_DIR, "gold_predictions.csv")
 PORT_CSV   = os.path.join(BASE_DIR, "portfolio_predictions.csv")
 METALS_CSV = os.path.join(BASE_DIR, "metals_predictions.csv")
 
-# Metal name -> ticker used for outcome-price resolution. Must be oz-equivalent
+# Metal name -> futures ticker (names only since 2026-10-13: outcomes are scored on SCORING_TICKERS ETFs). Must be oz-equivalent
 # spot-scale, matching the "spot_price_usd_oz" entry price logged by log_metals()
 # (build_metals_dashboard.py's calibrated D["metals"][name]["spot_usd_oz"]).
 # Silver: SI=F futures already trade at spot scale. Platinum: PPLT is a raw ETF
@@ -370,12 +370,14 @@ GOLD_COLS = [
     "r21", "r63", "r126", "r252",
     "p63_percentile",
     # Outcome side (filled on resolution)
-    "outcome_date",
-    "gcf_price_at_outcome",
+    "outcome_date",           # date of the bar the outcome was scored on (h trading bars after the entry bar)
+    "gcf_price_at_outcome",   # legacy (calendar-day scoring, retired 2026-10-13); left blank, see scored_* below
     "actual_return_pct",
     "prediction_correct",     # 1=correct, 0=wrong, blank=pending
     "status",                 # PENDING / RESOLVED
     "notes",
+    # Scoring detail (v2): one instrument at both ends, horizon in trading days
+    "scoring_ticker", "scored_entry_date", "scored_entry_px", "scored_outcome_px",
 ]
 
 PORT_COLS = [
@@ -395,6 +397,9 @@ PORT_COLS = [
     "tilt_beat_neutral", # 1=yes, 0=no, blank=pending
     "status",
     "notes",
+    # Scoring detail (v2): entry/outcome both read from the same price series, horizon in trading days
+    "scored_entry_date",
+    "equities_entry_px", "gold_entry_px", "bonds_entry_px", "crypto_entry_px", "fx_entry_px",
 ]
 
 
@@ -411,12 +416,14 @@ METALS_COLS = [
     "chg_21", "chg_63", "chg_126", "chg_252",
     "curr_pct_63",            # current 63d-return percentile within own history
     # Outcome side (filled on resolution)
-    "outcome_date",
-    "price_at_outcome",
+    "outcome_date",           # date of the bar the outcome was scored on (h trading bars after the entry bar)
+    "price_at_outcome",       # legacy (calendar-day scoring, retired 2026-10-13); left blank, see scored_* below
     "actual_return_pct",
     "prediction_correct",     # 1=correct, 0=wrong, blank=pending
     "status",                 # PENDING / RESOLVED
     "notes",
+    # Scoring detail (v2): one instrument at both ends, horizon in trading days
+    "scoring_ticker", "scored_entry_date", "scored_entry_px", "scored_outcome_px",
 ]
 
 
@@ -599,253 +606,171 @@ NEUTRAL_WEIGHTS = {
 }
 
 
-def _close_at(hist, last=False):
-    """First (or last) valid Close in a yfinance frame, or None if the download came back empty
-    or has no usable close. Resolution lookups must never raise on a transient Yahoo failure --
-    a skipped row simply stays PENDING and is retried on the next run (outcome prices are keyed
-    to the outcome date, so waiting does not change the result)."""
+# ════════════════════════════════════════════════════════════
+#  SCORING (v2, 2026-10-13)
+# ════════════════════════════════════════════════════════════
+# Horizons are in TRADING DAYS everywhere in this project (CPE tau, the dashboards' recovery
+# statistics, predictor_ledger.py, cpe_signal_ledger.py). A prediction logged on date D with horizon h
+# is scored from the last settled bar BEFORE D to the close h trading bars later, on ONE instrument at
+# both ends. Replaced on 2026-10-13: calendar-day horizons, an outcome price taken from the FIRST bar of a
+# +/-5-day window (3-5 days before the horizon date), and a GLD-derived gold entry scored against a GC=F
+# futures outcome. Original logs are kept in legacy_calendar_horizon/.
+# Gold / silver / platinum are scored on the spot-tracking ETFs (no futures roll, no spot-vs-futures basis,
+# history Yahoo does not restate). The portfolio keeps its five proxies (same tickers as ibkr_paper_ledger).
+SCORING_TICKERS = {"Gold": "GLD", "Silver": "SLV", "Platinum": "PPLT"}
+PORT_TICKERS = {"equities": "SPY", "gold": "GC=F", "bonds": "TLT", "crypto": "IBIT", "fx": "UUP"}
+SCORED_COLS = ["scoring_ticker", "scored_entry_date", "scored_entry_px", "scored_outcome_px"]
+
+
+def _daily_closes(ticker, start):
+    """Unadjusted daily closes (tz-naive date index) from `start`, or None if Yahoo returned nothing usable.
+    Never raises: a skipped row simply stays PENDING and is retried on the next run."""
     try:
-        if hist is None or hist.empty:
+        import yfinance as yf
+        h = yf.download(ticker, start=str(start), auto_adjust=False, progress=False)
+        if h is None or h.empty:
             return None
-        s = hist["Close"].squeeze().dropna()
+        s = h["Close"].squeeze().dropna()
         if len(s) == 0:
             return None
-        return float(s.iloc[-1] if last else s.iloc[0])
+        s.index = pd.to_datetime(s.index).tz_localize(None).normalize()
+        return s[~s.index.duplicated(keep="last")].sort_index()
     except Exception:
         return None
 
 
-def resolve_gold():
-    if not os.path.exists(GOLD_CSV):
-        print("[GOLD] No CSV found to resolve.")
-        return
+def _score_span(s, pred_date, h):
+    """Entry = last settled close BEFORE pred_date; outcome = close h TRADING bars later.
+    Returns (entry_date, entry_px, outcome_date, outcome_px), or None if it cannot be scored yet
+    (no such outcome bar, or that bar is dated today (UTC) and may still be forming)."""
+    if s is None:
+        return None
+    before = s.index[s.index < pd.Timestamp(pred_date)]
+    if len(before) == 0:
+        return None
+    i = s.index.get_loc(before[-1])
+    j = i + int(h)
+    if j >= len(s):
+        return None
+    if s.index[j].date() >= datetime.now(timezone.utc).date():
+        return None
+    return s.index[i], float(s.iloc[i]), s.index[j], float(s.iloc[j])
 
-    df = pd.read_csv(GOLD_CSV)
-    pending = df[df["status"] == "PENDING"].copy()
+
+def _is_correct(direction, ret_pct):
+    if direction == "BULLISH":
+        return 1 if ret_pct > 0 else 0
+    if direction == "BEARISH":
+        return 1 if ret_pct < 0 else 0
+    return 1 if abs(ret_pct) < 3 else 0   # NEUTRAL: within +/-3% (rule unchanged, any horizon)
+
+
+def _ensure_cols(df, cols):
+    for c in cols:
+        if c not in df.columns:
+            df[c] = ""
+    return df
+
+
+def _history_start(pending):
+    return (pd.to_datetime(pending["date_predicted"]).min() - timedelta(days=10)).date()
+
+
+def _resolve_direction_calls(csv_path, label, name_col, price_label):
+    """Shared resolver for gold_predictions.csv (name_col=None -> 'Gold') and metals_predictions.csv."""
+    if not os.path.exists(csv_path):
+        print(f"[{label}] No CSV found to resolve.")
+        return
+    df = pd.read_csv(csv_path)
+    pending = df[df["status"] == "PENDING"]
     if pending.empty:
-        print("[GOLD] No pending predictions to resolve.")
+        print(f"[{label}] No pending predictions to resolve.")
         return
-
-    import yfinance as yf
-    # Fetch current GC=F price
-    gcf = yf.download("GC=F", period="5d", auto_adjust=True, progress=False)
-    current_price = _close_at(gcf, last=True)  # informational only (printed, never used for resolution)
-    if current_price is None:
-        print("\n[GOLD RESOLVE] Current GC=F price unavailable (Yahoo returned no data); continuing.")
-    else:
-        print(f"\n[GOLD RESOLVE] Current GC=F price: ${current_price:,.2f}")
-
+    df = _ensure_cols(df, SCORED_COLS)
+    start = _history_start(pending)
+    series = {}
     resolved = 0
     for idx, row in pending.iterrows():
-        pred_date    = pd.to_datetime(row["date_predicted"]).date()
-        horizon_days = int(row["horizon_days"])
-        outcome_date = pred_date + timedelta(days=horizon_days)
+        name = row[name_col] if name_col else "Gold"
+        tk = SCORING_TICKERS.get(name)
+        if tk is None:
+            continue
+        if tk not in series:
+            series[tk] = _daily_closes(tk, start)
+        span = _score_span(series[tk], row["date_predicted"], row["horizon_days"])
+        if span is None:
+            continue
+        e_date, e_px, o_date, o_px = span
+        ret = (o_px / e_px - 1) * 100
+        correct = _is_correct(row["direction"], ret)
+        df.at[idx, "outcome_date"]       = str(o_date.date())
+        df.at[idx, "actual_return_pct"]  = round(ret, 2)
+        df.at[idx, "prediction_correct"] = correct
+        df.at[idx, "status"]             = "RESOLVED"
+        df.at[idx, "scoring_ticker"]     = tk
+        df.at[idx, "scored_entry_date"]  = str(e_date.date())
+        df.at[idx, "scored_entry_px"]    = round(e_px, 4)
+        df.at[idx, "scored_outcome_px"]  = round(o_px, 4)
+        print(f"  [{name} {pd.to_datetime(row['date_predicted']).date()} → {o_date.date()}] {row['direction']} "
+              f"{int(row['horizon_days'])} trading days | {tk} {e_px:.2f} → {o_px:.2f} | ret={ret:+.1f}% | "
+              f"{'✓ CORRECT' if correct else '✗ WRONG'}")
+        resolved += 1
+    df.to_csv(csv_path, index=False)
+    print(f"  [{label}] {resolved} prediction(s) resolved.")
 
-        if TODAY >= outcome_date:
-            # Fetch price at outcome date (nearest trading day)
-            start = outcome_date - timedelta(days=5)
-            end   = outcome_date + timedelta(days=5)
-            hist  = yf.download("GC=F", start=str(start), end=str(end),
-                                auto_adjust=True, progress=False)
-            if hist.empty:
-                print(f"  [SKIP] No price data for outcome date {outcome_date}")
-                continue
 
-            out_price   = _close_at(hist)
-            if out_price is None:
-                print(f"  [SKIP] No usable close for outcome date {outcome_date}; stays PENDING")
-                continue
-            entry_price = float(row["gcf_price_usd"])
-            actual_ret  = (out_price / entry_price - 1) * 100
-            direction   = row["direction"]
-
-            # Correct if direction matches actual move
-            if direction == "BULLISH":
-                correct = 1 if actual_ret > 0 else 0
-            elif direction == "BEARISH":
-                correct = 1 if actual_ret < 0 else 0
-            else:  # NEUTRAL — correct if within ±3%
-                correct = 1 if abs(actual_ret) < 3 else 0
-
-            df.at[idx, "outcome_date"]         = str(outcome_date)
-            df.at[idx, "gcf_price_at_outcome"] = round(out_price, 2)
-            df.at[idx, "actual_return_pct"]    = round(actual_ret, 2)
-            df.at[idx, "prediction_correct"]   = correct
-            df.at[idx, "status"]               = "RESOLVED"
-
-            result_str = "✓ CORRECT" if correct else "✗ WRONG"
-            print(f"  [{pred_date} → {outcome_date}] {direction} {horizon_days}d | "
-                  f"entry=${entry_price:.0f} → out=${out_price:.0f} | "
-                  f"ret={actual_ret:+.1f}% | {result_str}")
-            resolved += 1
-
-    df.to_csv(GOLD_CSV, index=False)
-    print(f"  [GOLD] {resolved} prediction(s) resolved.")
+def resolve_gold():
+    _resolve_direction_calls(GOLD_CSV, "GOLD", None, "gcf_price_usd")
 
 
 def resolve_metals():
-    if not os.path.exists(METALS_CSV):
-        print("[METALS] No CSV found to resolve.")
-        return
-
-    df = pd.read_csv(METALS_CSV)
-    pending = df[df["status"] == "PENDING"].copy()
-    if pending.empty:
-        print("[METALS] No pending predictions to resolve.")
-        return
-
-    import yfinance as yf
-    resolved = 0
-    for name, ticker in METALS_TICKERS.items():
-        rows = pending[pending["metal"] == name]
-        if rows.empty:
-            continue
-
-        hist_cache = {}
-        for idx, row in rows.iterrows():
-            pred_date    = pd.to_datetime(row["date_predicted"]).date()
-            horizon_days = int(row["horizon_days"])
-            outcome_date = pred_date + timedelta(days=horizon_days)
-
-            if TODAY >= outcome_date:
-                if outcome_date not in hist_cache:
-                    start = outcome_date - timedelta(days=5)
-                    end   = outcome_date + timedelta(days=5)
-                    hist_cache[outcome_date] = yf.download(
-                        ticker, start=str(start), end=str(end),
-                        auto_adjust=True, progress=False)
-                hist = hist_cache[outcome_date]
-                if hist.empty:
-                    print(f"  [SKIP] No price data for {name} outcome date {outcome_date}")
-                    continue
-
-                out_price   = _close_at(hist)
-                if out_price is None:
-                    print(f"  [SKIP] No usable close for {name} outcome date {outcome_date}; stays PENDING")
-                    continue
-                entry_price = float(row["spot_price_usd_oz"])
-                actual_ret  = (out_price / entry_price - 1) * 100
-                direction   = row["direction"]
-
-                if direction == "BULLISH":
-                    correct = 1 if actual_ret > 0 else 0
-                elif direction == "BEARISH":
-                    correct = 1 if actual_ret < 0 else 0
-                else:  # NEUTRAL — correct if within ±3%
-                    correct = 1 if abs(actual_ret) < 3 else 0
-
-                df.at[idx, "outcome_date"]      = str(outcome_date)
-                df.at[idx, "price_at_outcome"]  = round(out_price, 2)
-                df.at[idx, "actual_return_pct"] = round(actual_ret, 2)
-                df.at[idx, "prediction_correct"]= correct
-                df.at[idx, "status"]            = "RESOLVED"
-
-                result_str = "✓ CORRECT" if correct else "✗ WRONG"
-                print(f"  [{name} {pred_date} → {outcome_date}] {direction} {horizon_days}d | "
-                      f"entry=${entry_price:.0f} → out=${out_price:.0f} | "
-                      f"ret={actual_ret:+.1f}% | {result_str}")
-                resolved += 1
-
-    df.to_csv(METALS_CSV, index=False)
-    print(f"  [METALS] {resolved} prediction(s) resolved.")
+    _resolve_direction_calls(METALS_CSV, "METALS", "metal", "spot_price_usd_oz")
 
 
 def resolve_portfolio():
     if not os.path.exists(PORT_CSV):
         print("[PORTFOLIO] No CSV found to resolve.")
         return
-
     df = pd.read_csv(PORT_CSV)
-    pending = df[df["status"] == "PENDING"].copy()
+    pending = df[df["status"] == "PENDING"]
     if pending.empty:
         print("[PORTFOLIO] No pending predictions to resolve.")
         return
-
-    import yfinance as yf
-    # Fetch current prices
-    tickers = {"equities": "SPY", "gold": "GC=F",
-               "bonds": "TLT", "crypto": "IBIT", "fx": "UUP"}
-    current = {}
-    for cls, tk in tickers.items():
-        hist = yf.download(tk, period="5d", auto_adjust=True, progress=False)
-        current[cls] = _close_at(hist, last=True)  # informational only; None if Yahoo returned nothing
-
-    print(f"\n[PORTFOLIO RESOLVE] Current prices fetched.")
+    df = _ensure_cols(df, ["scored_entry_date"] + [f"{c}_entry_px" for c in PORT_TICKERS])
+    start = _history_start(pending)
+    series = {c: _daily_closes(t, start) for c, t in PORT_TICKERS.items()}
     resolved = 0
-
     for idx, row in pending.iterrows():
-        pred_date    = pd.to_datetime(row["date_predicted"]).date()
-        horizon_days = int(row["dominant_horizon_days"])
-        outcome_date = pred_date + timedelta(days=horizon_days)
-
-        if TODAY >= outcome_date:
-            # Fetch prices at outcome date for each asset
-            out_prices = {}
-            for cls, tk in tickers.items():
-                start = outcome_date - timedelta(days=5)
-                end   = outcome_date + timedelta(days=5)
-                hist  = yf.download(tk, start=str(start), end=str(end),
-                                   auto_adjust=True, progress=False)
-                px = _close_at(hist)
-                out_prices[cls] = px if px is not None else np.nan
-
-            # Never resolve on partial data: with one asset missing, tilt/neutral P&L would be
-            # computed from the remaining assets only and written permanently. Leave PENDING and
-            # retry next run (the outcome-date window is fixed, so the answer won't change).
-            missing = [c for c, v in out_prices.items() if np.isnan(v)]
-            if missing:
-                print(f"  [SKIP] {pred_date} -> {outcome_date}: no outcome price for {missing}; stays PENDING")
-                continue
-
-            # Compute returns
-            returns = {}
-            for cls in tickers:
-                entry = float(row[f"{cls}_price"])
-                out   = out_prices.get(cls, np.nan)
-                returns[cls] = (out / entry - 1) if (not np.isnan(out) and entry > 0) else np.nan
-
-            # Tilt PnL — weighted by tilt-adjusted weights (normalised)
-            tilt_weights = {}
-            for cls in tickers:
-                tilt = row[f"{cls}_tilt"]
-                tilt_weights[cls] = tilt_to_weight(tilt, NEUTRAL_WEIGHTS[cls])
-            tw_sum = sum(tilt_weights.values())
-            tilt_weights = {k: v / tw_sum for k, v in tilt_weights.items()}
-
-            neutral_weights = {k: v / sum(NEUTRAL_WEIGHTS.values())
-                               for k, v in NEUTRAL_WEIGHTS.items()}
-
-            tilt_pnl    = sum(tilt_weights[cls] * returns[cls]
-                              for cls in tickers if not np.isnan(returns[cls]))
-            neutral_pnl = sum(neutral_weights[cls] * returns[cls]
-                              for cls in tickers if not np.isnan(returns[cls]))
-
-            beat = 1 if tilt_pnl > neutral_pnl else 0
-
-            # Fill outcome columns
-            for cls in tickers:
-                df.at[idx, f"{cls}_price_out"] = round(out_prices.get(cls, np.nan), 4)
-                df.at[idx, f"{cls}_return"]    = round(returns[cls] * 100, 2) \
-                    if not np.isnan(returns[cls]) else ""
-
-            df.at[idx, "outcome_date"]      = str(outcome_date)
-            df.at[idx, "tilt_pnl"]          = round(tilt_pnl * 100, 2)
-            df.at[idx, "neutral_pnl"]       = round(neutral_pnl * 100, 2)
-            df.at[idx, "tilt_beat_neutral"] = beat
-            df.at[idx, "status"]            = "RESOLVED"
-
-            result_str = "✓ TILT WON" if beat else "✗ NEUTRAL WON"
-            print(f"  [{pred_date} → {outcome_date}] "
-                  f"tilt={tilt_pnl*100:+.2f}% vs neutral={neutral_pnl*100:+.2f}% | {result_str}")
-            resolved += 1
-
+        h = int(row["dominant_horizon_days"])
+        spans = {c: _score_span(series[c], row["date_predicted"], h) for c in PORT_TICKERS}
+        # Never resolve on partial data: with one asset missing, P&L would come from the others only.
+        missing = [c for c, sp in spans.items() if sp is None]
+        if missing:
+            continue
+        returns = {c: spans[c][3] / spans[c][1] - 1 for c in PORT_TICKERS}
+        tilt_weights = {c: tilt_to_weight(row[f"{c}_tilt"], NEUTRAL_WEIGHTS[c]) for c in PORT_TICKERS}
+        tw_sum = sum(tilt_weights.values())
+        tilt_weights = {k: v / tw_sum for k, v in tilt_weights.items()}
+        neutral_weights = {k: v / sum(NEUTRAL_WEIGHTS.values()) for k, v in NEUTRAL_WEIGHTS.items()}
+        tilt_pnl    = sum(tilt_weights[c] * returns[c] for c in PORT_TICKERS)
+        neutral_pnl = sum(neutral_weights[c] * returns[c] for c in PORT_TICKERS)
+        beat = 1 if tilt_pnl > neutral_pnl else 0
+        for c in PORT_TICKERS:
+            df.at[idx, f"{c}_entry_px"]  = round(spans[c][1], 4)
+            df.at[idx, f"{c}_price_out"] = round(spans[c][3], 4)
+            df.at[idx, f"{c}_return"]    = round(returns[c] * 100, 2)
+        df.at[idx, "scored_entry_date"]  = str(spans["equities"][0].date())
+        df.at[idx, "outcome_date"]       = str(max(sp[2] for sp in spans.values()).date())
+        df.at[idx, "tilt_pnl"]           = round(tilt_pnl * 100, 2)
+        df.at[idx, "neutral_pnl"]        = round(neutral_pnl * 100, 2)
+        df.at[idx, "tilt_beat_neutral"]  = beat
+        df.at[idx, "status"]             = "RESOLVED"
+        print(f"  [{pd.to_datetime(row['date_predicted']).date()} → {df.at[idx, 'outcome_date']}] {h} trading days | "
+              f"tilt={tilt_pnl*100:+.2f}% vs neutral={neutral_pnl*100:+.2f}% | {'✓ TILT WON' if beat else '✗ NEUTRAL WON'}")
+        resolved += 1
     df.to_csv(PORT_CSV, index=False)
     print(f"  [PORTFOLIO] {resolved} prediction(s) resolved.")
 
-
-# ════════════════════════════════════════════════════════════
-#  SECTION 5 — SUMMARY PRINTOUT
-# ════════════════════════════════════════════════════════════
 
 def print_summary():
     print("\n" + "=" * 60)
