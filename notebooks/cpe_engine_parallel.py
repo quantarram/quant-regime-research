@@ -54,7 +54,17 @@ EXCLUDE_FROM_X = {
     "THBUSD=X","CNYUSD=X","KRWUSD=X",
 }
 
-TMP_DIR = "cpe_tmp_chunks"
+TMP_DIR = os.environ.get("CPE_TMP", "cpe_tmp_chunks")
+
+# Optional overrides (defaults reproduce the original behaviour exactly):
+#   CPE_PRICES  input panel            (default multiasset_prices.parquet)
+#   CPE_END     last date to include   (default: whole panel)
+#   CPE_OUT     output parquet         (default cpe_results.parquet)
+#   CPE_Y       comma list: only these targets (testing / reproduction checks)
+PRICES_PATH = os.environ.get("CPE_PRICES", "multiasset_prices.parquet")
+END_DATE    = os.environ.get("CPE_END")
+OUT_PATH    = os.environ.get("CPE_OUT", "cpe_results.parquet")
+Y_ONLY      = [t for t in os.environ.get("CPE_Y", "").split(",") if t]
 
 # ── WORKER GLOBALS ────────────────────────────────────────────────────────────
 _increments        = None
@@ -174,7 +184,10 @@ def main():
     print(f"  Workers : {N_WORKERS}")
     print(f"{'='*65}")
 
-    prices = pd.read_parquet("multiasset_prices.parquet")
+    prices = pd.read_parquet(PRICES_PATH)
+    if END_DATE:
+        prices = prices[prices.index <= pd.Timestamp(END_DATE)]
+        print(f"  Panel truncated to <= {END_DATE}: {prices.shape}")
 
     all_tickers   = list(prices.columns)
     price_tickers = [t for t in all_tickers if t not in RATE_INDEX_TICKERS]
@@ -228,6 +241,8 @@ def main():
         for f in glob.glob(os.path.join(TMP_DIR, "*.parquet")):
             os.remove(f)
 
+    if Y_ONLY:
+        predicted_tickers = [t for t in predicted_tickers if t in Y_ONLY]
     tasks = [(y, i) for i, y in enumerate(predicted_tickers)]
 
     total_combos = (len(predicted_tickers) * len(predictor_tickers) *
@@ -265,7 +280,7 @@ def main():
             ascending=[True,True,True,True,True,True,False]
         ).reset_index(drop=True)
 
-        out_path = "cpe_results.parquet"
+        out_path = OUT_PATH
         df_all.to_parquet(out_path, engine="pyarrow",
                           compression="snappy", index=False)
 

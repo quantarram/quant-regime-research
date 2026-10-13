@@ -50,7 +50,10 @@ print(f"{'='*65}")
 
 # ── LOAD PRICES ───────────────────────────────────────────────────────────────
 print("\n  Loading price data...")
-prices = pd.read_parquet("multiasset_prices.parquet")
+prices = pd.read_parquet(os.environ.get("CPE_PRICES", "multiasset_prices.parquet"))
+_end = os.environ.get("CPE_END")
+if _end:
+    prices = prices[prices.index <= pd.Timestamp(_end)]
 all_tickers   = list(prices.columns)
 price_tickers = [t for t in all_tickers if t not in RATE_INDEX_TICKERS]
 rate_tickers  = [t for t in all_tickers if t in RATE_INDEX_TICKERS]
@@ -86,7 +89,7 @@ for tau in TAU_LIST:
 
 # ── LOAD PAIRWISE CPE RESULTS ─────────────────────────────────────────────────
 print("\n  Loading pairwise CPE results...")
-pairwise = pd.read_parquet("cpe_results.parquet")
+pairwise = pd.read_parquet(os.environ.get("CPE_PAIRWISE", "cpe_results.parquet"))
 
 # Remove excluded tickers from predictor side
 pairwise = pairwise[~pairwise["X"].isin(EXCLUDE_TICKERS)].copy()
@@ -244,7 +247,7 @@ if results:
         ascending=[True,True,False,False]
     ).reset_index(drop=True)
 
-    out = "joint_cpe_results.parquet"
+    out = os.environ.get("CPE_JOINT_OUT", "joint_cpe_results.parquet")
     df.to_parquet(out, engine="pyarrow", compression="snappy", index=False)
 
     print(f"\n{'='*65}")

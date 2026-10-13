@@ -101,6 +101,9 @@ TILT_THRESHOLDS = [
 # ── LOAD DATA ────────────────────────────────────────────────
 print("\nLoading local data...")
 prices = pd.read_parquet("multiasset_prices.parquet")
+import fx_align as _fx_align
+# FX (=X) bars in the stored panel sit one bar late from 2010-08-03 (see fx_align.py); align in memory, file untouched
+prices = _fx_align.apply_if_needed(prices)
 cpe    = pd.read_parquet("cpe_results.parquet")
 jcpe   = pd.read_parquet("joint_cpe_results.parquet")
 
@@ -141,6 +144,8 @@ try:
     import datetime as _dt_check
     if len(raw.index) and raw.index.max().date() >= _dt_check.date.today():
         raw = raw[raw.index.date < _dt_check.date.today()]
+    # same one-bar FX offset exists in the fresh Yahoo download; align it before it is merged
+    raw = _fx_align.realign_fx(raw)
 
     for col in raw.columns:
         if col in prices.columns:
