@@ -124,6 +124,15 @@ def resolve(df, series, today_utc):
         if s is None:
             continue
         asof = pd.Timestamp(r["forecast_date"])
+        if str(r["ticker"]).endswith("=X"):
+            # The dashboard's FX feed is the raw Yahoo series, whose bars are dated one bar late
+            # (see fx_align.py), so a forecast labelled D was made on the close of the PREVIOUS FX
+            # bar. The stored price_at_forecast matches that previous bar of the (aligned) history
+            # to within 0.01-0.3%, not the bar labelled D. Score from the true as-of bar.
+            prev = s.index[s.index < asof]
+            if not len(prev):
+                continue
+            asof = prev[-1]
         pos = s.index.searchsorted(asof)
         if pos >= len(s) or s.index[pos] != asof:
             continue  # as-of date not in this series (should not happen) -- leave pending

@@ -45,6 +45,8 @@ print(f"{'='*65}")
 # ── LOAD DATA ─────────────────────────────────────────────────────────────────
 print("\n  Loading data...")
 prices   = pd.read_parquet("multiasset_prices.parquet")
+import fx_align
+prices   = fx_align.apply_if_needed(prices)   # FX bars in the stored panel are one bar late (see fx_align.py)
 joint    = pd.read_parquet("joint_cpe_results.parquet")
 
 all_tickers   = list(prices.columns)
