@@ -132,8 +132,14 @@ for (y, tau_f, q_y, direction), group in groups:
               f"elapsed: {elapsed:.0f}s", end="\r")
 
     # Sort by pairwise CPE descending
+    # Deterministic order: ties on pairwise CPE (and later on joint CPE, where the
+    # first candidate tried wins) are broken by X, tau_past, q_X, so the result does
+    # not depend on the row order of cpe_results.parquet (the parallel pairwise engine
+    # writes chunks in completion order).
     candidates = (group
-                  .sort_values("CPE", ascending=False)
+                  .sort_values(["CPE", "X", "tau_past", "q_X"],
+                               ascending=[False, True, True, True],
+                               kind="mergesort")
                   .reset_index(drop=True))
     if len(candidates) < 2:
         continue
