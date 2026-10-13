@@ -54,6 +54,8 @@ import warnings
 import numpy as np
 import pandas as pd
 
+import horizon_calendar as hc
+
 warnings.filterwarnings("ignore")  # log of non-positive prices in a few series -> NaN, as in the engine
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -84,8 +86,8 @@ def load_inputs(today_utc=None, asof=None):
 
 
 def increment(prices, ticker, tau):
-    s = prices[ticker]
-    return (s - s.shift(tau)) if ticker in RATE_TICKERS else np.log(s / s.shift(tau))
+    """Past move over tau of the instrument's OWN trading days (see horizon_calendar.py), NaN where it has no bar."""
+    return hc.own_increment(prices, ticker, tau, RATE_TICKERS)
 
 
 def find_entry_events(prices, table, after):
@@ -107,6 +109,9 @@ def find_entry_events(prices, table, after):
             else:
                 thr = frozen.quantile(1.0 - float(q))
                 fire = inc < thr
+            # onset = first bar in the tail after a bar of its own that was not (weekend rows of a 7-day union calendar
+            # are not bars of a weekday instrument, so they must not reset the tail)
+            fire = fire[inc.notna()]
             onset = fire & ~fire.shift(1, fill_value=False)
             hit = onset[(onset) & (onset.index > after)].index
             for dt in hit:
@@ -150,42 +155,42 @@ def score(ev=None, asof=None):
     ev = ev.copy()
     ev["entry_date"] = pd.to_datetime(ev["entry_date"])
     rows = ev[["entry_date"] + COND].merge(table, on=COND, how="inner")
-    idx = prices.index
-    pos_of = pd.Series(np.arange(len(idx)), index=idx)
-    rows["pos"] = pos_of.reindex(rows["entry_date"]).values
-    rows["resolve_pos"] = rows["pos"] + rows["tau_future"]
-    rows["resolved"] = rows["resolve_pos"] <= len(idx) - 1
     rows["event"] = np.nan
-    rows["live_base"] = np.nan   # how often Y's event happened on ANY day of the live window (the live control)
+    rows["live_base"] = np.nan   # how often Y's event happened on ANY bar of the live window (the live control)
     rows["outcome_date"] = pd.NaT
-    live_start = pos_of[idx > TABLE_END].iloc[0]
 
     for (y, tf), g in rows.groupby(["Y", "tau_future"]):
         if y not in prices.columns:
             continue
-        inc = increment(prices, y, int(tf))
+        tf = int(tf)
+        inc = increment(prices, y, tf)
         frozen = inc[inc.index <= TABLE_END].dropna()
         if len(frozen) < 100:
             continue
-        fwd = inc.shift(-int(tf)).values  # forward move from each bar
+        own = prices[y].dropna()
+        pos_y = pd.Series(np.arange(len(own)), index=own.index)
+        fwd = hc.own_forward(prices, y, tf)          # forward move over tf of Y's own bars, from each of its bars
+        ent = pos_y.reindex(g["entry_date"]).values   # NaN when Y has no bar on the entry date (e.g. a weekend event)
+        out_pos = ent + tf
+        ok = ~np.isnan(ent) & (out_pos <= len(own) - 1)
+        f = fwd.reindex(g["entry_date"]).values
         for (qy, d), gg in g.groupby(["q_Y", "direction"]):
-            r = gg[gg["resolved"]]
+            sel = ok[g.index.get_indexer(gg.index)]
+            r = gg[sel]
             if r.empty:
                 continue
-            f = fwd[r["pos"].astype(int).values]
+            fr = f[g.index.get_indexer(r.index)]
             if d == "bullish":
-                ev_flag = f > frozen.quantile(float(qy))
+                ev_flag = fr > frozen.quantile(float(qy))
             else:
-                ev_flag = f < frozen.quantile(1.0 - float(qy))
-            ev_flag = np.where(np.isnan(f), np.nan, ev_flag.astype(float))
+                ev_flag = fr < frozen.quantile(1.0 - float(qy))
+            ev_flag = np.where(np.isnan(fr), np.nan, ev_flag.astype(float))
             rows.loc[r.index, "event"] = ev_flag
-            # same event, evaluated on every bar of the live window that has resolved
-            w = fwd[live_start:len(idx) - int(tf)]
-            w = w[~np.isnan(w)]
+            w = fwd[fwd.index > TABLE_END].dropna().values   # same event on every resolved bar of the live window
             thr = frozen.quantile(float(qy)) if d == "bullish" else frozen.quantile(1.0 - float(qy))
             rows.loc[r.index, "live_base"] = float((w > thr).mean() if d == "bullish" else (w < thr).mean()) if len(w) else np.nan
-            rows.loc[r.index, "outcome_date"] = idx[r["resolve_pos"].astype(int).values]
-    rows.loc[rows["event"].isna(), "resolved"] = False
+            rows.loc[r.index, "outcome_date"] = own.index[out_pos[g.index.get_indexer(r.index)].astype(int)]
+    rows["resolved"] = rows["event"].notna()
     return rows, prices.index.max()
 
 

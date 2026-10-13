@@ -17,6 +17,7 @@ Usage:
 """
 
 import pandas as pd
+import horizon_calendar as hc
 import numpy as np
 import pyarrow.parquet as pq
 from multiprocessing import Pool, cpu_count
@@ -207,19 +208,15 @@ def main():
     increments = {}
     for tau in all_taus:
         inc = pd.DataFrame(index=prices.index)
-        for t in price_tickers:
-            s = prices[t]
-            inc[t] = np.log(s / s.shift(tau))
-        for t in rate_tickers:
-            s = prices[t]
-            inc[t] = s - s.shift(tau)
+        for t in price_tickers + rate_tickers:
+            inc[t] = hc.own_increment(prices, t, tau, RATE_INDEX_TICKERS)   # trading days of each instrument's own bars
         increments[tau] = inc
         print(f"    tau={tau:>3}  shape={inc.shape}")
 
     print(f"\n  Pre-computing forward increments for Y...")
     future_inc = {}
     for tau_f in TAU_FUTURE:
-        fi = increments[tau_f][predicted_tickers].shift(-tau_f)
+        fi = pd.DataFrame({t: hc.own_forward(prices, t, tau_f) for t in predicted_tickers}, index=prices.index)
         future_inc[tau_f] = fi
         print(f"    tau_f={tau_f:>3}  non-null rows: {fi.dropna(how='all').shape[0]}")
 

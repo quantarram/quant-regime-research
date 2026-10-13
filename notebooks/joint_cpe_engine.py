@@ -20,6 +20,7 @@ Output: joint_cpe_results.parquet
 """
 
 import pandas as pd
+import horizon_calendar as hc
 import numpy as np
 from datetime import datetime
 import warnings, os, time
@@ -66,19 +67,15 @@ print("  Pre-computing increments...")
 increments = {}
 for tau in TAU_LIST:
     inc = pd.DataFrame(index=prices.index)
-    for t in price_tickers:
-        s = prices[t]
-        inc[t] = np.log(s / s.shift(tau))
-    for t in rate_tickers:
-        s = prices[t]
-        inc[t] = s - s.shift(tau)
+    for t in price_tickers + rate_tickers:
+        inc[t] = hc.own_increment(prices, t, tau, RATE_INDEX_TICKERS)   # trading days of each instrument's own bars
     increments[tau] = inc
 
 print("  Pre-computing forward increments...")
 predicted_tickers = [t for t in price_tickers if t not in EXCLUDE_TICKERS]
 future_inc = {}
 for tau_f in TAU_LIST:
-    future_inc[tau_f] = increments[tau_f][predicted_tickers].shift(-tau_f)
+    future_inc[tau_f] = pd.DataFrame({t: hc.own_forward(prices, t, tau_f) for t in predicted_tickers}, index=prices.index)
 
 print("  Pre-computing quantile thresholds...")
 full_q_grid = sorted(set(Q_GRID + [round(1 - q, 10) for q in Q_GRID]))

@@ -211,11 +211,10 @@ full_q = sorted(set(Q_GRID + [round(1-q,10) for q in Q_GRID]))
 thresholds = {}
 inc_series_cache = {}
 for tau in TAU_LIST:
+    import horizon_calendar as _hc
     idf = pd.DataFrame(index=prices.index)
-    for t in price_tickers:
-        s = prices[t]; idf[t] = np.log(s/s.shift(tau))
-    for t in rate_tickers:
-        s = prices[t]; idf[t] = s - s.shift(tau)
+    for t in price_tickers + rate_tickers:   # each instrument's own trading days, matching current_inc above
+        idf[t] = _hc.own_increment(prices, t, tau, set(rate_tickers))
     inc_series_cache[tau] = idf
     for q in full_q:
         thresholds[(tau,q)] = idf.quantile(q, numeric_only=True).to_dict()
