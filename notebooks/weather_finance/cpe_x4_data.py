@@ -67,6 +67,9 @@ def monthly():
     out['ICE']=seaice(); lags['ICE']=(1,14)
     return out,lags
 def build(price_index):
+    # Climate states are monthly; they are laid on Monday-Friday rows (business days) so that a horizon of tau is tau business days, and the
+    # cumulative-sum form sums tau weekday readings. Weekend rows of the 7-day price panel stay NaN (same unit as the targets' own trading days).
+    price_index = pd.bdate_range(price_index.min(), price_index.max())
     ms,lags=monthly(); cols={}
     for k,s in ms.items():
         a=avail(s,*lags[k]); d=a.reindex(a.index.union(price_index)).ffill().reindex(price_index); d[d.index<a.index.min()]=np.nan

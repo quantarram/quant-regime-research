@@ -79,6 +79,9 @@ def ace_daily():
             if v>=34: ace[pd.Timestamp(p[0])]=ace.get(pd.Timestamp(p[0]),0.0)+v*v/1e4
     return pd.Series(ace).sort_index()
 def build(price_index):
+    # Climate states are monthly; they are laid on Monday-Friday rows (business days) so that a horizon of tau is tau business days, and the
+    # cumulative-sum form sums tau weekday readings. Weekend rows of the 7-day price panel stay NaN (same unit as the targets' own trading days).
+    price_index = pd.bdate_range(price_index.min(), price_index.max())
     ms=monthly_series(); cols={}
     for k,s in ms.items():
         avail=pd.DatetimeIndex([d+pd.DateOffset(months=1)+pd.Timedelta(days=11) for d in s.index])

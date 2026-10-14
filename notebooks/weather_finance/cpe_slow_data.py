@@ -33,6 +33,9 @@ def series():
             'TNA':avail(ym_table(os.path.join(D,'tna.txt')),2),'TSA':avail(ym_table(os.path.join(D,'tsa.txt')),2),
             'WHWP':avail(ym_table(os.path.join(D,'whwp.txt')),2),'PNA':avail(ym_table(os.path.join(D,'pna.txt')),2)}
 def build(price_index):
+    # Climate states are monthly; they are laid on Monday-Friday rows (business days) so that a horizon of tau is tau business days, and the
+    # cumulative-sum form sums tau weekday readings. Weekend rows of the 7-day price panel stay NaN (same unit as the targets' own trading days).
+    price_index = pd.bdate_range(price_index.min(), price_index.max())
     cols={}
     for k,s in series().items():
         daily=s.reindex(s.index.union(price_index)).ffill().reindex(price_index); daily[daily.index<s.index.min()]=np.nan

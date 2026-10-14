@@ -23,6 +23,8 @@ def load_panel():
     C=pd.read_parquet(os.path.join(HERE,'data','climate','climate_daily.parquet')).reindex(px.index)
     return px,C
 def build(px,C,cutoff=None):
+    """Increments in each series' OWN bars (horizon_calendar.py): targets and prices on their own trading days, climate states on Monday-Friday rows."""
+    import horizon_calendar as hc
     if cutoff is not None: px,C=px[px.index<=cutoff],C[C.index<=cutoff]
     P=pd.concat([px,C],axis=1)
     climate=list(C.columns)
@@ -30,12 +32,10 @@ def build(px,C,cutoff=None):
     rate_tickers=[t for t in px.columns if t in eng.RATE_INDEX_TICKERS]+climate
     predicted=[t for t in price_tickers if t not in eng.EXCLUDE_FROM_Y]
     taus=sorted(set(TAU_PAST+TAU_FUTURE)); inc={}
+    rates=set(rate_tickers)
     for tau in taus:
-        d={}
-        for t in price_tickers: d[t]=np.log(P[t]/P[t].shift(tau))
-        for t in rate_tickers: d[t]=P[t]-P[t].shift(tau)
-        inc[tau]=pd.DataFrame(d)
-    fut={tf:inc[tf][predicted].shift(-tf) for tf in TAU_FUTURE}
+        inc[tau]=pd.DataFrame({t:hc.own_increment(P,t,tau,rates) for t in price_tickers+rate_tickers})
+    fut={tf:pd.DataFrame({t:hc.own_forward(P,t,tf) for t in predicted}) for tf in TAU_FUTURE}
     qs=sorted(set(eng.Q_GRID+[round(1-q,10) for q in eng.Q_GRID]))
     thr={(tau,q):inc[tau].quantile(q,numeric_only=True).to_dict() for tau in taus for q in qs}
     return inc,fut,thr,predicted,climate

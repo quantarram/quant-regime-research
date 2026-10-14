@@ -43,6 +43,9 @@ def soi():
                 if abs(x)<99: out[(y,m+1)]=x
     return monthly_to_avail(out)
 def build(price_index):
+    # Climate states are monthly; they are laid on Monday-Friday rows (business days) so that a horizon of tau is tau business days, and the
+    # cumulative-sum form sums tau weekday readings. Weekend rows of the 7-day price panel stay NaN (same unit as the targets' own trading days).
+    price_index = pd.bdate_range(price_index.min(), price_index.max())
     series={'ONI':oni(),'NINO34':nino34(),'AO':ao(),'NAO':monthly_to_avail(table_year_month(os.path.join(D,'nao.txt'),99)),
             'PDO':monthly_to_avail(table_year_month(os.path.join(D,'pdo.txt'),9.0)),'SOI':soi()}
     cols={}

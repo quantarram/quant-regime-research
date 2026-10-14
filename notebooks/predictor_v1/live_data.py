@@ -42,8 +42,8 @@ def refresh_main_prices(period="400d"):
         if isinstance(raw.columns, pd.MultiIndex):
             raw.columns = raw.columns.get_level_values(0)
         raw.index = pd.to_datetime(raw.index).tz_localize(None)
-        if len(raw.index) and raw.index.max().date() >= dt.date.today():
-            raw = raw[raw.index.date < dt.date.today()]
+        if len(raw.index) and raw.index.max().date() >= dt.datetime.now(dt.timezone.utc).date():
+            raw = raw[raw.index.date < dt.datetime.now(dt.timezone.utc).date()]
 
         for col in raw.columns:
             if col in prices.columns:
@@ -85,8 +85,8 @@ def refresh_sector_proxy_cache(period="60d"):
         if isinstance(raw.columns, pd.MultiIndex):
             raw.columns = raw.columns.get_level_values(0)
         raw.index = pd.to_datetime(raw.index).tz_localize(None)
-        if len(raw.index) and raw.index.max().date() >= dt.date.today():
-            raw = raw[raw.index.date < dt.date.today()]
+        if len(raw.index) and raw.index.max().date() >= dt.datetime.now(dt.timezone.utc).date():
+            raw = raw[raw.index.date < dt.datetime.now(dt.timezone.utc).date()]
 
         for col in PROXY_FETCH_TICKERS:
             if col not in raw.columns:

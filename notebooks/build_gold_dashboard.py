@@ -85,8 +85,8 @@ try:
     # every run on a given day sees identical, fully-settled data; it only
     # advances once the day rolls over.
     import datetime as _dt_check
-    if len(raw.index) and raw.index.max().date() >= _dt_check.date.today():
-        raw = raw[raw.index.date < _dt_check.date.today()]
+    if len(raw.index) and raw.index.max().date() >= _dt_check.datetime.now(_dt_check.timezone.utc).date():
+        raw = raw[raw.index.date < _dt_check.datetime.now(_dt_check.timezone.utc).date()]
     # same one-bar FX offset exists in the fresh Yahoo download; align it before it is merged
     raw = _fx_align.realign_fx(raw)
     for col in raw.columns:
