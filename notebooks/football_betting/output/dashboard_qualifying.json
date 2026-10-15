@@ -1,3 +1,34 @@
 [
-
+  {
+    "fixture":"Roma vs Genoa",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-10-17T18:45:00Z",
+    "pick":"Roma",
+    "home_team_matched":"Roma",
+    "away_team_matched":"Genoa",
+    "ppg_diff":0.9666666667,
+    "home_ppg_home_only":2.3,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.35,
+    "qualifies":true
+  },
+  {
+    "fixture":"Real Madrid vs Sevilla",
+    "league":"SP1",
+    "country":"Spain",
+    "competition":"Spanish League",
+    "start_time":"2026-10-18T19:00:00Z",
+    "pick":"Real Madrid",
+    "home_team_matched":"Real Madrid",
+    "away_team_matched":"Sevilla",
+    "ppg_diff":1.0333333333,
+    "home_ppg_home_only":2.6333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.18,
+    "qualifies":true
+  }
 ]
