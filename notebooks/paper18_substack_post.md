@@ -58,7 +58,7 @@ So the dashboard logs its own forecasts. On 16 October 2026 it recorded 18 base-
 
 What I disclose in the paper: the supply-cycle predictor was registered after I found the lag, and the "holds since 2017" rule was added after the property results faded. I flag both because they are exactly the choices that make a backtest look better than it is.
 
-**Paper:** [Zenodo link to follow]
+**Paper:** https://zenodo.org/records/23418466
 **Live dashboard:** https://quantarram.github.io/sg-buy-timing-dashboard/ (rebuilt every morning, with a lookup for any HDB block)
 
 *Research, not advice.*
