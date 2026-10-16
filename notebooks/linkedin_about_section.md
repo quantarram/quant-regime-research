@@ -1,7 +1,7 @@
 I chase calibrated probabilities in systems that refuse to sit still. The atmosphere by day, markets by night. Both humble me. Only one pays the salary.
 
 By day:
-Quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency). ML and probabilistic modeling for numerical weather prediction. Being wrong about rain, professionally.
+Quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency). ML and probabilistic modeling for numerical weather prediction.
 
 By night:
 Conditional Probability of Exceedance (CPE): a live signal system across 161 instruments (equities, fixed income, gold, crypto, commodities, volatility, FX). Zenodo preprints, receipts attached:
