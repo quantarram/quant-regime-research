@@ -13,12 +13,11 @@ Zenodo preprints:
 - A 97.0% out-of-sample calibration hit rate across 103,983 resolved instances
 - A gold dashboard that called the 2025 bull run (+102%) and pivoted bearish in Feb 2026
 - A portfolio tilt achieving Sharpe 1.43 vs 1.03 for a 60/40 benchmark
-- Moisture-stress variables (VPD, dry heat, heat+drought) with the series' highest lift (2.02×)
 - A sugar-price call made before the outcome was known, confirmed once the monsoon resolved (+29%)
 - A public monitor scoring every dashboard against what actually happened
 - A live climate-signals dashboard scoring rare-extreme conditions forward since Oct 2026
-- A Singapore buy-timing dashboard: the COE premium is a ten-year echo of its own supply, one quota-cut rule held to 2021, and it scores its own forecasts forward
-- Public Repos: github.com/quantarram/quant-regime-research and github.com/quantarram/sg-buy-timing-dashboard
+- A Singapore buy-timing dashboard: the COE premium is a ten-year echo, scored forward
+- Public Repos: github.com/quantarram/quant-regime-research, /sg-buy-timing-dashboard
 
 Beyond CPE:
 
@@ -26,10 +25,8 @@ I've extended my doctoral multifractal cascade work into finance, finding regime
 
 Negative Results:
 
-They get equal billing: Paper 7's Sugar Reversal traced a strong signal to a geographic artefact; the hurricane study found one of two hypotheses unsupported; a check of three AI-stock assumptions came back empty; Paper 17 found everyday weather carries no price signal, leaving rare extremes an open question; and Paper 18 found no Singapore housing timing signal that survives out of sample.
+They get equal billing: Paper 7's Sugar Reversal traced a strong signal to a geographic artefact; the hurricane study found one of two hypotheses unsupported; a check of three AI-stock assumptions came back empty; Paper 17 found everyday weather carries no price signal, leaving rare extremes an open question; and Paper 18 found no housing timing signal that survives out of sample.
 
 Background:
 
 Previously, three years at École des Ponts on multifractal predictability. Joint M.Tech–PhD from IIT Kharagpur in mesoscale atmospheric predictability.
-
-Core Interests: probabilistic forecasting, regime-aware signals, calibrated uncertainty — weather and markets alike.
