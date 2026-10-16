@@ -1,39 +1,17 @@
-I am a quantitative researcher working across atmospheric predictability and financial signal generation, united by one problem: extracting calibrated probabilistic structure from noisy, non-stationary systems.
+I am an independent quantitative researcher in Singapore. I ask what is actually predictable in markets, and over what horizon, and I publish the answer whether or not it flatters me.
 
-Professional Role:
+The thread running through the work is one framework, Conditional Probability of Exceedance (CPE): when one series is in an extreme tail, how often does another exceed its own threshold later? It is a counting method, not a fitted model, so every result can be checked against raw data. I test it the hard way: mechanisms written down first, thresholds frozen on a formation window, scoring on years the method never saw, and live dashboards that log their own forecasts in public.
 
-I currently work as a quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency) — ML and probabilistic modeling for numerical weather prediction.
+What that has produced so far, in 18 papers and two research notes:
+• A multi-asset CPE signal system covering 161 instruments, with live dashboards for gold, precious metals and a multi-asset portfolio tilt.
+• Climate-finance tests, from temperature and drought to hurricanes and reinsurers, and a test of whether everyday weather or rare extremes move prices.
+• Predictability limits and AI/ML: models that match climatology, architectures that cannot beat a measured ceiling, and a momentum filter that does.
+• Paper 18, the latest: a ten-year echo in Singapore's COE premium, one supported rule (quota cuts), and no housing timing signal that survives out of sample. A free dashboard scores its own forecasts.
 
-The CPE Framework:
+I report null results as findings, disclose every choice I made after seeing data, and treat "wait and watch" as a legitimate answer.
 
-Alongside this, I lead an independent quant finance programme built around Conditional Probability of Exceedance (CPE) — a live signal system spanning 161 instruments (equities, bonds, gold, crypto, commodities, volatility, FX). Zenodo preprints:
+Latest paper: https://zenodo.org/records/23418466
+Code and dashboards: https://github.com/quantarram
+Writing: https://arunramanathans.substack.com
 
-A 97.0% out-of-sample calibration hit rate across 103,983 resolved instances
-
-A gold dashboard that called the 2025 bull run (+102%) and pivoted bearish in Feb 2026
-
-A portfolio tilt achieving Sharpe 1.43 vs 1.03 for a 60/40 benchmark
-
-Moisture-stress variables with the series' highest lift (2.02×)
-
-A sugar-price call made before the outcome was known, confirmed once the monsoon resolved (+29%)
-
-A public monitor scoring every dashboard against outcomes
-
-A daily weather impacts dashboard (energy, crops), forecasts scored against climatology
-
-github.com/quantarram/quant-regime-research
-
-Beyond CPE:
-
-I've also extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. That runs live as a 22-instrument price-forecasting dashboard: real skill for half the panel, zero demonstrated tradeable alpha across five strategy tests. The same machinery yields a general AI/ML training-window rule. Five further attempts to beat that ceiling — architecture, depth, data, loss functions, uncertainty — all failed. A sixth, at the decision layer, hit the same wall — but using the predictability limit to pick which instruments a classic momentum strategy trades beat the unfiltered version, an edge that held up across ten tests.
-
-Negative Results:
-
-Paper 7's Sugar Reversal traced a strong climate-finance signal to a geographic artefact, gone once city proxies became crop-zone data; the hurricane study found one of two hypotheses unsupported; a three-part check of common AI-stock assumptions came back empty on all three.
-
-Background:
-
-Previously, three years at École des Ponts on multifractal predictability. Joint M.Tech–PhD from IIT Kharagpur in mesoscale atmospheric predictability.
-
-Core Interests: probabilistic forecasting, regime-aware signals, calibrated uncertainty — weather and markets alike.
+Research, not investment advice.
