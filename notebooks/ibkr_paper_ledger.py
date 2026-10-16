@@ -109,11 +109,14 @@ LEDGER_COLS = [
     "cum_return_tilt", "cum_return_neutral", "cum_return_hth",
     "turnover_pct", "est_cost_drag_sgd", "cum_cost_drag_sgd",
     "hth_turnover_pct", "hth_est_cost_drag_sgd", "hth_cum_cost_drag_sgd",
+    "hth_cash_usd",
     "notes",
 ]
 
 
 def fetch_usdsgd_rate():
+    if os.environ.get("IBKR_USDSGD"):   # reproduce a logged day exactly (repairs only)
+        return float(os.environ["IBKR_USDSGD"])
     hist = yf.download("USDSGD=X", period="5d", auto_adjust=True, progress=False)
     return float(hist["Close"].squeeze().dropna().iloc[-1])
 
@@ -324,6 +327,7 @@ def main():
         hold_until_prev = {cls: None for cls in TICKERS}
         shares_hth_prev = {cls: 0.0 for cls in TICKERS}
         cum_cost_drag_hth_prev = 0.0
+        cash_hth_prev_usd = 0.0
     else:
         prev = df.iloc[-1]
 
@@ -335,7 +339,9 @@ def main():
         cum_cost_drag_hth_prev = (
             float(prev["hth_cum_cost_drag_sgd"]) if pd.notna(prev.get("hth_cum_cost_drag_sgd")) else 0.0
         )
-        nav_hth_usd = sum(shares_hth_prev[cls] * prices[cls] for cls in TICKERS)
+        # Capital the sleeves did not absorb on an earlier day is carried as idle cash (see hth_cash_usd below)
+        cash_hth_prev_usd = float(prev["hth_cash_usd"]) if pd.notna(prev.get("hth_cash_usd")) else 0.0
+        nav_hth_usd = sum(shares_hth_prev[cls] * prices[cls] for cls in TICKERS) + cash_hth_prev_usd
 
     held_cls = [cls for cls in TICKERS if hold_until_prev[cls] is not None and hold_until_prev[cls] > TODAY]
     free_cls = [cls for cls in TICKERS if cls not in held_cls]
@@ -374,6 +380,11 @@ def main():
     else:
         neutral_w_alloc = {}
 
+    # Capital that no sleeve takes: when every free sleeve is opening a hold at its suggested weight there is no neutral pool to
+    # absorb the rest of the free budget. It stays in the portfolio as idle cash (earning nothing) and is re-offered to the
+    # sleeves the next day. Before 2026-10-16 it silently left the NAV (S$6.7k on 2026-10-15).
+    cash_hth_w = neutral_budget if not neutral_pool_cls else 0.0
+
     target_hth_w = {}
     for cls in TICKERS:
         if cls in held_cls:
@@ -410,6 +421,7 @@ def main():
         shares_hth[cls] = shares_hth_free[cls]
 
     nav_hth_usd_net = nav_hth_usd - est_cost_hth_usd
+    cash_hth_usd = cash_hth_w * nav_hth_usd
     nav_hth_sgd = nav_hth_usd_net * usdsgd
     hth_turnover_pct = (turnover_hth_usd / nav_hth_usd * 100) if nav_hth_usd > 0 else 0.0
     hth_est_cost_drag_sgd = est_cost_hth_usd * usdsgd
@@ -448,6 +460,7 @@ def main():
     row["hth_turnover_pct"]      = round(hth_turnover_pct, 4)
     row["hth_est_cost_drag_sgd"] = round(hth_est_cost_drag_sgd, 4)
     row["hth_cum_cost_drag_sgd"] = round(hth_cum_cost_drag_sgd, 4)
+    row["hth_cash_usd"]          = round(cash_hth_usd, 2)
     row["notes"]                 = notes
 
     df = pd.concat([df, pd.DataFrame([row], columns=LEDGER_COLS)], ignore_index=True)
