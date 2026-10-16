@@ -1,17 +1,35 @@
-I am an independent quantitative researcher in Singapore. I ask what is actually predictable in markets, and over what horizon, and I publish the answer whether or not it flatters me.
+I am a quantitative researcher working across atmospheric predictability and financial signal generation, united by one problem: extracting calibrated probabilistic structure from noisy, non-stationary systems.
 
-The thread running through the work is one framework, Conditional Probability of Exceedance (CPE): when one series is in an extreme tail, how often does another exceed its own threshold later? It is a counting method, not a fitted model, so every result can be checked against raw data. I test it the hard way: mechanisms written down first, thresholds frozen on a formation window, scoring on years the method never saw, and live dashboards that log their own forecasts in public.
+Professional Role:
 
-What that has produced so far, in 18 papers and two research notes:
-• A multi-asset CPE signal system covering 161 instruments, with live dashboards for gold, precious metals and a multi-asset portfolio tilt.
-• Climate-finance tests, from temperature and drought to hurricanes and reinsurers, and a test of whether everyday weather or rare extremes move prices.
-• Predictability limits and AI/ML: models that match climatology, architectures that cannot beat a measured ceiling, and a momentum filter that does.
-• Paper 18, the latest: a ten-year echo in Singapore's COE premium, one supported rule (quota cuts), and no housing timing signal that survives out of sample. A free dashboard scores its own forecasts.
+I currently work as a quantitative research scientist at the Centre for Climate Research Singapore (CCRS, National Environment Agency) — ML and probabilistic modeling for numerical weather prediction.
 
-I report null results as findings, disclose every choice I made after seeing data, and treat "wait and watch" as a legitimate answer.
+The CPE Framework:
 
-Latest paper: https://zenodo.org/records/23418466
-Code and dashboards: https://github.com/quantarram
-Writing: https://arunramanathans.substack.com
+Alongside this, I lead an independent quant finance programme built around Conditional Probability of Exceedance (CPE) — a live signal system spanning 161 instruments (equities, fixed income, gold, crypto, commodities, volatility, FX).
 
-Research, not investment advice.
+Zenodo preprints:
+
+- A 97.0% out-of-sample calibration hit rate across 103,983 resolved instances
+- A gold dashboard that called the 2025 bull run (+102%) and pivoted bearish in Feb 2026
+- A portfolio tilt achieving Sharpe 1.43 vs 1.03 for a 60/40 benchmark
+- Moisture-stress variables (VPD, dry heat, heat+drought) with the series' highest lift (2.02×)
+- A sugar-price call made before the outcome was known, confirmed once the monsoon resolved (+29%)
+- A public monitor scoring every dashboard against what actually happened
+- A live climate-signals dashboard scoring rare-extreme conditions forward since Oct 2026
+- A Singapore buy-timing dashboard: the COE premium is a ten-year echo of its own supply, one quota-cut rule held to 2021, and it scores its own forecasts forward
+- Public Repos: github.com/quantarram/quant-regime-research and github.com/quantarram/sg-buy-timing-dashboard
+
+Beyond CPE:
+
+I've extended my doctoral multifractal cascade work into finance, finding regime-dependent predictability pockets instead of the atmosphere's steady decay. It runs live as a 22-instrument forecasting dashboard: real skill for half the panel, no demonstrated tradeable alpha. The same machinery yields an AI/ML training-window rule. Five attempts to beat that ceiling (architecture, depth, data, loss functions, uncertainty) failed; a sixth, at the decision layer, hit the same wall, though using the limit to pick which instruments a momentum strategy trades beat the unfiltered version across ten tests.
+
+Negative Results:
+
+They get equal billing: Paper 7's Sugar Reversal traced a strong signal to a geographic artefact; the hurricane study found one of two hypotheses unsupported; a check of three AI-stock assumptions came back empty; Paper 17 found everyday weather carries no price signal, leaving rare extremes an open question; and Paper 18 found no Singapore housing timing signal that survives out of sample.
+
+Background:
+
+Previously, three years at École des Ponts on multifractal predictability. Joint M.Tech–PhD from IIT Kharagpur in mesoscale atmospheric predictability.
+
+Core Interests: probabilistic forecasting, regime-aware signals, calibrated uncertainty — weather and markets alike.
