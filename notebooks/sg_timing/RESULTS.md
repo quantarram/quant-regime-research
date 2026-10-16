@@ -9,3 +9,5 @@ Four registered mechanisms (quota supply, demand ratio, value reversion, momentu
 - 22 of 288 pass the (adapted) admission on formation: lift >= 1.5, >= 20 exercises, >= 5 episodes. Scored on the test window their mean lift is 1.09, 9% keep a lift >= 1.5 and half are above their base rate. No momentum row was admitted; value-reversion rows average 0.94.
 - Reading: simple conditions on past premium, quota and bid pressure do not beat the base rate for the next one to six months. Base rates: the premium rose in 56% of exercises; over six exercises (about three months) it rose more than 10% in 29% of windows and fell more than 10% in 16%, an upward drift over a series that went from S$18,500 to S$130,000.
 - Caveat: the quota formula and the Category A/B rules changed in 2022-2023, so formation thresholds from 2010-2017 describe a different regime.
+
+**Superseded (2026-10-16):** the proper analysis, a causal walk-forward on monthly series from 2002, is in `quantarram/sg-buy-timing-dashboard/research/`. This first scan used 2010 data and a single split.
