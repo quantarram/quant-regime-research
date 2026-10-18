@@ -336,7 +336,7 @@ addOverview('portfolio', 'Portfolio tilt', 'live', sgn(P.all.diff, 2) + ' <small
 const PR = D.predictor;
 addOverview('predictor', 'Predictor (22 instruments)', 'live', PR.n_resolved + ' <small>of ' + PR.n_logged.toLocaleString() + ' resolved</small>', '', [PR.n_instruments_resolved + ' of ' + PR.n_instruments + ' instruments have an outcome', 'long horizons resolve from 2027']);
 const F = D.football;
-addOverview('football', 'Football checklist', 'live', F.wins + '/' + F.n_resolved, '<small>picks won</small>', ['odds-implied win rate ' + pct(F.implied), 'S$' + sgn(F.pnl, 2) + ' on S$' + num(F.stake, 2) + ' staked']);
+addOverview('football', 'Football checklist', 'live', F.wins + '/' + F.n_resolved, '<small>picks won</small>', ['odds-implied win rate ' + pct(F.implied), 'S$' + sgn(F.pnl, 2) + ' on S$' + num(F.stake, 2) + ' staked (turnover: re-staked winnings count again)']);
 const C = D.cpe, c63 = C.by_horizon.find(r => r.horizon === 63);
 addOverview('cpe', 'CPE dashboard (161 instruments)', 'live', c63 ? pct(c63.hit) : '&ndash;', '<small>63d realised</small>',
   [c63 ? 'claimed ' + pct(c63.claimed) + ', live base ' + pct(c63.live_base) + ' (n=' + c63.n.toLocaleString() + ')' : 'no 63d outcomes yet',

@@ -364,18 +364,18 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
         <div><div class="buy-stat-l">Bets placed</div><span>{n_bets_placed_total}</span></div>
-        <div><div class="buy-stat-l">Total staked</div><span>S${total_staked_all:.2f}</span></div>
+        <div><div class="buy-stat-l">Total staked (turnover)</div><span>S${total_staked_all:.2f}</span></div>
         <div><div class="buy-stat-l">Resolved</div><span>{n_real_bets}</span></div>
         <div><div class="buy-stat-l">Real hit rate</div><span style="color:var(--gold)">{real_hit_rate:.1%}</span></div>
         <div><div class="buy-stat-l">Real P&amp;L</div><span style="color:{'var(--green)' if real_pnl>=0 else 'var(--red)'}">S${real_pnl:+.2f} ({real_roi:+.1%})</span></div>
         <div><div class="buy-stat-l">Backtested</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:8px;">{pending_note}</div>"""
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">Stakes are summed bet by bet: winnings that were bet again count again, so the total is turnover, not fresh money put in, and the % beside Real P&amp;L is return on turnover. {pending_note}</div>"""
     else:
         track_stats_html = f"""
       <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
         <div><div class="buy-stat-l">Bets placed</div><span>{n_bets_placed_total}</span></div>
-        <div><div class="buy-stat-l">Total staked</div><span>S${total_staked_all:.2f}</span></div>
+        <div><div class="buy-stat-l">Total staked (turnover)</div><span>S${total_staked_all:.2f}</span></div>
         <div><div class="buy-stat-l">Signals pending</div><span>{n_pending}</span></div>
         <div><div class="buy-stat-l">Backtested (reference)</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
       </div>
