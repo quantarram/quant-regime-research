@@ -78,6 +78,7 @@ PPG_DIFF_THRESHOLD_Q = 0.90
 HOME_PPG_THRESHOLD_Q = 0.90
 VALIDATED_HIT_RATE = 0.838
 VALIDATED_ROI = 0.0190
+FRESH_CAPITAL_SGD = 200.0   # the only fresh money deposited (user, 2026-10-18; betting since August 2026); every later stake is re-staked winnings
 VALIDATED_HOLDOUT_N = 648
 
 SGPOOLS_API = "https://api.singaporepools.com/football/events/v1/upcoming-event"
@@ -368,6 +369,7 @@ def render_html(qualifying_df, all_scored_df, generated_at, ppg_diff_threshold, 
         <div><div class="buy-stat-l">Resolved</div><span>{n_real_bets}</span></div>
         <div><div class="buy-stat-l">Real hit rate</div><span style="color:var(--gold)">{real_hit_rate:.1%}</span></div>
         <div><div class="buy-stat-l">Real P&amp;L</div><span style="color:{'var(--green)' if real_pnl>=0 else 'var(--red)'}">S${real_pnl:+.2f} ({real_roi:+.1%})</span></div>
+        <div><div class="buy-stat-l">Return on S${FRESH_CAPITAL_SGD:.0f} deposited</div><span style="color:{'var(--green)' if real_pnl>=0 else 'var(--red)'}">{real_pnl/FRESH_CAPITAL_SGD:+.1%}</span></div>
         <div><div class="buy-stat-l">Backtested</div><span style="color:var(--muted)">{VALIDATED_HIT_RATE:.1%} / {VALIDATED_ROI:+.1%}</span></div>
       </div>
       <div style="font-size:10px;color:var(--muted);margin-top:8px;">Stakes are summed bet by bet: winnings that were bet again count again, so the total is turnover, not fresh money put in, and the % beside Real P&amp;L is return on turnover. {pending_note}</div>"""
