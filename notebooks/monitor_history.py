@@ -114,7 +114,7 @@ def cpe_metrics(d):
     s = cled.live_stats(ev=ev, asof=d)
     out = []
     for r in s["by_horizon"]:
-        if r["n"] >= 1 and r["horizon"] in (1, 21, 63):
+        if r["n"] >= 1 and r["horizon"] in (1, 21, 63, 126):
             h = r["horizon"]
             out += [("cpe", f"claimed_{h}d", r["claimed"], r["n"]), ("cpe", f"realised_{h}d", r["hit"], r["n"]),
                     ("cpe", f"live_base_{h}d", r["live_base"], r["n"])]

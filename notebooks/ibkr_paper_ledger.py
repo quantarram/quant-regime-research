@@ -267,6 +267,13 @@ def main():
         daily_return_neutral = nav_neutral_sgd / nav_neutral_sgd_prev - 1
         cum_return_neutral = nav_neutral_sgd / STARTING_CAPITAL_SGD - 1
         notes = ""
+        # Stale-price guard (2026-10-21): a Tuesday-Friday row logs the PREVIOUS day's settled close, which differs from the
+        # previous row's price unless the dashboard snapshot is one bar old (an audit against settled closes found such rows).
+        if TODAY.weekday() in (1, 2, 3, 4):
+            same = [cls for cls in TICKERS if abs(prices[cls] / float(prev[f"{cls}_price"]) - 1) < 1e-9]
+            if same:
+                notes = "STALE? price unchanged from the previous row: " + ", ".join(same)
+                print(f"  WARNING: {notes}")
 
     # Estimated transaction cost of today's rebalance (bullish-tilt track
     # only -- see COST_BPS docstring above). Sized off PRE-cost NAV to
