@@ -1,0 +1,55 @@
+name: Python upgrade test (temporary)
+
+# Dispatch-only test: runs the daily pipeline on three runner/Python combinations from the same commit, WITHOUT committing
+# anything, and uploads every file each combination changed so the outputs can be compared. Delete after the Python move.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: "py39-ubuntu2404", os: "ubuntu-24.04", py: "3.9"}
+          - {name: "py311-ubuntu2404", os: "ubuntu-24.04", py: "3.11"}
+          - {name: "py311-ubuntu-latest", os: "ubuntu-latest", py: "3.11"}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - {name: gold, working-directory: notebooks, run: python build_gold_dashboard.py}
+      - {name: portfolio, working-directory: notebooks, run: python build_portfolio_dashboard.py}
+      - {name: metals, working-directory: notebooks, run: python build_metals_dashboard.py}
+      - {name: predictor dashboard, working-directory: notebooks, run: python build_predictor_dashboard.py}
+      - {name: predictor ledger, working-directory: notebooks, run: python predictor_ledger.py}
+      - {name: log predictions, working-directory: notebooks, run: python log_predictions.py --both}
+      - {name: ibkr ledger, working-directory: notebooks, run: python ibkr_paper_ledger.py}
+      - {name: football dashboard, working-directory: notebooks, run: python football_betting/daily_dashboard.py}
+      - {name: football resolve, working-directory: notebooks, run: python football_betting/resolve_football_picks.py}
+      - {name: cpe signal ledger, working-directory: notebooks, run: python cpe_signal_ledger.py}
+      - {name: performance monitor, working-directory: notebooks, continue-on-error: true, run: python build_performance_monitor.py}
+      - name: Collect changed files
+        if: always()
+        run: |
+          mkdir -p /tmp/out
+          { git diff --name-only; git ls-files --others --exclude-standard; } | sort -u > /tmp/changed.txt
+          tar czf /tmp/out/changed.tgz -T /tmp/changed.txt
+          cp /tmp/changed.txt /tmp/out/changed.txt
+          python --version > /tmp/out/python_version.txt
+          pip freeze > /tmp/out/pip_freeze.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.name }}
+          path: /tmp/out
