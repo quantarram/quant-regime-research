@@ -323,7 +323,8 @@ function directionPanel(id, title, blocks, scoring) {
 }
 const SCORING = 'Scoring (as logged): a BULLISH call is correct if the price is higher at the horizon; a NEUTRAL call is correct if the move stays within &plusmn;3%. ' +
   'The baseline for a BULLISH call is how often the price rose over all resolved windows of that horizon, whatever the signal said; ' +
-  'for NEUTRAL it is how often the move stayed within &plusmn;3%. Hit rate above its baseline is the signal adding something beyond the market&rsquo;s own drift.';
+  'for NEUTRAL it is how often the move stayed within &plusmn;3%. Hit rate above its baseline is the signal adding something beyond the market&rsquo;s own drift. ' +
+  'All three metals use one score ladder (55 or more is BULLISH, 25 to 55 NEUTRAL, below 25 BEARISH); an asset whose table shows only BULLISH rows has never scored below 55, so its hit rate is the market&rsquo;s own drift and the always-long baseline is the fair comparison. The &plusmn;3% band is the same at every horizon, so a NEUTRAL call at 63 days or more is rarely right.';
 
 addOverview('gold', 'Gold', 'live', pct(D.gold.bull_hit), 'bullish-call hit', [D.gold.bull_n + ' bullish of ' + D.gold.n_resolved + ' resolved (' + D.gold.n_pending + ' pending)', 'price rose in ' + pct(D.gold.overall_rose) + ' of all windows']);
 const metN = D.metals.Silver.n_resolved + D.metals.Platinum.n_resolved;
