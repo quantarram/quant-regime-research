@@ -1,3 +1,18 @@
 [
-
+  {
+    "fixture":"Arsenal vs Everton",
+    "league":"E0",
+    "country":"England",
+    "competition":"English Premier",
+    "start_time":"2026-10-24T14:00:00Z",
+    "pick":"Arsenal",
+    "home_team_matched":"Arsenal",
+    "away_team_matched":"Everton",
+    "ppg_diff":1.1666666667,
+    "home_ppg_home_only":2.3333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.35,
+    "qualifies":true
+  }
 ]
