@@ -48,7 +48,7 @@ concurrency:
 
 jobs:
   run-dashboards:
-    runs-on: ubuntu-24.04   # ubuntu-latest moved to 26.04 on 2026-10-21, which has no Python 3.9 (setup-python failed); pinned to keep the same environment
+    runs-on: ubuntu-latest   # Python 3.11 (3.9 is not available on the 26.04 image); tested 2026-10-21 against 3.9 on the same commit with the same pinned requirements
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -59,7 +59,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install dependencies
