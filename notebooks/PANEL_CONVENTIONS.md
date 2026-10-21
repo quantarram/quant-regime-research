@@ -1,0 +1,12 @@
+# Price-panel conventions (fixed 2026-10-13 to 21 in the live pipeline; archival research scripts unchanged)
+
+Two properties of the stored panels (`multiasset_prices.parquet`, `multiasset_prices_live_history.parquet`) matter for any new analysis:
+
+1. **FX bars (`...=X`) are dated one bar late from 2010-08-03 on** (Yahoo's dating; same-bar correlation of EURUSD with UUP is about 0, next-bar about -0.9). Align with `fx_align.realign_fx(prices)` (or `apply_if_needed`). The frozen file is left byte-identical so published results reproduce; the live history was converted once and the builders align every fresh download.
+2. **The index is a union calendar: weekdays to 2013, every calendar day from 2014** (crypto trades daily; equities, ETFs, FX and futures are NaN on weekends). Shifting that frame by `tau` rows therefore means `tau` trading days before 2014 but `tau` calendar days after. Compute horizons on each instrument's own bars with `horizon_calendar.own_increment(prices, ticker, tau)` / `own_forward(...)`.
+
+## Where the conventions are applied (live pipeline, all verified)
+CPE pairwise and joint engines, `cpe_signal_ledger.py`, `cpe_signal_score.py`, the gold/portfolio/metals builders (aligned FX in memory and in every fresh download), `predictor_ledger.py` (EURUSD scored from the true as-of bar), `log_predictions.py` (scoring in trading days on one instrument), the climate research pipeline (`weather_finance/cpe_climate_run.py` and the four data builders) and the weather dashboard repo (`cpe_climate.py`, `climate_decisions.py`). The predictor_v1 live caches keep EURUSD on Yahoo's own dates by design (see the note in `predictor_v1/live_data.py`: aligning changes its features by under 3%).
+
+## Archival research scripts (NOT changed)
+`PANEL_CONVENTIONS_archival_scripts.txt` lists 173 scripts that read the panel with the old conventions (80 in `predictor_v1/`, 25 in `prior/`, 22 in `weather_finance/` outside the climate pipeline, 19 in the notebooks root such as the TSMOM/XSMOM studies, 16 in `files/`, and a few others). They produced the published papers and are kept as they were so those results reproduce. Their figures use row-based horizons on the union panel and unaligned FX; anything built on them for new work should load the panel through the two helpers above. The only effects on a given result are (a) FX targets or predictors shifted by one bar and (b) horizons after 2014 counted in calendar days instead of trading days.
