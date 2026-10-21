@@ -48,7 +48,7 @@ concurrency:
 
 jobs:
   run-dashboards:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # ubuntu-latest moved to 26.04 on 2026-10-21, which has no Python 3.9 (setup-python failed); pinned to keep the same environment
     timeout-minutes: 60
     steps:
       - name: Checkout
