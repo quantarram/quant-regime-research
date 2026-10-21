@@ -29,6 +29,11 @@ MAIN_FETCH_TICKERS = [
 PROXY_FETCH_TICKERS = ["IYR", "VOX"]
 
 
+# FX note (2026-10-21): this module deliberately keeps EURUSD=X on Yahoo's own dates (the stored frozen panel and the raw download
+# both date an FX bar one bar late; see fx_align.py). The feature panel, the training labels and the forecast all use that one
+# convention, so they are internally consistent; aligning would shift EURUSD's rolling features by under 3% (median under 0.7%,
+# measured on the last quarter of the frozen panel) and its 189-day label by one bar in 189. predictor_ledger.py scores EURUSD forecasts
+# from the true as-of bar (the previous FX bar), so the published convention and the scoring agree.
 def refresh_main_prices(period="400d"):
     """In-memory-only top-up of multiasset_prices.parquet, following
     build_gold_dashboard.py's pattern: strip any partial 'today' session
