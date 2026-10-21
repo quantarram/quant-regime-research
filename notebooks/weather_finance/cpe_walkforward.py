@@ -27,7 +27,7 @@ rows=rows[rows.n_ep_f>=4].drop_duplicates(KEY).reset_index(drop=True)
 idx=px.index; n=len(idx); pos_of=lambda ts: int(idx.searchsorted(pd.Timestamp(ts)))
 print(SET,'candidate rows',len(rows),rows.groupby('batch').size().to_dict(),flush=True)
 YEARS=list(range(2016,2027)); cut_pos=pos_of(CUT+pd.Timedelta(days=1)); ys_pos={y:pos_of(f'{y}-01-01') for y in YEARS+[2027]}
-ev=[]; adm=[]
+ev=[]; adm=[]; OUTPOS={}
 for (x,tp,q,d),grp in rows.groupby(['X','tau_past','q_X','direction']):
     s=inc_a[int(tp)][x]; thr=thr_f[(int(tp),float(q))][x] if d=='bullish' else thr_f[(int(tp),round(1-float(q),10))][x]
     fire=((s>thr) if d=='bullish' else (s<thr)).fillna(False).values
@@ -40,18 +40,24 @@ for (x,tp,q,d),grp in rows.groupby(['X','tau_past','q_X','direction']):
         fa=fut_a[tf][y].values; ok=~np.isnan(fa)
         o=np.where(ok,((fa>ty) if d=='bullish' else (fa<ty)).astype(float),np.nan)
         p=np.arange(n)
+        # row position at which the outcome of an origin row is known: tf of the target's OWN bars later (n+1 = never)
+        if (y,tf) not in OUTPOS:
+            oi=idx.get_indexer(px[y].dropna().index); op=np.full(n,n+1,dtype=np.int64)
+            if len(oi)>tf: op[oi[:-tf]]=oi[tf:]
+            OUTPOS[(y,tf)]=op
+        outpos=OUTPOS[(y,tf)]
         entries=[]
         for e in ep_pos:
             v=e[ok[e]]
             if len(v): entries.append(int(v[0]))
         entries=np.array(entries,dtype=int)
         for Y in YEARS:
-            S=ys_pos[Y]; lim=S-tf            # an outcome is known before S only if origin < S - tf
-            e_t=entries[(entries>=cut_pos)&(entries<lim)]
+            S=ys_pos[Y]                       # an outcome is known before S only if its (own-bar) outcome row lies before S
+            e_t=entries[(entries>=cut_pos)&(outpos[entries]<S)]
             n_ep_t=len(e_t); hit_t=float(np.mean(o[e_t])) if n_ep_t else np.nan
-            fd=np.where(fire&ok&(p>=cut_pos)&(p<lim))[0]
+            fd=np.where(fire&ok&(p>=cut_pos)&(outpos<S))[0]
             n_d=len(fd); cpe=float(np.mean(o[fd])) if n_d else np.nan
-            allv=ok&(p>=cut_pos)&(p<lim); base=float(np.mean(o[allv])) if allv.any() else np.nan
+            allv=ok&(p>=cut_pos)&(outpos<S); base=float(np.mean(o[allv])) if allv.any() else np.nan
             admitted=bool(n_ep_t>=3 and hit_t>=2/3 and n_d>=100 and cpe>=base+0.10)
             e_y=entries[(entries>=S)&(entries<ys_pos[Y+1])]
             if len(e_y)==0: continue

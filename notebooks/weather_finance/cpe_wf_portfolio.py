@@ -21,9 +21,15 @@ def run(Ev,label,verbose=True):
     if len(Ev)==0: return None
     start=pos_of(f"{Ev.entry.min().year}-01-01")
     votes={}   # (Y) -> array of +1/-1 counts
+    own={}
+    def expiry(y,e,tf):
+        # last row of a vote opened at entry row e: tf of the target's OWN bars after its first bar on or after the entry row
+        if y not in own: own[y]=idx.get_indexer(px[y].dropna().index)
+        o=own[y]; kb=int(np.searchsorted(o,e)); t=kb+int(tf)
+        return int(o[t]) if t<len(o) else n
     for r in Ev.itertuples():
         e=pos_of(r.entry); a=votes.setdefault(r.Y,np.zeros((2,n),dtype=np.int16)); k=0 if r.direction=='bullish' else 1
-        a[k,e+1:min(n,e+1+int(r.tau_future))]+=1
+        a[k,e+1:min(n,expiry(r.Y,e,r.tau_future)+1)]+=1
     ys=sorted(votes); W=np.zeros((len(ys),n)); L=np.zeros((len(ys),n))
     for i,y in enumerate(ys):
         a=votes[y]; v=np.where((a[0]>0)&(a[1]==0),1.0,np.where((a[1]>0)&(a[0]==0),-1.0,0.0)); W[i]=v; L[i]=(a.sum(0)>0).astype(float)
