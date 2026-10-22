@@ -12,7 +12,7 @@
     "home_ppg_home_only":2.3333333333,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.35,
+    "odds":1.4,
     "qualifies":true
   },
   {
@@ -28,7 +28,7 @@
     "home_ppg_home_only":2.4333333333,
     "ppg_diff_threshold":0.8,
     "home_ppg_threshold":2.2666666667,
-    "odds":1.27,
+    "odds":1.28,
     "qualifies":true
   }
 ]
