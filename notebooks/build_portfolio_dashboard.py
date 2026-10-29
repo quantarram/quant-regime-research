@@ -222,6 +222,12 @@ try:
             # 2026-09-04 when the saved file was found still stuck at
             # 2026-09-02 a full day after this was first added.
             merged_hist = prices.combine_first(existing_hist)
+            import asof_replay as _ar
+            if not _ar.ASOF:
+                merged_hist, _pruned = _ar.prune_unreported(merged_hist, raw, since=pd.read_parquet("multiasset_prices.parquet").index.max())
+                if _pruned:
+                    print(f"  Live history: dropped {sum(len(v) for v in _pruned.values())} stored bar(s) Yahoo no longer reports: "
+                          + ", ".join(f"{k} {v}" for k, v in sorted(_pruned.items())))
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]

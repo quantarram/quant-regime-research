@@ -69,7 +69,11 @@ try:
                                     "SGDUSD=X","SOXX","XLK","QQQ","VUG","EWY","GLD","IAU",
                                     "DX-Y.NYB","UUP","^GVZ"]  # DXY index, USD ETF backup, Gold Vol Index
                                     + pair["X"].unique().tolist()))
-    raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
+    import asof_replay as _asof
+    if _asof.ASOF:
+        raw = _asof.raw_asof(fetch_list)
+    else:
+        raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
@@ -88,7 +92,8 @@ try:
     if len(raw.index) and raw.index.max().date() >= _dt_check.datetime.now(_dt_check.timezone.utc).date():
         raw = raw[raw.index.date < _dt_check.datetime.now(_dt_check.timezone.utc).date()]
     # same one-bar FX offset exists in the fresh Yahoo download; align it before it is merged
-    raw = _fx_align.realign_fx(raw)
+    if not _asof.ASOF:
+        raw = _fx_align.realign_fx(raw)
     for col in raw.columns:
         if col in prices.columns:
             # For existing columns: append new rows after parquet max date
@@ -174,10 +179,17 @@ try:
             # correctly -- see build_portfolio_dashboard.py for why the
             # earlier per-column version silently truncated new dates.
             merged_hist = prices.combine_first(existing_hist)
+            import asof_replay as _ar
+            if not _ar.ASOF:
+                merged_hist, _pruned = _ar.prune_unreported(merged_hist, raw, since=PARQUET_MAX_DATE)
+                if _pruned:
+                    print(f"  Live history: dropped {sum(len(v) for v in _pruned.values())} stored bar(s) Yahoo no longer reports: "
+                          + ", ".join(f"{k} {v}" for k, v in sorted(_pruned.items())))
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
-        merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
+        if not _asof.ASOF:
+            merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
         print(f"  Live price history saved -> {LIVE_HISTORY_PARQUET} "
               f"({merged_hist.shape[0]} rows x {merged_hist.shape[1]} tickers, "
               f"through {merged_hist.index.max().date()})")
@@ -235,10 +247,10 @@ def fires(predictors, tau_pasts, q_Xs, direction):
 # ── GOLD PRICE STATS ──────────────────────────────────────────────────────────
 print("Computing gold price stats...")
 # Clip strictly to parquet history — no yfinance rows allowed in historical analysis
-gcf = prices["GC=F"].dropna()
-gcf = gcf[gcf.index <= PARQUET_MAX_DATE]
+gcf_live = prices["GC=F"].dropna()   # live series: used only for the current state (changes, peak, chart); historical distributions stay on the frozen panel
+gcf = gcf_live[gcf_live.index <= PARQUET_MAX_DATE]
 sgd_fx = prices[FX_TICKER].dropna()
-usd_per_sgd = 1.0 / float(sgd_fx.reindex(gcf.index).ffill().iloc[-1])
+usd_per_sgd = 1.0 / float(sgd_fx.iloc[-1])   # latest settled rate (was the rate on the frozen panel's last date)
 
 # ── GOLD SPOT PRICE: use GLD ETF as primary (most reliable, never rolls)
 # GLD tracks spot gold: 1 share = 0.0963 troy oz (NAV ratio)
@@ -342,7 +354,7 @@ else:  # after 4 PM SGT: today's US session still open, last close was yesterday
 bar_sub_text = (f"Gold spot price in Singapore dollars per gram · "
                 f"Last US close: {_us_close_label} · "
                 f"Derived from GLD ETF and USD/SGD rate.")
-peak_252 = float(gcf.iloc[-252:].max()) if len(gcf) >= 252 else float(gcf.max())
+peak_252 = float(gcf_live.iloc[-252:].max()) if len(gcf_live) >= 252 else float(gcf_live.max())
 dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
 peak_spot_sgd_g = round(peak_252 * usd_per_sgd / 31.1035, 2)
 
@@ -354,8 +366,7 @@ _gcf_current = gold_usd  # single source of truth — GLD ETF derived, fixed for
 # GC=F futures trade continuously — yfinance returns different intraday prices
 # each run, shifting prox_score and auto_score by 0.3-0.5 points.
 # Override all GC=F entries in current_inc with stable GLD-derived returns.
-_gcf_hist = prices["GC=F"].dropna()
-_gcf_hist = _gcf_hist[_gcf_hist.index <= PARQUET_MAX_DATE]
+_gcf_hist = gcf_live
 for _tau in list(current_inc.keys()):
     if "GC=F" in current_inc[_tau] and len(_gcf_hist) > _tau:
         _past_price = float(_gcf_hist.iloc[-1-_tau])
@@ -364,8 +375,8 @@ for _tau in list(current_inc.keys()):
 print(f"  GC=F current_inc frozen to GLD-derived price ${_gcf_current:.2f}/oz")
 
 def pct_chg(n):
-    if len(gcf) > n:
-        return float((_gcf_current / float(gcf.iloc[-1-n]) - 1) * 100)
+    if len(gcf_live) > n:
+        return float((_gcf_current / float(gcf_live.iloc[-1-n]) - 1) * 100)
     return 0.0
 
 # Round to 1dp to prevent marginal historical episode inclusion/exclusion
@@ -639,12 +650,12 @@ components = {
 print(f"  Composite buy score: {composite} — {buy_label}")
 
 # ── PRICE CHART DATA ──────────────────────────────────────────────────────────
-chart_dates  = [str(d.date()) for d in gcf.index[-365:]]
-chart_prices = [round(float(p),2) for p in gcf.iloc[-365:]]
-chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035,2) for p in gcf.iloc[-365:]]
+chart_dates  = [str(d.date()) for d in gcf_live.index[-365:]]
+chart_prices = [round(float(p),2) for p in gcf_live.iloc[-365:]]
+chart_sgd_g  = [round(float(p)*usd_per_sgd/31.1035,2) for p in gcf_live.iloc[-365:]]
 
 # 52-week high and peak drawdown (already computed above)
-peak_date_idx= gcf.iloc[-252:].idxmax() if len(gcf)>=252 else gcf.idxmax()
+peak_date_idx= gcf_live.iloc[-252:].idxmax() if len(gcf_live)>=252 else gcf_live.idxmax()
 
 # ── FORWARD CONE ─────────────────────────────────────────────────────────────
 # Use the recovery_63 distribution to project forward
@@ -686,8 +697,8 @@ data = {
     "spot_sgd_g":       round(gold_spot_sgd_g,2),
     "spot_sgd_oz":      round(gold_spot_sgd_oz,2),
     "bar_sub_text":     bar_sub_text,
-    "high_252":      round(float(gcf.iloc[-252:].max()) if len(gcf)>=252 else gold_usd,2),
-    "low_252":       round(float(gcf.iloc[-252:].min()) if len(gcf)>=252 else gold_usd,2),
+    "high_252":      round(float(gcf_live.iloc[-252:].max()) if len(gcf_live)>=252 else gold_usd,2),
+    "low_252":       round(float(gcf_live.iloc[-252:].min()) if len(gcf_live)>=252 else gold_usd,2),
     "curr_pct_63":   round(curr_pct_63,1),
     "curr_pct_126":  round(curr_pct_126,1),
     "recovery_63":   {str(k):v for k,v in recovery_63.items()},

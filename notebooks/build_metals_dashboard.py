@@ -123,7 +123,11 @@ try:
          "SGDUSD=X","DX-Y.NYB","UUP","^GVZ"]
         + cpe["X"].unique().tolist()
     ))
-    raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
+    import asof_replay as _asof
+    if _asof.ASOF:
+        raw = _asof.raw_asof(fetch_list)
+    else:
+        raw = yf.download(fetch_list, period="400d", auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
@@ -138,7 +142,8 @@ try:
     if len(raw.index) and raw.index.max().date() >= _dt_check.datetime.now(_dt_check.timezone.utc).date():
         raw = raw[raw.index.date < _dt_check.datetime.now(_dt_check.timezone.utc).date()]
     # same one-bar FX offset exists in the fresh Yahoo download; align it before it is merged
-    raw = _fx_align.realign_fx(raw)
+    if not _asof.ASOF:
+        raw = _fx_align.realign_fx(raw)
 
     for col in raw.columns:
         if col in prices.columns:
@@ -186,10 +191,17 @@ try:
             # correctly -- see build_portfolio_dashboard.py for why the
             # earlier per-column version silently truncated new dates.
             merged_hist = prices.combine_first(existing_hist)
+            import asof_replay as _ar
+            if not _ar.ASOF:
+                merged_hist, _pruned = _ar.prune_unreported(merged_hist, raw, since=PARQUET_MAX_DATE)
+                if _pruned:
+                    print(f"  Live history: dropped {sum(len(v) for v in _pruned.values())} stored bar(s) Yahoo no longer reports: "
+                          + ", ".join(f"{k} {v}" for k, v in sorted(_pruned.items())))
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
-        merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
+        if not _asof.ASOF:
+            merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
         print(f"  Live price history saved -> {LIVE_HISTORY_PARQUET} "
               f"({merged_hist.shape[0]} rows x {merged_hist.shape[1]} tickers, "
               f"through {merged_hist.index.max().date()})")
@@ -408,13 +420,15 @@ for name, info in METALS.items():
     spot_sgd_g  = spot_sgd_oz / TROY_OZ_G
 
     # ── returns / drawdown vs current price series (parquet-clipped, own units) ──
-    last_hist_price = float(hist.iloc[-1])
+    # current state from the live series; `hist` (clipped to the frozen panel) is used only for the historical distributions below
+    live = prices[info["hist"]].dropna()
+    last_hist_price = float(live.iloc[-1])
     def pct_chg(n):
-        if len(hist) > n:
-            return float((last_hist_price / float(hist.iloc[-1 - n]) - 1) * 100)
+        if len(live) > n:
+            return float((last_hist_price / float(live.iloc[-1 - n]) - 1) * 100)
         return 0.0
     chg = {t: round(pct_chg(t), 2) for t in [1,5,21,63,126,252]}
-    peak_252 = float(hist.iloc[-252:].max()) if len(hist) >= 252 else float(hist.max())
+    peak_252 = float(live.iloc[-252:].max()) if len(live) >= 252 else float(live.max())
     dd_from_peak = round((last_hist_price / peak_252 - 1) * 100, 2)
 
     # ── mean-reversion / recovery odds (CORRECT forward-return sign) ──
@@ -489,7 +503,7 @@ for name, info in METALS.items():
     print(f"  {name:9s}: spot ${spot_usd_oz:,.2f}/oz | draw={draw_score:5.1f} "
           f"auto={auto_score:5.1f} cpe={cpe_score:5.1f} -> composite={composite:5.1f} ({buy_label})")
 
-    chart = hist.iloc[-365:]
+    chart = live.iloc[-365:]
     metal_data[name] = {
         "info": info,
         "spot_usd_oz": round(spot_usd_oz, 2),
