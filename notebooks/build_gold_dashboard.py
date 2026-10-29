@@ -355,12 +355,13 @@ bar_sub_text = (f"Gold spot price in Singapore dollars per gram · "
                 f"Last US close: {_us_close_label} · "
                 f"Derived from GLD ETF and USD/SGD rate.")
 peak_252 = float(gcf_live.iloc[-252:].max()) if len(gcf_live) >= 252 else float(gcf_live.max())
-dd_from_peak = round((gold_usd / peak_252 - 1) * 100, 2)
+dd_from_peak = round((float(gcf_live.iloc[-1]) / peak_252 - 1) * 100, 2)   # GC=F last settled bar over the GC=F peak (same instrument both ends)
 peak_spot_sgd_g = round(peak_252 * usd_per_sgd / 31.1035, 2)
 
-# Freeze current price to GLD-derived value computed once above.
-# This prevents yfinance tick noise in GC=F from shifting chg[] between runs.
-_gcf_current = gold_usd  # single source of truth — GLD ETF derived, fixed for this run
+# Current level for every change below: the last settled GC=F bar, so numerator and denominator are the same
+# instrument (the GLD-derived price in gold_usd sits about 0.5% above the futures and is kept for display only).
+# The forming bar is stripped at load, so this does not move between runs on the same day.
+_gcf_current = float(gcf_live.iloc[-1])
 
 # ── FREEZE current_inc GC=F ENTRIES to GLD-derived price ──
 # GC=F futures trade continuously — yfinance returns different intraday prices
@@ -372,7 +373,7 @@ for _tau in list(current_inc.keys()):
         _past_price = float(_gcf_hist.iloc[-1-_tau])
         if _past_price > 0:
             current_inc[_tau]["GC=F"] = float(np.log(_gcf_current / _past_price))
-print(f"  GC=F current_inc frozen to GLD-derived price ${_gcf_current:.2f}/oz")
+print(f"  GC=F current_inc set from the last settled GC=F bar ${_gcf_current:.2f}/oz")
 
 def pct_chg(n):
     if len(gcf_live) > n:
