@@ -538,7 +538,7 @@ date,dashboard,metric,value,n
 2026-09-18,football,win_rate,1.0,7
 2026-09-18,gold,bullish_hit,0.842105,19
 2026-09-18,gold,price_rose_all,0.656716,67
-2026-09-18,metals,bullish_hit,0.871795,78
+2026-09-18,metals,bullish_hit,0.883117,77
 2026-09-18,metals,price_rose_all,0.871795,78
 2026-09-18,portfolio,neutral_pnl_avg,4.138182,11
 2026-09-18,portfolio,tilt_pnl_avg,4.397273,11
@@ -553,7 +553,7 @@ date,dashboard,metric,value,n
 2026-09-21,football,win_rate,1.0,7
 2026-09-21,gold,bullish_hit,0.842105,19
 2026-09-21,gold,price_rose_all,0.652174,69
-2026-09-21,metals,bullish_hit,0.85,80
+2026-09-21,metals,bullish_hit,0.871795,78
 2026-09-21,metals,price_rose_all,0.85,80
 2026-09-21,portfolio,neutral_pnl_avg,4.635,12
 2026-09-21,portfolio,tilt_pnl_avg,4.893333,12
@@ -568,7 +568,7 @@ date,dashboard,metric,value,n
 2026-09-22,football,win_rate,1.0,7
 2026-09-22,gold,bullish_hit,0.842105,19
 2026-09-22,gold,price_rose_all,0.630137,73
-2026-09-22,metals,bullish_hit,0.790698,86
+2026-09-22,metals,bullish_hit,0.839506,81
 2026-09-22,metals,price_rose_all,0.790698,86
 2026-09-22,portfolio,neutral_pnl_avg,4.635,12
 2026-09-22,portfolio,tilt_pnl_avg,4.893333,12
@@ -583,7 +583,7 @@ date,dashboard,metric,value,n
 2026-09-23,football,win_rate,1.0,7
 2026-09-23,gold,bullish_hit,0.842105,19
 2026-09-23,gold,price_rose_all,0.626667,75
-2026-09-23,metals,bullish_hit,0.772727,88
+2026-09-23,metals,bullish_hit,0.829268,82
 2026-09-23,metals,price_rose_all,0.772727,88
 2026-09-23,portfolio,neutral_pnl_avg,4.856429,14
 2026-09-23,portfolio,tilt_pnl_avg,5.056429,14
@@ -598,7 +598,7 @@ date,dashboard,metric,value,n
 2026-09-24,football,win_rate,1.0,7
 2026-09-24,gold,bullish_hit,0.842105,19
 2026-09-24,gold,price_rose_all,0.623377,77
-2026-09-24,metals,bullish_hit,0.755556,90
+2026-09-24,metals,bullish_hit,0.819277,83
 2026-09-24,metals,price_rose_all,0.755556,90
 2026-09-24,portfolio,neutral_pnl_avg,4.979375,16
 2026-09-24,portfolio,tilt_pnl_avg,5.141875,16
@@ -619,7 +619,7 @@ date,dashboard,metric,value,n
 2026-09-25,football,win_rate,1.0,7
 2026-09-25,gold,bullish_hit,0.842105,19
 2026-09-25,gold,price_rose_all,0.62963,81
-2026-09-25,metals,bullish_hit,0.73913,92
+2026-09-25,metals,bullish_hit,0.809524,84
 2026-09-25,metals,price_rose_all,0.73913,92
 2026-09-25,portfolio,neutral_pnl_avg,4.979375,16
 2026-09-25,portfolio,tilt_pnl_avg,5.141875,16
@@ -634,7 +634,7 @@ date,dashboard,metric,value,n
 2026-09-28,football,win_rate,1.0,7
 2026-09-28,gold,bullish_hit,0.842105,19
 2026-09-28,gold,price_rose_all,0.626506,83
-2026-09-28,metals,bullish_hit,0.723404,94
+2026-09-28,metals,bullish_hit,0.8,85
 2026-09-28,metals,price_rose_all,0.723404,94
 2026-09-28,portfolio,neutral_pnl_avg,4.979375,16
 2026-09-28,portfolio,tilt_pnl_avg,5.141875,16
@@ -649,7 +649,7 @@ date,dashboard,metric,value,n
 2026-09-29,football,win_rate,1.0,7
 2026-09-29,gold,bullish_hit,0.842105,19
 2026-09-29,gold,price_rose_all,0.609195,87
-2026-09-29,metals,bullish_hit,0.68,100
+2026-09-29,metals,bullish_hit,0.772727,88
 2026-09-29,metals,price_rose_all,0.68,100
 2026-09-29,portfolio,neutral_pnl_avg,4.979375,16
 2026-09-29,portfolio,tilt_pnl_avg,5.141875,16
@@ -664,7 +664,7 @@ date,dashboard,metric,value,n
 2026-09-30,football,win_rate,1.0,7
 2026-09-30,gold,bullish_hit,0.85,20
 2026-09-30,gold,price_rose_all,0.606742,89
-2026-09-30,metals,bullish_hit,0.666667,102
+2026-09-30,metals,bullish_hit,0.764045,89
 2026-09-30,metals,price_rose_all,0.666667,102
 2026-09-30,portfolio,neutral_pnl_avg,5.275294,17
 2026-09-30,portfolio,tilt_pnl_avg,5.454706,17
@@ -679,7 +679,7 @@ date,dashboard,metric,value,n
 2026-10-01,football,win_rate,1.0,7
 2026-10-01,gold,bullish_hit,0.869565,23
 2026-10-01,gold,price_rose_all,0.612903,93
-2026-10-01,metals,bullish_hit,0.653846,104
+2026-10-01,metals,bullish_hit,0.747253,91
 2026-10-01,metals,price_rose_all,0.653846,104
 2026-10-01,portfolio,neutral_pnl_avg,5.93,20
 2026-10-01,portfolio,tilt_pnl_avg,6.1575,20
@@ -700,7 +700,7 @@ date,dashboard,metric,value,n
 2026-10-02,football,win_rate,1.0,7
 2026-10-02,gold,bullish_hit,0.869565,23
 2026-10-02,gold,price_rose_all,0.6,95
-2026-10-02,metals,bullish_hit,0.641509,106
+2026-10-02,metals,bullish_hit,0.73913,92
 2026-10-02,metals,price_rose_all,0.641509,106
 2026-10-02,portfolio,neutral_pnl_avg,6.017143,21
 2026-10-02,portfolio,tilt_pnl_avg,6.27,21
@@ -715,7 +715,7 @@ date,dashboard,metric,value,n
 2026-10-05,football,win_rate,1.0,7
 2026-10-05,gold,bullish_hit,0.869565,23
 2026-10-05,gold,price_rose_all,0.59375,96
-2026-10-05,metals,bullish_hit,0.62963,108
+2026-10-05,metals,bullish_hit,0.731183,93
 2026-10-05,metals,price_rose_all,0.62963,108
 2026-10-05,portfolio,neutral_pnl_avg,6.017143,21
 2026-10-05,portfolio,tilt_pnl_avg,6.27,21
@@ -736,7 +736,7 @@ date,dashboard,metric,value,n
 2026-10-06,football,win_rate,1.0,7
 2026-10-06,gold,bullish_hit,0.869565,23
 2026-10-06,gold,price_rose_all,0.574257,101
-2026-10-06,metals,bullish_hit,0.586207,116
+2026-10-06,metals,bullish_hit,0.731183,93
 2026-10-06,metals,price_rose_all,0.586207,116
 2026-10-06,portfolio,neutral_pnl_avg,6.221818,22
 2026-10-06,portfolio,tilt_pnl_avg,6.483636,22
@@ -757,7 +757,7 @@ date,dashboard,metric,value,n
 2026-10-07,football,win_rate,1.0,7
 2026-10-07,gold,bullish_hit,0.833333,24
 2026-10-07,gold,price_rose_all,0.563107,103
-2026-10-07,metals,bullish_hit,0.581197,117
+2026-10-07,metals,bullish_hit,0.731183,93
 2026-10-07,metals,price_rose_all,0.576271,118
 2026-10-07,portfolio,neutral_pnl_avg,6.303913,23
 2026-10-07,portfolio,tilt_pnl_avg,6.575217,23
@@ -778,7 +778,7 @@ date,dashboard,metric,value,n
 2026-10-08,football,win_rate,1.0,7
 2026-10-08,gold,bullish_hit,0.851852,27
 2026-10-08,gold,price_rose_all,0.570093,107
-2026-10-08,metals,bullish_hit,0.575,120
+2026-10-08,metals,bullish_hit,0.726316,95
 2026-10-08,metals,price_rose_all,0.565574,122
 2026-10-08,portfolio,neutral_pnl_avg,6.408462,26
 2026-10-08,portfolio,tilt_pnl_avg,6.698077,26
@@ -799,7 +799,7 @@ date,dashboard,metric,value,n
 2026-10-09,football,win_rate,1.0,7
 2026-10-09,gold,bullish_hit,0.857143,28
 2026-10-09,gold,price_rose_all,0.568807,109
-2026-10-09,metals,bullish_hit,0.577236,123
+2026-10-09,metals,bullish_hit,0.731959,97
 2026-10-09,metals,price_rose_all,0.563492,126
 2026-10-09,portfolio,neutral_pnl_avg,6.53963,27
 2026-10-09,portfolio,tilt_pnl_avg,6.833333,27
@@ -820,7 +820,7 @@ date,dashboard,metric,value,n
 2026-10-12,football,win_rate,1.0,10
 2026-10-12,gold,bullish_hit,0.862069,29
 2026-10-12,gold,price_rose_all,0.557522,113
-2026-10-12,metals,bullish_hit,0.570312,128
+2026-10-12,metals,bullish_hit,0.737374,99
 2026-10-12,metals,price_rose_all,0.544776,134
 2026-10-12,portfolio,neutral_pnl_avg,6.601786,28
 2026-10-12,portfolio,tilt_pnl_avg,6.900357,28
@@ -841,7 +841,7 @@ date,dashboard,metric,value,n
 2026-10-13,football,win_rate,1.0,10
 2026-10-13,gold,bullish_hit,0.866667,30
 2026-10-13,gold,price_rose_all,0.556522,115
-2026-10-13,metals,bullish_hit,0.564885,131
+2026-10-13,metals,bullish_hit,0.732673,101
 2026-10-13,metals,price_rose_all,0.536232,138
 2026-10-13,portfolio,neutral_pnl_avg,6.656552,29
 2026-10-13,portfolio,tilt_pnl_avg,6.95931,29
@@ -865,7 +865,7 @@ date,dashboard,metric,value,n
 2026-10-14,football,win_rate,1.0,10
 2026-10-14,gold,bullish_hit,0.870968,31
 2026-10-14,gold,price_rose_all,0.555556,117
-2026-10-14,metals,bullish_hit,0.548148,135
+2026-10-14,metals,bullish_hit,0.711538,104
 2026-10-14,metals,price_rose_all,0.521127,142
 2026-10-14,portfolio,neutral_pnl_avg,6.693333,30
 2026-10-14,portfolio,tilt_pnl_avg,6.999333,30
@@ -889,7 +889,7 @@ date,dashboard,metric,value,n
 2026-10-15,football,win_rate,1.0,10
 2026-10-15,gold,bullish_hit,0.882353,34
 2026-10-15,gold,price_rose_all,0.561983,121
-2026-10-15,metals,bullish_hit,0.559441,143
+2026-10-15,metals,bullish_hit,0.720721,111
 2026-10-15,metals,price_rose_all,0.533333,150
 2026-10-15,portfolio,neutral_pnl_avg,6.712941,34
 2026-10-15,portfolio,tilt_pnl_avg,6.994706,34
@@ -915,7 +915,7 @@ date,dashboard,metric,value,n
 2026-10-16,football,win_rate,1.0,10
 2026-10-16,gold,bullish_hit,0.885714,35
 2026-10-16,gold,price_rose_all,0.560976,123
-2026-10-16,metals,bullish_hit,0.561644,146
+2026-10-16,metals,bullish_hit,0.725664,113
 2026-10-16,metals,price_rose_all,0.532468,154
 2026-10-16,portfolio,neutral_pnl_avg,6.743714,35
 2026-10-16,portfolio,tilt_pnl_avg,7.025429,35
@@ -941,7 +941,7 @@ date,dashboard,metric,value,n
 2026-10-19,football,win_rate,1.0,12
 2026-10-19,gold,bullish_hit,0.888889,36
 2026-10-19,gold,price_rose_all,0.551181,127
-2026-10-19,metals,bullish_hit,0.543046,151
+2026-10-19,metals,bullish_hit,0.713043,115
 2026-10-19,metals,price_rose_all,0.506173,162
 2026-10-19,portfolio,neutral_pnl_avg,6.7375,36
 2026-10-19,portfolio,tilt_pnl_avg,7.019722,36
@@ -967,7 +967,7 @@ date,dashboard,metric,value,n
 2026-10-20,football,win_rate,1.0,12
 2026-10-20,gold,bullish_hit,0.888889,36
 2026-10-20,gold,price_rose_all,0.542636,129
-2026-10-20,metals,bullish_hit,0.538961,154
+2026-10-20,metals,bullish_hit,0.709402,117
 2026-10-20,metals,price_rose_all,0.5,166
 2026-10-20,portfolio,neutral_pnl_avg,6.479211,38
 2026-10-20,portfolio,tilt_pnl_avg,6.752632,38
@@ -993,7 +993,7 @@ date,dashboard,metric,value,n
 2026-10-21,football,win_rate,1.0,12
 2026-10-21,gold,bullish_hit,0.891892,37
 2026-10-21,gold,price_rose_all,0.541985,131
-2026-10-21,metals,bullish_hit,0.544872,156
+2026-10-21,metals,bullish_hit,0.714286,119
 2026-10-21,metals,price_rose_all,0.5,170
 2026-10-21,portfolio,neutral_pnl_avg,6.3345,40
 2026-10-21,portfolio,tilt_pnl_avg,6.597,40
@@ -1019,7 +1019,7 @@ date,dashboard,metric,value,n
 2026-10-22,football,win_rate,1.0,12
 2026-10-22,gold,bullish_hit,0.891892,37
 2026-10-22,gold,price_rose_all,0.525926,135
-2026-10-22,metals,bullish_hit,0.524691,162
+2026-10-22,metals,bullish_hit,0.68,125
 2026-10-22,metals,price_rose_all,0.477528,178
 2026-10-22,portfolio,neutral_pnl_avg,6.181364,44
 2026-10-22,portfolio,tilt_pnl_avg,6.423636,44
@@ -1045,7 +1045,7 @@ date,dashboard,metric,value,n
 2026-10-23,football,win_rate,1.0,12
 2026-10-23,gold,bullish_hit,0.868421,38
 2026-10-23,gold,price_rose_all,0.518248,137
-2026-10-23,metals,bullish_hit,0.518293,164
+2026-10-23,metals,bullish_hit,0.669291,127
 2026-10-23,metals,price_rose_all,0.467033,182
 2026-10-23,portfolio,neutral_pnl_avg,5.978913,46
 2026-10-23,portfolio,tilt_pnl_avg,6.21413,46
@@ -1071,7 +1071,7 @@ date,dashboard,metric,value,n
 2026-10-26,football,win_rate,1.0,14
 2026-10-26,gold,bullish_hit,0.868421,38
 2026-10-26,gold,price_rose_all,0.503546,141
-2026-10-26,metals,bullish_hit,0.512048,166
+2026-10-26,metals,bullish_hit,0.658915,129
 2026-10-26,metals,price_rose_all,0.447368,190
 2026-10-26,portfolio,neutral_pnl_avg,5.4526,50
 2026-10-26,portfolio,tilt_pnl_avg,5.6676,50
@@ -1097,7 +1097,7 @@ date,dashboard,metric,value,n
 2026-10-27,football,win_rate,1.0,14
 2026-10-27,gold,bullish_hit,0.868421,38
 2026-10-27,gold,price_rose_all,0.503497,143
-2026-10-27,metals,bullish_hit,0.502959,169
+2026-10-27,metals,bullish_hit,0.648855,131
 2026-10-27,metals,price_rose_all,0.438144,194
 2026-10-27,portfolio,neutral_pnl_avg,5.386154,52
 2026-10-27,portfolio,tilt_pnl_avg,5.596731,52
@@ -1123,7 +1123,7 @@ date,dashboard,metric,value,n
 2026-10-28,football,win_rate,1.0,14
 2026-10-28,gold,bullish_hit,0.868421,38
 2026-10-28,gold,price_rose_all,0.496552,145
-2026-10-28,metals,bullish_hit,0.494186,172
+2026-10-28,metals,bullish_hit,0.639098,133
 2026-10-28,metals,price_rose_all,0.429293,198
 2026-10-28,portfolio,neutral_pnl_avg,5.300741,54
 2026-10-28,portfolio,tilt_pnl_avg,5.503704,54

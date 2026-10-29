@@ -434,7 +434,7 @@ for name, info in METALS.items():
     # ── mean-reversion / recovery odds (CORRECT forward-return sign) ──
     ret_63  = ((hist / hist.shift(63)) - 1).dropna() * 100
     curr_pct_63 = float(np.mean(ret_63.values <= chg[63]))   # percentile rank, 0-1
-    draw_score = round(100 * (1 - curr_pct_63), 1)           # deeper drawdown -> higher score
+    draw_score = round(min(100.0, max(0.0, -round(chg[63], 1) / 20 * 100)), 1)   # same rule as the gold page: -20% over 63d = 100, 0% or a gain = 0
 
     trigger_dates = ret_63[ret_63 <= chg[63]].index
     recovery = {}

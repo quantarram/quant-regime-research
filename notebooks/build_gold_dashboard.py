@@ -382,14 +382,16 @@ def pct_chg(n):
 # Round to 1dp to prevent marginal historical episode inclusion/exclusion
 # from shifting recovery counts between runs due to yfinance tick noise
 chg = {t: round(pct_chg(t),1) for t in [1,5,10,21,63,126,252]}
+# The historical distributions below are log returns (x100); chg is a simple % change. Convert before comparing.
+chg_log = {t: round(float(np.log1p(chg[t]/100) * 100), 1) for t in chg}
 
 # Historical distribution of 63d and 126d returns for GC=F
 gcf_63  = np.log(gcf/gcf.shift(63)).dropna().values * 100
 gcf_126 = np.log(gcf/gcf.shift(126)).dropna().values * 100
 gcf_252 = np.log(gcf/gcf.shift(252)).dropna().values * 100
 
-curr_pct_63  = round(float(np.mean(gcf_63  <= chg[63]))  * 100, 1)
-curr_pct_126 = round(float(np.mean(gcf_126 <= chg[126])) * 100, 1)
+curr_pct_63  = round(float(np.mean(gcf_63  <= chg_log[63]))  * 100, 1)
+curr_pct_126 = round(float(np.mean(gcf_126 <= chg_log[126])) * 100, 1)
 
 # ── RECOVERY ANALYSIS ─────────────────────────────────────────────────────────
 print("Computing historical recovery analysis...")
@@ -421,9 +423,9 @@ def recovery_dist(lookback_tau, threshold_pct, forward_taus):
 FWD_TAUS = [21,63,126,252]
 
 # After 63d drawdown >= current
-recovery_63 = recovery_dist(63, chg[63], FWD_TAUS)
+recovery_63 = recovery_dist(63, chg_log[63], FWD_TAUS)
 # After 126d drawdown >= current
-recovery_126 = recovery_dist(126, chg[126], FWD_TAUS)
+recovery_126 = recovery_dist(126, chg_log[126], FWD_TAUS)
 # After any bottom decile drawdown (10th percentile)
 p10_63 = round(float(np.percentile(gcf_63, 10)), 1)
 recovery_extreme = recovery_dist(63, p10_63, FWD_TAUS)
