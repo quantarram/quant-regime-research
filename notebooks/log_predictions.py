@@ -589,9 +589,11 @@ def log_metals(metals_state):
 
 def tilt_to_weight(tilt, neutral_wt):
     """Convert tilt label to suggested portfolio weight."""
-    if tilt == "TILT UP":
+    # OVERWEIGHT / UNDERWEIGHT are the stronger tiers of the same direction on the portfolio page; ibkr_paper_ledger.py already
+    # treats OVERWEIGHT as bullish. Until 2026-10-29 only the TILT labels were recognised here, so those days scored as neutral.
+    if tilt in ("TILT UP", "OVERWEIGHT"):
         return neutral_wt * 1.4
-    elif tilt == "TILT DOWN":
+    elif tilt in ("TILT DOWN", "UNDERWEIGHT"):
         return neutral_wt * 0.1
     else:
         return neutral_wt

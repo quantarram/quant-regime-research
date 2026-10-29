@@ -503,7 +503,7 @@ for name, info in METALS.items():
     print(f"  {name:9s}: spot ${spot_usd_oz:,.2f}/oz | draw={draw_score:5.1f} "
           f"auto={auto_score:5.1f} cpe={cpe_score:5.1f} -> composite={composite:5.1f} ({buy_label})")
 
-    chart = live.iloc[-365:]
+    chart = live[live.index > live.index[-1] - pd.Timedelta(days=365)]   # the page says 1 year: 365 calendar days, not 365 bars (about 17 months)
     metal_data[name] = {
         "info": info,
         "spot_usd_oz": round(spot_usd_oz, 2),

@@ -129,8 +129,12 @@ try:
         # Note: XAUUSD=X removed — delisted on Yahoo Finance
         + cpe["X"].unique().tolist()
     ))
-    raw = yf.download(fetch_list, period="400d",
-                      auto_adjust=True, progress=False)["Close"]
+    import asof_replay as _asof
+    if _asof.ASOF:
+        raw = _asof.raw_asof(fetch_list)
+    else:
+        raw = yf.download(fetch_list, period="400d",
+                          auto_adjust=True, progress=False)["Close"]
     if isinstance(raw.columns, pd.MultiIndex):
         raw.columns = raw.columns.get_level_values(0)
     raw.index = pd.to_datetime(raw.index).tz_localize(None)
@@ -145,7 +149,8 @@ try:
     if len(raw.index) and raw.index.max().date() >= _dt_check.datetime.now(_dt_check.timezone.utc).date():
         raw = raw[raw.index.date < _dt_check.datetime.now(_dt_check.timezone.utc).date()]
     # same one-bar FX offset exists in the fresh Yahoo download; align it before it is merged
-    raw = _fx_align.realign_fx(raw)
+    if not _asof.ASOF:
+        raw = _fx_align.realign_fx(raw)
 
     for col in raw.columns:
         if col in prices.columns:
@@ -231,7 +236,8 @@ try:
         else:
             merged_hist = prices.copy()
         merged_hist = merged_hist.sort_index().loc[~merged_hist.index.duplicated(keep="last")]
-        merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
+        if not _asof.ASOF:
+            merged_hist.to_parquet(LIVE_HISTORY_PARQUET)
         print(f"  Live price history saved -> {LIVE_HISTORY_PARQUET} "
               f"({merged_hist.shape[0]} rows x {merged_hist.shape[1]} tickers, "
               f"through {merged_hist.index.max().date()})")
