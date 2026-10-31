@@ -1,2 +1,6 @@
 .venv/
 .claude/
+
+# local secrets (API keys) — never commit
+.env
+*.env
