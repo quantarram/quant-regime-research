@@ -430,6 +430,9 @@ for name, info in METALS.items():
     chg = {t: round(pct_chg(t), 2) for t in [1,5,21,63,126,252]}
     peak_252 = float(live.iloc[-252:].max()) if len(live) >= 252 else float(live.max())
     dd_from_peak = round((last_hist_price / peak_252 - 1) * 100, 2)
+    # distance above the trailing 1-year low (the "buy near the 1-year low" watch)
+    low_252 = float(live.iloc[-252:].min()) if len(live) >= 252 else float(live.min())
+    pct_above_low = round((last_hist_price / low_252 - 1) * 100, 2)
 
     # ── mean-reversion / recovery odds (CORRECT forward-return sign) ──
     ret_63  = ((hist / hist.shift(63)) - 1).dropna() * 100
@@ -514,6 +517,7 @@ for name, info in METALS.items():
         "chg": chg,
         "dd_from_peak": dd_from_peak,
         "peak_252": round(peak_252, 2),
+        "pct_above_low": pct_above_low,
         "draw_score": draw_score,
         "auto_score": round(auto_score, 1),
         "cpe_score": cpe_score,
@@ -562,6 +566,8 @@ if "Gold" in metal_data:
                     g["chg"]           = {k: _GD["chg"].get(str(k), g["chg"].get(k, 0)) for k in g["chg"]}
                     g["dd_from_peak"]  = _GD["dd_from_peak"]
                     g["peak_252"]      = _GD["peak_252"]
+                    # same instrument mix the gold page uses for its 52-week range
+                    g["pct_above_low"] = round((_GD["gold_usd"] / _GD["low_252"] - 1) * 100, 2)
                     g["draw_score"]    = _gc["draw_score"]
                     g["auto_score"]    = _gc["auto_score"]
                     g["cpe_score"]     = _gc["cpe_score"]
@@ -660,6 +666,7 @@ bundle = {
         "spot_usd_oz": d["spot_usd_oz"], "spot_sgd_oz": d["spot_sgd_oz"],
         "spot_sgd_g": d["spot_sgd_g"], "spot_src": d["spot_src"], "spot_date": d["spot_date"],
         "chg": d["chg"], "dd_from_peak": d["dd_from_peak"], "peak_252": d["peak_252"],
+        "pct_above_low": d["pct_above_low"],
         "draw_score": d["draw_score"], "auto_score": d["auto_score"], "cpe_score": d["cpe_score"],
         "composite": d["composite"], "buy_label": d["buy_label"], "verdict_tier": d["verdict_tier"],
         "curr_pct_63": d["curr_pct_63"],
@@ -984,7 +991,10 @@ for(const name of METAL_ORDER){{
       <div><div class="buy-stat-l">63d</div><span>${{fmt(m.chg['63'])}}</span></div>
       <div><div class="buy-stat-l">252d</div><span>${{fmt(m.chg['252'])}}</span></div>
     </div>
-    <div style="font-size:9px;color:var(--muted);margin-top:10px;">Spot: ${{m.spot_src}} (${{m.spot_date}})</div>
+    <div style="font-family:var(--mono);font-size:10px;margin-top:10px;color:${{m.pct_above_low<=1?'var(--green)':m.pct_above_low<=5?'var(--amber)':'var(--muted)'}}">
+      ${{m.pct_above_low<=1 ? '&#9679; At its 1-year low (within 1%)' : m.pct_above_low.toFixed(1)+'% above its 1-year low'}}
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-top:6px;">Spot: ${{m.spot_src}} (${{m.spot_date}})</div>
   `;
   bcEl.appendChild(card);
 }}
