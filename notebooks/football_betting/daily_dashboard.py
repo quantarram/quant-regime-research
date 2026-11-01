@@ -78,7 +78,7 @@ PPG_DIFF_THRESHOLD_Q = 0.90
 HOME_PPG_THRESHOLD_Q = 0.90
 VALIDATED_HIT_RATE = 0.838
 VALIDATED_ROI = 0.0190
-FRESH_CAPITAL_SGD = 200.0   # the only fresh money deposited (user, 2026-10-18; betting since August 2026); every later stake is re-staked winnings
+FRESH_CAPITAL_SGD = 300.0   # fresh money deposited: S$200 (betting since August 2026) + S$100 on 2026-11-01 (user); every other stake is re-staked winnings
 VALIDATED_HOLDOUT_N = 648
 
 SGPOOLS_API = "https://api.singaporepools.com/football/events/v1/upcoming-event"
