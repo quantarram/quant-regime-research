@@ -1,3 +1,34 @@
 [
-
+  {
+    "fixture":"Roma vs Sassuolo",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-11-07T19:45:00Z",
+    "pick":"Roma",
+    "home_team_matched":"Roma",
+    "away_team_matched":"Sassuolo",
+    "ppg_diff":1.0,
+    "home_ppg_home_only":2.3666666667,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.25,
+    "qualifies":true
+  },
+  {
+    "fixture":"Paris SG vs Troyes",
+    "league":"F1",
+    "country":"France",
+    "competition":"French League",
+    "start_time":"2026-11-07T19:45:00Z",
+    "pick":"Paris SG",
+    "home_team_matched":"Paris SG",
+    "away_team_matched":"Troyes",
+    "ppg_diff":1.7333333333,
+    "home_ppg_home_only":2.4,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.07,
+    "qualifies":true
+  }
 ]
