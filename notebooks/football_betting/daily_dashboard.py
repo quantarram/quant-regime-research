@@ -565,6 +565,15 @@ def main():
     refreshed = refresh_core_leagues()
     print(f"  {len(refreshed):,} matches on file, most recent: {refreshed['date'].max().date()}")
 
+    # lock in results for finished matches BEFORE the page is rendered, so the track-record block
+    # counts today's resolutions (resolve_football_picks.py used to run after the render, leaving the
+    # published page one day behind: Roma/PSG showed as unresolved on 2026-11-11 although the log had them)
+    try:
+        import resolve_football_picks
+        resolve_football_picks.main()
+    except Exception as _e:
+        print(f"  (resolve step skipped: {_e})")
+
     print("Computing current team form from real historical results (no model fit)...")
     current_ppg_any, current_ppg_home_only, ppg_diff_threshold, home_ppg_threshold = compute_current_form_and_thresholds()
     print(f"  ppg_diff threshold ({PPG_DIFF_THRESHOLD_Q:.0%} pct, real history): {ppg_diff_threshold:.2f}")
