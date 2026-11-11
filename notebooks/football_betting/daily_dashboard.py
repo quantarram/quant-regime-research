@@ -609,7 +609,10 @@ def main():
         # or already marked bet_placed by record_bet.py, keep that row rather than clobbering
         # it with a fresh PENDING/not-bet one
         combined = combined.sort_values(["bet_placed", "status"], ascending=[False, False])
-        combined = combined.drop_duplicates(subset=["fixture", "start_time"], keep="first")
+        # key on the match DATE, not the exact kickoff: a rescheduled kickoff time (e.g. 19:45 -> 20:05 on
+        # 2026-11-05 for Paris SG vs Troyes) otherwise logs the same match a second time
+        combined["_match_date"] = combined["start_time"].astype(str).str[:10]
+        combined = combined.drop_duplicates(subset=["fixture", "_match_date"], keep="first").drop(columns="_match_date")
     else:
         combined = today_log
     combined.to_csv(log_path, index=False)
