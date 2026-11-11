@@ -148,6 +148,28 @@ def write_rows(new_rows):
     return hist
 
 
+def restate_cpe_rows():
+    """Recompute every logged CPE row from the current price history.
+
+    Yahoo applies each ex-dividend adjustment to its history a few days late, so for a few days after a
+    month-end dividend the stored bond-ETF bars understate total returns across the ex-date and the 21-day CPE
+    realised rate is transiently low (31% on 2026-11-04 against 40.5% once Yahoo had caught up). Recomputing the
+    whole CPE history each run lets earlier rows settle to the final value; only the newest few rows can be transient.
+    """
+    hist = load_history()
+    dates = sorted(hist.loc[hist["dashboard"] == "cpe", "date"].unique())
+    new = []
+    for d in dates:
+        new += [(d, a, b, round(v, 6), int(n)) for a, b, v, n in cpe_metrics(pd.Timestamp(d))]
+    if not new:
+        return hist
+    out = pd.concat([hist[hist["dashboard"] != "cpe"], pd.DataFrame(new, columns=COLS)], ignore_index=True)
+    out = out.sort_values(["date", "dashboard", "metric"])
+    out.to_csv(HISTORY_PATH, index=False)
+    print(f"Monitor history: CPE rows recomputed for {len(dates)} date(s)")
+    return out
+
+
 def snapshot_date_today():
     """Latest complete day: yesterday (UTC). Skips weekends, when no new bars or outcomes can have arrived."""
     d = datetime.now(timezone.utc).date() - timedelta(days=1)
@@ -162,6 +184,7 @@ def append_today():
     rows = snapshot(d)
     hist = write_rows(rows)
     print(f"Monitor history: {len(rows)} metric(s) written for {d.date()}; {hist['date'].nunique()} snapshot dates in file")
+    hist = restate_cpe_rows()
     return hist
 
 
