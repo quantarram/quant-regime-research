@@ -236,7 +236,7 @@ date_predicted,gcf_price_usd,price_sgd_per_g,composite_score,verdict,direction,h
 2026-08-17,4373.37,180.3,38.0,NEUTRAL,NEUTRAL,126,69.8,11.2,-5.1,-9.9,32.1,13.3,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-08-17,4373.37,180.3,38.0,NEUTRAL,NEUTRAL,252,69.3,11.2,-5.1,-9.9,32.1,13.3,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-08-18,4373.37,180.3,37.5,NEUTRAL,NEUTRAL,21,59.4,11.3,-1.8,-10.9,34.1,27.4,2026-09-16,,-3.39,0.0,RESOLVED,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),GLD,2026-08-17,405.49,391.74
-2026-08-18,4373.37,180.3,37.5,NEUTRAL,NEUTRAL,63,64.6,11.3,-1.8,-10.9,34.1,27.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
+2026-08-18,4373.37,180.3,37.5,NEUTRAL,NEUTRAL,63,64.6,11.3,-1.8,-10.9,34.1,27.4,2026-11-13,,-12.34,0.0,RESOLVED,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),GLD,2026-08-17,405.49,355.45
 2026-08-18,4373.37,180.3,37.5,NEUTRAL,NEUTRAL,126,69.2,11.3,-1.8,-10.9,34.1,27.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-08-18,4373.37,180.3,37.5,NEUTRAL,NEUTRAL,252,70.1,11.3,-1.8,-10.9,34.1,27.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-08-19,4341.45,178.98,39.5,NEUTRAL,NEUTRAL,21,59.0,10.1,-2.9,-9.5,32.5,22.4,2026-09-17,,-0.05,1.0,RESOLVED,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),GLD,2026-08-18,398.55,398.36
@@ -471,7 +471,7 @@ date_predicted,gcf_price_usd,price_sgd_per_g,composite_score,verdict,direction,h
 2026-10-15,4096.55,168.88,27.0,NEUTRAL,NEUTRAL,63,61.1,-5.2,2.9,-14.4,-0.0,50.7,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-10-15,4096.55,168.88,27.0,NEUTRAL,NEUTRAL,126,60.9,-5.2,2.9,-14.4,-0.0,50.7,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-10-15,4096.55,168.88,27.0,NEUTRAL,NEUTRAL,252,64.8,-5.2,2.9,-14.4,-0.0,50.7,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
-2026-10-16,4169.77,171.9,33.1,NEUTRAL,NEUTRAL,21,62.2,-5.0,3.8,-12.9,0.8,55.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
+2026-10-16,4169.77,171.9,33.1,NEUTRAL,NEUTRAL,21,62.2,-5.0,3.8,-12.9,0.8,55.4,2026-11-13,,-7.12,0.0,RESOLVED,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),GLD,2026-10-15,382.71,355.45
 2026-10-16,4169.77,171.9,33.1,NEUTRAL,NEUTRAL,63,62.2,-5.0,3.8,-12.9,0.8,55.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-10-16,4169.77,171.9,33.1,NEUTRAL,NEUTRAL,126,64.1,-5.0,3.8,-12.9,0.8,55.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
 2026-10-16,4169.77,171.9,33.1,NEUTRAL,NEUTRAL,252,66.5,-5.0,3.8,-12.9,0.8,55.4,,,,,PENDING,restated 2026-10-29: point-in-time replay with current-state inputs from live prices (originally scored against a series frozen at 2026-06-16),,,,
@@ -587,3 +587,7 @@ date_predicted,gcf_price_usd,price_sgd_per_g,composite_score,verdict,direction,h
 2026-11-13,3866.66,159.6,44.8,WAIT & WATCH,NEUTRAL,63,61.0,-5.4,-12.4,-16.9,-5.4,1.8,,,,,PENDING,,,,,
 2026-11-13,3866.66,159.6,44.8,WAIT & WATCH,NEUTRAL,126,52.3,-5.4,-12.4,-16.9,-5.4,1.8,,,,,PENDING,,,,,
 2026-11-13,3866.66,159.6,44.8,WAIT & WATCH,NEUTRAL,252,59.7,-5.4,-12.4,-16.9,-5.4,1.8,,,,,PENDING,,,,,
+2026-11-14,3872.76,160.22,46.0,WAIT & WATCH,NEUTRAL,21,66.2,-6.8,-13.1,-14.7,-7.6,1.4,,,,,PENDING,,,,,
+2026-11-14,3872.76,160.22,46.0,WAIT & WATCH,NEUTRAL,63,61.0,-6.8,-13.1,-14.7,-7.6,1.4,,,,,PENDING,,,,,
+2026-11-14,3872.76,160.22,46.0,WAIT & WATCH,NEUTRAL,126,53.9,-6.8,-13.1,-14.7,-7.6,1.4,,,,,PENDING,,,,,
+2026-11-14,3872.76,160.22,46.0,WAIT & WATCH,NEUTRAL,252,61.4,-6.8,-13.1,-14.7,-7.6,1.4,,,,,PENDING,,,,,
