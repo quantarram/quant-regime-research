@@ -9,6 +9,10 @@ about what money was actually on the line.
 Usage:
     python record_bet.py "Barcelona vs Athletic Bilbao" 10
     python record_bet.py "Barcelona" 10                    # fuzzy match on part of the fixture name
+    python record_bet.py "Barcelona" 100 1.15 --add --placed "2026-11-19 18:54"
+                                                             # ADD a further slip to an existing position:
+                                                             # totals and blended odds are worked out here,
+                                                             # --placed is the slip's time in SGT (default now)
     python record_bet.py "Barcelona" 10 1.17               # optional: the ACTUAL odds you got,
                                                              # if different from the logged snapshot
                                                              # (odds move between dashboard build and
@@ -25,7 +29,27 @@ OUT_DIR = Path(__file__).parent / "output"
 LOG_PATH = OUT_DIR / "qualifying_log.csv"
 
 
+def _append_slip(fixture, kickoff, placed_sgt, stake, odds):
+    """One row per real bet slip (bet_slips.csv) so the odds chart can show each price actually obtained."""
+    path = OUT_DIR / "bet_slips.csv"
+    row = pd.DataFrame([{"fixture": fixture, "kickoff_utc": kickoff,
+                         "placed_utc": placed_sgt.tz_convert("UTC").strftime("%Y-%m-%dT%H:%M:%SZ"),
+                         "stake_sgd": stake, "odds": odds}])
+    if path.exists():
+        row = pd.concat([pd.read_csv(path), row], ignore_index=True)
+    row.to_csv(path, index=False)
+
+
 def main():
+    args = sys.argv[1:]
+    add = "--add" in args
+    placed = pd.Timestamp.now(tz="Asia/Singapore")
+    if "--placed" in args:
+        i = args.index("--placed")
+        placed = pd.Timestamp(args[i + 1]).tz_localize("Asia/Singapore")
+        del args[i:i + 2]
+    args = [a for a in args if a != "--add"]
+    sys.argv = [sys.argv[0]] + args
     if len(sys.argv) < 3:
         print('Usage: python record_bet.py "<fixture or team name>" <stake_sgd>')
         sys.exit(1)
@@ -55,11 +79,20 @@ def main():
         sys.exit(1)
 
     idx = log[log["fixture"] == match].index[-1]  # most recent if logged more than once
-    log.loc[idx, "bet_placed"] = True
-    log.loc[idx, "actual_stake_sgd"] = stake
     if "actual_odds" not in log.columns:
         log["actual_odds"] = pd.NA
-    price = actual_odds if actual_odds is not None else log.loc[idx, "odds"]
+    slip_odds = actual_odds if actual_odds is not None else float(log.loc[idx, "odds"])
+    _append_slip(match, log.loc[idx, "start_time"], placed, stake, slip_odds)
+    if add and bool(log.loc[idx, "bet_placed"]) and pd.notna(log.loc[idx, "actual_stake_sgd"]):
+        prev_stake = float(log.loc[idx, "actual_stake_sgd"])
+        prev_odds = float(log.loc[idx, "actual_odds"])
+        total = prev_stake + stake
+        price = (prev_stake * prev_odds + stake * slip_odds) / total   # blended = total payout / total stake
+        stake = total
+    else:
+        price = slip_odds
+    log.loc[idx, "bet_placed"] = True
+    log.loc[idx, "actual_stake_sgd"] = stake
     log.loc[idx, "actual_odds"] = price
     log.to_csv(LOG_PATH, index=False)
 

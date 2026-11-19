@@ -31,6 +31,27 @@ def _fmt_sgt(ts):
     return ts.astimezone(SGT).strftime("%a %d %b %H:%M SGT")
 
 
+SLIPS_PATH = OUT_DIR / "bet_slips.csv"
+
+
+def load_slips(fixture, kickoff_utc, path=None):
+    """Individual bet slips for one fixture (bet_slips.csv, written by record_bet.py): one row per
+    real bet with the time it was placed (UTC), stake and the odds actually obtained. Empty list if
+    the fixture has no slips on file (older bets were recorded only as a combined stake/odds)."""
+    path = Path(path) if path else SLIPS_PATH
+    if not path.exists():
+        return []
+    s = pd.read_csv(path)
+    if s.empty:
+        return []
+    s = s[(s["fixture"] == fixture) & (pd.to_datetime(s["kickoff_utc"], utc=True) == kickoff_utc)]
+    out = []
+    for r in s.sort_values("placed_utc").itertuples():
+        out.append((pd.Timestamp(r.placed_utc).tz_convert("UTC") if pd.Timestamp(r.placed_utc).tzinfo
+                    else pd.Timestamp(r.placed_utc).tz_localize("UTC"), float(r.stake_sgd), float(r.odds)))
+    return out
+
+
 def load_history(path=None):
     path = Path(path) if path else OUT_DIR / "odds_history.csv"
     if not path.exists():
@@ -58,7 +79,7 @@ def _nice_ticks(lo, hi, target=5):
     return ticks, decimals
 
 
-def fixture_chart_svg(series, cutoff, now, bet_odds=None):
+def fixture_chart_svg(series, cutoff, now, bet_odds=None, slips=None):
     """series: DataFrame (snapshot_utc tz-aware, odds_h), already limited to <= cutoff."""
     W, H, PL, PR, PT, PB = 560, 200, 46, 16, 14, 30
     pts = series.sort_values("snapshot_utc")
@@ -71,7 +92,8 @@ def fixture_chart_svg(series, cutoff, now, bet_odds=None):
     def x_at(t):
         return PL + (t - t0).total_seconds() / span * (W - PL - PR)
 
-    vals = list(pts["odds_h"]) + ([bet_odds] if bet_odds else [])
+    slips = slips or []
+    vals = list(pts["odds_h"]) + ([bet_odds] if bet_odds else []) + [o for _, _, o in slips]
     lo, hi = min(vals), max(vals)
     pad = 0.25 * (hi - lo)
     lo, hi = lo - pad, hi + pad
@@ -115,7 +137,17 @@ def fixture_chart_svg(series, cutoff, now, bet_odds=None):
         p.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{PT}" y2="{H-PB}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1 3"/>')
         p.append(f'<text x="{x+4:.1f}" y="{H-PB-4}" font-size="9" fill="var(--muted)" font-family="var(--mono)">now</text>')
     xy = [(x_at(r.snapshot_utc), y_at(r.odds_h)) for r in pts.itertuples()]
-    if bet_odds:
+    if slips:
+        # one green marker per real bet at the moment it was placed, at the price actually obtained
+        for ts, stk, od in slips:
+            x = min(max(x_at(ts), PL), W - PR)
+            y = y_at(od)
+            p.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.6" fill="var(--green)"/>')
+            anchor = "end" if x > W - PR - 110 else "start"
+            tx = x - 8 if anchor == "end" else x + 8
+            p.append(f'<text x="{tx:.1f}" y="{y+13:.1f}" text-anchor="{anchor}" font-size="9" fill="var(--green)" '
+                     f'font-family="var(--mono)">S${stk:,.0f} @ {od:.2f}</text>')
+    elif bet_odds:
         y = y_at(bet_odds)
         p.append(f'<line x1="{PL}" x2="{W-PR}" y1="{y:.1f}" y2="{y:.1f}" stroke="var(--green)" stroke-width="1.4" stroke-dasharray="6 4"/>')
         # put the label at whichever corner of the line is clear of the data points and their value labels
@@ -168,10 +200,15 @@ def fixture_card_html(row, series, now):
     last = s.iloc[-1]
     stats = [("Latest charted run", f'{last["odds_h"]:.2f}', _fmt_sgt(last["snapshot_utc"])),
              ("High / low", f'{s["odds_h"].max():.2f} / {s["odds_h"].min():.2f}', f"{n} daily run{'s' if n != 1 else ''}")]
+    slips = load_slips(row["fixture"], kickoff) if placed else []
     if bet_odds is not None:
         diff = last["odds_h"] - bet_odds
         word = "run paid more" if diff > 0.0049 else ("run paid less" if diff < -0.0049 else "same as your bet")
-        stats.insert(0, ("Your bet", f"{bet_odds:.2f}", f"S${stake:,.2f} staked" if stake else ""))
+        if len(slips) > 1:
+            sub = " + ".join(f"{o:.2f}" for _, _, o in slips) + f" blended; S${stake:,.2f} staked" if stake else ""
+            stats.insert(0, ("Your bets", f"{len(slips)} slips @ {bet_odds:.3f}", sub))
+        else:
+            stats.insert(0, ("Your bet", f"{bet_odds:.2f}", f"S${stake:,.2f} staked" if stake else ""))
         stats.append(("Latest run vs bet", f"{diff:+.2f}", word))
     stats_html = "".join(
         f'<div><div class="buy-stat-l">{k}</div><span style="font-family:var(--mono);">{v}</span>'
@@ -183,7 +220,7 @@ def fixture_card_html(row, series, now):
     if n < 3:
         note = (f'<div style="font-size:10px;color:var(--muted);margin-top:8px;">Only {n} daily run'
                 f'{"s" if n != 1 else ""} so far &mdash; no trend can be read yet.</div>')
-    svg = fixture_chart_svg(s, cutoff, now, bet_odds)
+    svg = fixture_chart_svg(s, cutoff, now, bet_odds, slips)
     return (f'<div class="card" style="margin-bottom:14px;">{header}<div style="margin-top:10px;">{svg}</div>'
             f'<div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7;">Odds on each daily run: {runs}</div>'
             f'<div class="buy-stats">{stats_html}</div>{note}</div>')
@@ -215,5 +252,7 @@ def odds_section_html(log_df, hist=None, now=None):
             'up to 1 day before kickoff</div>'
             '<div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6;">'
             'Home-win odds Singapore Pools quoted on each daily run (gold), and where a bet was placed, the odds you '
-            'actually got (green dashed). Line above the green one = that day\'s price paid more than the bet did.'
+            'actually got, one green dot per bet slip at the time it was placed. Each gold dot is the single reading the '
+            'daily run takes (about 15:20 SGT); the price can move between runs, so a bet placed later can sit off '
+            'the gold line.'
             '</div>' + "".join(cards) + '</div>')
