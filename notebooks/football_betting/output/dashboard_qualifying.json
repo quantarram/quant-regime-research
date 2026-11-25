@@ -1,3 +1,66 @@
 [
-
+  {
+    "fixture":"Inter vs Genoa",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-11-28T19:45:00Z",
+    "pick":"Inter",
+    "home_team_matched":"Inter",
+    "away_team_matched":"Genoa",
+    "ppg_diff":1.0666666667,
+    "home_ppg_home_only":2.4333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.28,
+    "qualifies":true
+  },
+  {
+    "fixture":"Paris SG vs Lorient",
+    "league":"F1",
+    "country":"France",
+    "competition":"French League",
+    "start_time":"2026-11-28T19:45:00Z",
+    "pick":"Paris SG",
+    "home_team_matched":"Paris SG",
+    "away_team_matched":"Lorient",
+    "ppg_diff":0.8333333333,
+    "home_ppg_home_only":2.4,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.17,
+    "qualifies":true
+  },
+  {
+    "fixture":"Real Madrid vs Alaves",
+    "league":"SP1",
+    "country":"Spain",
+    "competition":"Spanish League",
+    "start_time":"2026-11-28T20:00:00Z",
+    "pick":"Real Madrid",
+    "home_team_matched":"Real Madrid",
+    "away_team_matched":"Alaves",
+    "ppg_diff":1.0333333333,
+    "home_ppg_home_only":2.6333333333,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.1,
+    "qualifies":true
+  },
+  {
+    "fixture":"Roma vs AC Monza",
+    "league":"I1",
+    "country":"Italy",
+    "competition":"Italian League",
+    "start_time":"2026-11-29T17:00:00Z",
+    "pick":"Roma",
+    "home_team_matched":"Roma",
+    "away_team_matched":"Monza",
+    "ppg_diff":1.6333333333,
+    "home_ppg_home_only":2.3666666667,
+    "ppg_diff_threshold":0.8,
+    "home_ppg_threshold":2.2666666667,
+    "odds":1.15,
+    "qualifies":true
+  }
 ]
