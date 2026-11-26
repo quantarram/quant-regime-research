@@ -1,0 +1,316 @@
+<title>Stock Dip Board &mdash; CPE Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0E0D; --card:#141614; --card2:#1B1E1B; --border:#2C302C; --border2:#3A3F3A;
+    --text:#DDE8DD; --muted:#7A8F7A; --faint:#1B1E1B;
+    --gold:#C9A84C; --green:#4DB87A; --red:#E05555; --warn:#E8A020;
+    --mono:'IBM Plex Mono',monospace; --serif:'DM Serif Display',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:14px;}
+  a{color:var(--gold);text-decoration:none;}
+  .page{max-width:1000px;margin:0 auto;padding:32px 24px 80px;}
+  .header{background:linear-gradient(160deg,#141614,#1B1E1B);border:1px solid var(--border2);
+           border-radius:16px;padding:32px 40px;margin-bottom:28px;
+           display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;}
+  .h-title{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}
+  .h-title em{font-style:italic;color:var(--gold);}
+  .h-sub{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .h-meta{font-size:12px;color:var(--muted);}
+  .h-badge{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);
+            border-radius:12px;padding:12px 20px;text-align:center;}
+  .h-badge-num{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--gold);}
+  .h-badge-label{font-size:10px;color:var(--muted);display:block;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;}
+  .section{margin-bottom:28px;}
+  .section-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px 24px;}
+  .tilt-table{width:100%;border-collapse:collapse;}
+  .tilt-table th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+                  padding:10px 14px;border-bottom:2px solid var(--border);text-align:left;background:var(--faint);}
+  .tilt-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .tilt-table tr:last-child td{border-bottom:none;}
+  .tilt-table tr:hover td{background:var(--card2);}
+  .ac-cell{display:flex;align-items:center;gap:10px;}
+  .ac-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .ac-name{font-weight:600;font-size:13px;color:var(--text);}
+  .ac-desc{font-size:10px;color:var(--muted);margin-top:2px;}
+  .tilt-pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:100px;font-family:var(--mono);font-size:9px;
+              font-weight:600;letter-spacing:.06em;white-space:nowrap;}
+  .weight-bar-bg{background:var(--border);border-radius:4px;height:6px;display:inline-block;vertical-align:middle;margin-top:4px;}
+  .weight-bar-fill{height:100%;border-radius:4px;}
+  .buy-stats{display:flex;gap:18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
+              font-family:var(--mono);font-size:11px;color:var(--text);flex-wrap:wrap;}
+  .buy-stat-l{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}
+  .note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px;}
+  .disclaimer{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-size:11px;
+               color:var(--muted);line-height:1.7;margin-top:28px;}
+  .disclaimer code{font-family:var(--mono);background:var(--card2);border:1px solid var(--border);border-radius:4px;
+               padding:1px 5px;font-size:10.5px;color:var(--text);}
+  .mono{font-family:var(--mono);}
+  @media(max-width:700px){ .header{grid-template-columns:1fr;} .page{padding:16px 12px 60px;} }
+</style>
+<div class="page">
+
+<div class="header">
+  <div>
+    <div class="h-sub">CPE Framework &mdash; Stock Board</div>
+    <div class="h-title">ETF <em>Dip &amp; Volatility</em> Checklist</div>
+    <div class="h-meta">Updated: 2026-11-27 00:07 SGT &nbsp;.&nbsp; prices through Wed 25 Nov 2026 (US close)
+      &nbsp;.&nbsp; 52 ETFs scanned &nbsp;.&nbsp; 21-bar bets only</div>
+  </div>
+  <div class="h-badge"><div class="h-badge-num">10</div><span class="h-badge-label">Qualifying Now</span></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Qualifying ETFs &mdash; 21-bar bet: target +0.5&sigma; before stop &minus;1.5&sigma;</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="tilt-table"><thead><tr>
+      <th style="width:300px">ETF</th><th>Status</th><th>1-month drop</th><th>Volatility</th>
+      <th style="text-align:right">Last close</th><th style="text-align:right">Target</th><th style="text-align:right">Stop</th><th>Horizon</th>
+    </tr></thead><tbody>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">ARKK <span style="color:var(--muted);font-weight:400;">&middot; ARK Innovation ETF</span></div>
+            <div class="ac-desc">Sector ETFs: backtest hit 77% vs 69% always-long, n=2650</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-20.5% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:100%;background:var(--red);"></div></div><div class="ac-desc">bottom 4% of its own 5y</div></td>
+          <td class="mono">1.59&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:54%;background:var(--gold);"></div></div><div class="ac-desc">top 6% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">67.36</td>
+          <td class="mono" style="text-align:right;color:var(--green);">71.88<div class="ac-desc">+6.7%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">53.81<div class="ac-desc">-20.1%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">XLK <span style="color:var(--muted);font-weight:400;">&middot; Technology SPDR</span></div>
+            <div class="ac-desc">Sector ETFs: backtest hit 77% vs 69% always-long, n=2650</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-17.8% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:100%;background:var(--red);"></div></div><div class="ac-desc">bottom 0% of its own 5y</div></td>
+          <td class="mono">1.91&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:71%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">155.79</td>
+          <td class="mono" style="text-align:right;color:var(--green);">164.51<div class="ac-desc">+5.6%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">129.63<div class="ac-desc">-16.8%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">QQQ <span style="color:var(--muted);font-weight:400;">&middot; Invesco Nasdaq-100 ETF</span></div>
+            <div class="ac-desc">US equity ETFs: backtest hit 83% vs 73% always-long, n=1085</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-12.1% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:81%;background:var(--red);"></div></div><div class="ac-desc">bottom 2% of its own 5y</div></td>
+          <td class="mono">2.00&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:75%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">633.93</td>
+          <td class="mono" style="text-align:right;color:var(--green);">661.84<div class="ac-desc">+4.4%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">550.21<div class="ac-desc">-13.2%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">VUG <span style="color:var(--muted);font-weight:400;">&middot; Vanguard Growth ETF</span></div>
+            <div class="ac-desc">Factor ETFs: backtest hit 80% vs 73% always-long, n=953</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-10.6% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:70%;background:var(--red);"></div></div><div class="ac-desc">bottom 5% of its own 5y</div></td>
+          <td class="mono">2.02&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:76%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">79.10</td>
+          <td class="mono" style="text-align:right;color:var(--green);">82.24<div class="ac-desc">+4.0%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">69.67<div class="ac-desc">-11.9%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">EEM <span style="color:var(--muted);font-weight:400;">&middot; iShares MSCI Emerging Markets ETF</span></div>
+            <div class="ac-desc">World / regional ETFs: backtest hit 74% vs 65% always-long, n=1743</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-9.8% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:65%;background:var(--red);"></div></div><div class="ac-desc">bottom 2% of its own 5y</div></td>
+          <td class="mono">1.61&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:55%;background:var(--gold);"></div></div><div class="ac-desc">top 7% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">56.40</td>
+          <td class="mono" style="text-align:right;color:var(--green);">58.90<div class="ac-desc">+4.4%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">48.89<div class="ac-desc">-13.3%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">EWJ <span style="color:var(--muted);font-weight:400;">&middot; iShares MSCI Japan ETF</span></div>
+            <div class="ac-desc">World / regional ETFs: backtest hit 74% vs 65% always-long, n=1743</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-8.4% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:56%;background:var(--red);"></div></div><div class="ac-desc">bottom 3% of its own 5y</div></td>
+          <td class="mono">1.58&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:54%;background:var(--gold);"></div></div><div class="ac-desc">top 4% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">87.25</td>
+          <td class="mono" style="text-align:right;color:var(--green);">90.29<div class="ac-desc">+3.5%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">78.12<div class="ac-desc">-10.5%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">VWO <span style="color:var(--muted);font-weight:400;">&middot; Vanguard Emerging Markets ETF</span></div>
+            <div class="ac-desc">World / regional ETFs: backtest hit 74% vs 65% always-long, n=1743</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-7.1% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:48%;background:var(--red);"></div></div><div class="ac-desc">bottom 5% of its own 5y</div></td>
+          <td class="mono">1.74&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:62%;background:var(--gold);"></div></div><div class="ac-desc">top 4% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">52.78</td>
+          <td class="mono" style="text-align:right;color:var(--green);">54.51<div class="ac-desc">+3.3%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">47.58<div class="ac-desc">-9.9%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">SPY <span style="color:var(--muted);font-weight:400;">&middot; SPDR S&P 500 ETF</span></div>
+            <div class="ac-desc">US equity ETFs: backtest hit 83% vs 73% always-long, n=1085</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-6.9% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:46%;background:var(--red);"></div></div><div class="ac-desc">bottom 6% of its own 5y</div></td>
+          <td class="mono">2.07&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:78%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">716.70</td>
+          <td class="mono" style="text-align:right;color:var(--green);">736.98<div class="ac-desc">+2.8%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">655.85<div class="ac-desc">-8.5%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">VTI <span style="color:var(--muted);font-weight:400;">&middot; Vanguard Total Stock Market ETF</span></div>
+            <div class="ac-desc">US equity ETFs: backtest hit 83% vs 73% always-long, n=1085</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-6.5% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:44%;background:var(--red);"></div></div><div class="ac-desc">bottom 6% of its own 5y</div></td>
+          <td class="mono">2.02&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:76%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">353.20</td>
+          <td class="mono" style="text-align:right;color:var(--green);">363.04<div class="ac-desc">+2.8%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">323.69<div class="ac-desc">-8.4%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr>
+        <tr>
+          <td><div class="ac-cell"><span class="ac-dot" style="background:var(--gold);"></span>
+            <div><div class="ac-name">VT <span style="color:var(--muted);font-weight:400;">&middot; Vanguard Total World ETF</span></div>
+            <div class="ac-desc">World / regional ETFs: backtest hit 74% vs 65% always-long, n=1743</div></div></div></td>
+          <td><span class="tilt-pill" style="color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);">NEW &middot; enters next close</span></td>
+          <td class="mono">-6.4% <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:43%;background:var(--red);"></div></div><div class="ac-desc">bottom 5% of its own 5y</div></td>
+          <td class="mono">1.85&times; <div class="weight-bar-bg" style="width:64px;"><div class="weight-bar-fill" style="width:68%;background:var(--gold);"></div></div><div class="ac-desc">top 2% of its own 5y</div></td>
+          <td class="mono" style="text-align:right;">147.54</td>
+          <td class="mono" style="text-align:right;color:var(--green);">151.60<div class="ac-desc">+2.8%</div></td>
+          <td class="mono" style="text-align:right;color:var(--red);">135.37<div class="ac-desc">-8.3%</div></td>
+          <td class="mono" style="font-size:11px;">21 bars<div class="ac-desc">about Fri 25 Dec 2026</div></td>
+        </tr></tbody></table>
+  </div>
+  <div class="note">A bet means: buy at the next close after the signal, sell at the target or the stop (checked on daily closes) or after
+  21 trading days, whichever comes first. Levels use each ETF's own volatility: &sigma; is the last 63 days' daily standard deviation
+  &times; &radic;21. These 10 ETFs mostly move together, so treat them as largely one bet on the same market bounce, not 10 separate ones. 63-bar bets: <b>no rule passed validation</b> (4,229 out-of-sample bets, hit rate lift
+  +1.0 pts, t = 0.26), so none are listed.</div>
+</div>
+
+<div class="section">
+  <div class="section-title">Live Record &mdash; every signal logged from the day this board started</div>
+  <div class="card">
+    <svg viewBox="0 0 900 200" style="width:100%;height:200px;"><line x1="52" y1="100.0" x2="884" y2="100.0" stroke="#2C302C"/><text x="44" y="104.0" text-anchor="end" font-family="monospace" font-size="10" fill="#7A8F7A">0%</text></svg>
+    
+      <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+        <div><div class="buy-stat-l">Signals logged</div><span>10</span></div>
+        <div><div class="buy-stat-l">Awaiting entry / open</div><span>10</span></div>
+        <div><div class="buy-stat-l">Resolved</div><span>0</span></div>
+        <div><div class="buy-stat-l">Backtest (out of sample)</div><span style="color:var(--muted)">73.5% / +1.53%</span></div>
+      </div>
+    <div class="note">Cumulative P&amp;L in % of position, one unit per bet, summed in the order bets resolved. A bet is held until its
+    target, stop or time limit and is never re-scored on later days. One live bet per ETF at a time.
+    The first outcomes arrive within about a month.</div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:14px;"><table class="tilt-table"><thead><tr>
+        <th>ETF</th><th>Signal bar</th><th>Status</th><th style="text-align:right">Entry</th><th style="text-align:right">Target</th>
+        <th style="text-align:right">Stop</th><th>Horizon</th></tr></thead><tbody><tr><td class="mono">SPY</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+2.8%</td>
+          <td class="mono" style="text-align:right;">-8.5%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">QQQ</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+4.4%</td>
+          <td class="mono" style="text-align:right;">-13.2%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">VTI</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+2.8%</td>
+          <td class="mono" style="text-align:right;">-8.4%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">VT</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+2.8%</td>
+          <td class="mono" style="text-align:right;">-8.3%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">EEM</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+4.4%</td>
+          <td class="mono" style="text-align:right;">-13.3%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">VWO</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+3.3%</td>
+          <td class="mono" style="text-align:right;">-9.9%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">EWJ</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+3.5%</td>
+          <td class="mono" style="text-align:right;">-10.5%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">XLK</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+5.6%</td>
+          <td class="mono" style="text-align:right;">-16.8%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">ARKK</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+6.7%</td>
+          <td class="mono" style="text-align:right;">-20.1%</td>
+          <td class="mono">21 bars</td></tr><tr><td class="mono">VUG</td><td class="mono">2026-11-25</td>
+          <td class="mono">PENDING ENTRY</td><td class="mono" style="text-align:right;">&mdash;</td>
+          <td class="mono" style="text-align:right;">+4.0%</td>
+          <td class="mono" style="text-align:right;">-11.9%</td>
+          <td class="mono">21 bars</td></tr></tbody></table></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Walk-Forward Evidence (2010 &ndash; 2026, out of sample) &mdash; rule: mom21_lo + vol_stressed @90th pct</div>
+  <div class="card">
+    <div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+      <div><div class="buy-stat-l">Bets</div><span>8,751</span></div>
+      <div><div class="buy-stat-l">Independent blocks</div><span>127 months</span></div>
+      <div><div class="buy-stat-l">Hit rate</div><span style="color:var(--gold)">73.5%</span></div>
+      <div><div class="buy-stat-l">Same ETFs always-long</div><span>68.3%</span></div>
+      <div><div class="buy-stat-l">Break-even hit rate</div><span>59.6%</span></div>
+      <div><div class="buy-stat-l">Avg P&amp;L / bet</div><span style="color:var(--green)">+1.53%</span></div>
+      <div><div class="buy-stat-l">Always-long P&amp;L / bet</div><span>+0.50%</span></div>
+      <div><div class="buy-stat-l">Cluster t-stat</div><span>2.97</span></div>
+    </div>
+    <div class="section-title" style="margin-top:22px;">Excess P&amp;L per bet by year &mdash; rule bets minus the same ETFs' always-long bets</div>
+    <svg viewBox="0 0 900 200" style="width:100%;height:200px;"><line x1="52" y1="93.0" x2="884" y2="93.0" stroke="#2C302C" stroke-dasharray="3,3"/><text x="44" y="97.0" text-anchor="end" font-family="monospace" font-size="10" fill="#7A8F7A">0</text><text x="44" y="26.0" text-anchor="end" font-family="monospace" font-size="10" fill="#7A8F7A">+4.3%</text><text x="44" y="170.0" text-anchor="end" font-family="monospace" font-size="10" fill="#7A8F7A">-4.3%</text><rect x="61.9" y="93.0" width="32.2" height="9.9" fill="#E05555"/><text x="78.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">10</text><text x="78.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=328</text><rect x="113.9" y="74.5" width="32.2" height="18.5" fill="#4DB87A"/><text x="130.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">11</text><text x="130.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=1064</text><rect x="165.9" y="84.2" width="32.2" height="8.8" fill="#4DB87A"/><text x="182.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">13</text><text x="182.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=773</text><rect x="217.9" y="93.0" width="32.2" height="5.5" fill="#E05555"/><text x="234.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">14</text><text x="234.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=1013</text><rect x="269.9" y="83.6" width="32.2" height="9.4" fill="#4DB87A"/><text x="286.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">15</text><text x="286.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=669</text><rect x="321.9" y="61.8" width="32.2" height="31.2" fill="#4DB87A"/><text x="338.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">16</text><text x="338.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=245</text><rect x="373.9" y="42.4" width="32.2" height="50.6" fill="#4DB87A"/><text x="390.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">17</text><text x="390.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=25</text><rect x="425.9" y="80.6" width="32.2" height="12.4" fill="#4DB87A"/><text x="442.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">18</text><text x="442.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=1097</text><rect x="477.9" y="40.8" width="32.2" height="52.2" fill="#4DB87A"/><text x="494.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">19</text><text x="494.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=168</text><rect x="529.9" y="50.3" width="32.2" height="42.7" fill="#4DB87A"/><text x="546.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">20</text><text x="546.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=1329</text><rect x="581.9" y="51.4" width="32.2" height="41.6" fill="#4DB87A"/><text x="598.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">21</text><text x="598.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=104</text><rect x="633.9" y="79.0" width="32.2" height="14.0" fill="#4DB87A"/><text x="650.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">22</text><text x="650.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=1191</text><rect x="685.9" y="45.4" width="32.2" height="47.6" fill="#4DB87A"/><text x="702.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">23</text><text x="702.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=10</text><rect x="737.9" y="46.7" width="32.2" height="46.3" fill="#4DB87A"/><text x="754.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">24</text><text x="754.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=116</text><rect x="789.9" y="26.0" width="32.2" height="67.0" fill="#4DB87A"/><text x="806.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">25</text><text x="806.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=397</text><rect x="841.9" y="93.0" width="32.2" height="22.9" fill="#E05555"/><text x="858.0" y="188" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">26</text><text x="858.0" y="198" text-anchor="middle" font-family="monospace" font-size="8" fill="#55665A">n=222</text></svg>
+    <div class="section-title" style="margin-top:22px;">By ETF group (diagnostic only, not used to choose the rule)</div>
+    <table class="tilt-table"><thead><tr><th>Group</th><th style="text-align:right">Bets</th><th style="text-align:right">Hit rate</th>
+      <th style="text-align:right">Always-long</th><th style="text-align:right">Excess P&amp;L</th></tr></thead><tbody><tr><td>US equity ETFs</td><td class="mono" style="text-align:right;">1085</td>
+        <td class="mono" style="text-align:right;">83%</td><td class="mono" style="text-align:right;">73%</td>
+        <td class="mono" style="text-align:right;color:var(--green);">+1.60%</td></tr><tr><td>World / regional ETFs</td><td class="mono" style="text-align:right;">1743</td>
+        <td class="mono" style="text-align:right;">74%</td><td class="mono" style="text-align:right;">65%</td>
+        <td class="mono" style="text-align:right;color:var(--green);">+1.46%</td></tr><tr><td>Sector ETFs</td><td class="mono" style="text-align:right;">2650</td>
+        <td class="mono" style="text-align:right;">77%</td><td class="mono" style="text-align:right;">69%</td>
+        <td class="mono" style="text-align:right;color:var(--green);">+1.43%</td></tr><tr><td>Factor ETFs</td><td class="mono" style="text-align:right;">953</td>
+        <td class="mono" style="text-align:right;">80%</td><td class="mono" style="text-align:right;">73%</td>
+        <td class="mono" style="text-align:right;color:var(--green);">+1.34%</td></tr><tr><td>Metals ETFs</td><td class="mono" style="text-align:right;">497</td>
+        <td class="mono" style="text-align:right;">66%</td><td class="mono" style="text-align:right;">62%</td>
+        <td class="mono" style="text-align:right;color:var(--green);">+0.83%</td></tr><tr><td>Bond ETFs</td><td class="mono" style="text-align:right;">1246</td>
+        <td class="mono" style="text-align:right;">62%</td><td class="mono" style="text-align:right;">68%</td>
+        <td class="mono" style="text-align:right;color:var(--red);">-0.07%</td></tr><tr><td>Other commodity ETFs</td><td class="mono" style="text-align:right;">577</td>
+        <td class="mono" style="text-align:right;">58%</td><td class="mono" style="text-align:right;">62%</td>
+        <td class="mono" style="text-align:right;color:var(--red);">-1.07%</td></tr></tbody></table>
+    <div class="note">Hit rate here counts a win when the target is hit first, or when the 21 days end with a positive return. The break-even
+    hit rate is |average loss| &divide; (average win + |average loss|), the stock version of 1 &divide; odds. It sits well below the hit
+    rate for any long position because most bets end on the time limit with small gains; the fair comparison is the &ldquo;same ETFs
+    always-long&rdquo; column, i.e. what buying every one of these ETFs on every day would have scored.</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>How this works:</strong> the same recipe as the football board. A pick appears only when <b>both</b> form conditions hold on the latest
+  close: <code>1-month return in the bottom 10% of the ETF's own last 5 years</code> and <code>1-month volatility relative to 1-year
+  volatility in the top 10%</code> &mdash; percentile cut-offs of each ETF's own point-in-time history, not fitted values. Of the
+  99 two-condition and one-condition rules tested, the rule is chosen each year using only outcomes already
+  complete before 1 January, and the table above pools the following year's bets, never seen when the rule was chosen. A rule may fire on
+  at most 6% of ETF-days; a horizon publishes picks only if its pooled out-of-sample cluster t-statistic is at least 2.
+  <br><br><b>Read this before using it:</b> the effective sample is the number of separate market episodes, not the number of bets &mdash;
+  ETFs dip together, so 8,751 bets stand on roughly 127 months, and the t-statistic is indicative only. The edge is in
+  equity-type ETFs; bond and commodity ETFs show none (table above), and 2026 so far is negative. Single stocks are excluded: the ten in the
+  stored price panel were picked after they became large, which inflates any backtest. Costs are 5 bps round trip; entry is assumed at the
+  next close after the signal, so there is no look-ahead, but real fills will differ. Validated on past data only; the live record above is the
+  real test. This page lists candidates only &mdash; it never places a trade or touches an account, and it is research, not advice.
+  &nbsp;.&nbsp; <strong>Dr. Arun Ramanathan</strong>
+</div>
+
+</div>

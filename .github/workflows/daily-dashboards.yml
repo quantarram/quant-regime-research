@@ -105,6 +105,13 @@ jobs:
         working-directory: notebooks
         run: python cpe_signal_ledger.py
 
+      # Stock board (ETF dip + volatility rule, walk-forward validated; rule frozen in stock_board/stock_board_rule.json).
+      # continue-on-error so a failure here never discards the day's core data and ledgers.
+      - name: Build stock board
+        working-directory: notebooks
+        continue-on-error: true
+        run: python stock_board/build_stock_board.py
+
       # Display-only panel: if it ever fails, still commit the day's core data and ledgers
       # (2026-10-11: a text-vs-number bug here discarded an entire day's run).
       - name: Build performance monitor
@@ -123,6 +130,7 @@ jobs:
             predictor_dashboard.html performance_monitor.html predictor_forecasts.csv cpe_signal_events.csv monitor_history.csv ibkr_paper_ledger.csv multiasset_prices_live_history.parquet \
             football_betting/output/dashboard.html football_betting/output/dashboard_qualifying.json \
             football_betting/output/qualifying_log.csv football_betting/output/odds_history.csv \
+            stock_board/stock_board.html stock_board/stock_board_log.csv \
             football_betting/data/matches.parquet \
             football_betting/data/season_cache/*_last_good.parquet
           if git diff --cached --quiet; then

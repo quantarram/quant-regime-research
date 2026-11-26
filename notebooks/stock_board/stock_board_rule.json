@@ -1,0 +1,794 @@
+{
+ "frozen_at": "2026-11-26 15:33 UTC",
+ "data_through": "2026-11-25",
+ "params": {
+  "k_target": 0.5,
+  "k_stop": 1.5,
+  "cost_round_trip": 0.0005,
+  "vol_window": 63,
+  "pct_window": 1260,
+  "first_oos_year": 2010,
+  "max_fire_rate": 0.06,
+  "min_blocks": 30,
+  "t_gate": 2.0,
+  "n_rules_tested": 99
+ },
+ "universe": {
+  "SPY": {
+   "name": "SPDR S&P 500 ETF",
+   "group": "US equity ETFs"
+  },
+  "QQQ": {
+   "name": "Invesco Nasdaq-100 ETF",
+   "group": "US equity ETFs"
+  },
+  "IWM": {
+   "name": "iShares Russell 2000 ETF",
+   "group": "US equity ETFs"
+  },
+  "DIA": {
+   "name": "SPDR Dow Jones ETF",
+   "group": "US equity ETFs"
+  },
+  "VTI": {
+   "name": "Vanguard Total Stock Market ETF",
+   "group": "US equity ETFs"
+  },
+  "VT": {
+   "name": "Vanguard Total World ETF",
+   "group": "World / regional ETFs"
+  },
+  "EFA": {
+   "name": "iShares MSCI EAFE ETF",
+   "group": "World / regional ETFs"
+  },
+  "EEM": {
+   "name": "iShares MSCI Emerging Markets ETF",
+   "group": "World / regional ETFs"
+  },
+  "VEA": {
+   "name": "Vanguard Developed Markets ETF",
+   "group": "World / regional ETFs"
+  },
+  "VWO": {
+   "name": "Vanguard Emerging Markets ETF",
+   "group": "World / regional ETFs"
+  },
+  "EWJ": {
+   "name": "iShares MSCI Japan ETF",
+   "group": "World / regional ETFs"
+  },
+  "EWZ": {
+   "name": "iShares MSCI Brazil ETF",
+   "group": "World / regional ETFs"
+  },
+  "FXI": {
+   "name": "iShares China Large-Cap ETF",
+   "group": "World / regional ETFs"
+  },
+  "INDA": {
+   "name": "iShares MSCI India ETF",
+   "group": "World / regional ETFs"
+  },
+  "EWY": {
+   "name": "iShares MSCI South Korea ETF",
+   "group": "World / regional ETFs"
+  },
+  "XLK": {
+   "name": "Technology SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLF": {
+   "name": "Financial SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLE": {
+   "name": "Energy SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLV": {
+   "name": "Health Care SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLI": {
+   "name": "Industrial SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLP": {
+   "name": "Consumer Staples SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLY": {
+   "name": "Consumer Discretionary SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLU": {
+   "name": "Utilities SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLRE": {
+   "name": "Real Estate SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLB": {
+   "name": "Materials SPDR",
+   "group": "Sector ETFs"
+  },
+  "XLC": {
+   "name": "Comms SPDR",
+   "group": "Sector ETFs"
+  },
+  "XBI": {
+   "name": "SPDR S&P Biotech ETF",
+   "group": "Sector ETFs"
+  },
+  "SOXX": {
+   "name": "iShares Semiconductor ETF",
+   "group": "Sector ETFs"
+  },
+  "ITB": {
+   "name": "iShares US Home Construction ETF",
+   "group": "Sector ETFs"
+  },
+  "ICLN": {
+   "name": "iShares Global Clean Energy ETF",
+   "group": "Sector ETFs"
+  },
+  "ARKK": {
+   "name": "ARK Innovation ETF",
+   "group": "Sector ETFs"
+  },
+  "VTV": {
+   "name": "Vanguard Value ETF",
+   "group": "Factor ETFs"
+  },
+  "VUG": {
+   "name": "Vanguard Growth ETF",
+   "group": "Factor ETFs"
+  },
+  "MTUM": {
+   "name": "iShares Momentum Factor ETF",
+   "group": "Factor ETFs"
+  },
+  "USMV": {
+   "name": "iShares Min Vol Factor ETF",
+   "group": "Factor ETFs"
+  },
+  "QUAL": {
+   "name": "iShares Quality Factor ETF",
+   "group": "Factor ETFs"
+  },
+  "SIZE": {
+   "name": "iShares Size Factor ETF",
+   "group": "Factor ETFs"
+  },
+  "GLD": {
+   "name": "SPDR Gold",
+   "group": "Metals ETFs"
+  },
+  "SLV": {
+   "name": "iShares Silver",
+   "group": "Metals ETFs"
+  },
+  "PPLT": {
+   "name": "Aberdeen Platinum",
+   "group": "Metals ETFs"
+  },
+  "PALL": {
+   "name": "Aberdeen Palladium",
+   "group": "Metals ETFs"
+  },
+  "USO": {
+   "name": "US Oil Fund (WTI)",
+   "group": "Other commodity ETFs"
+  },
+  "DBC": {
+   "name": "Invesco DB Commodity",
+   "group": "Other commodity ETFs"
+  },
+  "DBB": {
+   "name": "Invesco DB Base Metals",
+   "group": "Other commodity ETFs"
+  },
+  "CPER": {
+   "name": "US Copper Index Fund",
+   "group": "Other commodity ETFs"
+  },
+  "TLT": {
+   "name": "iShares 20Y+ Treasury",
+   "group": "Bond ETFs"
+  },
+  "IEF": {
+   "name": "iShares 7-10Y Treasury",
+   "group": "Bond ETFs"
+  },
+  "LQD": {
+   "name": "iShares IG Corp Bond",
+   "group": "Bond ETFs"
+  },
+  "HYG": {
+   "name": "iShares HY Corp Bond",
+   "group": "Bond ETFs"
+  },
+  "EMB": {
+   "name": "iShares EM Bond",
+   "group": "Bond ETFs"
+  },
+  "AGG": {
+   "name": "iShares Core US Aggregate",
+   "group": "Bond ETFs"
+  },
+  "TIP": {
+   "name": "iShares TIPS",
+   "group": "Bond ETFs"
+  }
+ },
+ "horizons": {
+  "21": {
+   "oos": {
+    "n": 8751,
+    "n_ep": 703,
+    "n_blk": 127,
+    "hit": 0.7345446234716032,
+    "pnl": 0.015344512225270317,
+    "avg_win": 0.044843006379380004,
+    "avg_loss": 0.06628110999712188,
+    "be": 0.5964601758681571,
+    "base_hit": 0.6825797405274553,
+    "base_pnl": 0.004995441604640007,
+    "exc_pnl": 0.01034907062063031,
+    "t": 2.9732222288820878,
+    "lift": 0.05196488294414792
+   },
+   "always_long": {
+    "n": 210963,
+    "n_ep": 52,
+    "n_blk": 203,
+    "hit": 0.6767158222057896,
+    "pnl": 0.004789865536908657,
+    "avg_win": 0.02904900342160491,
+    "avg_loss": 0.04599066616636557,
+    "be": 0.6128847104323908,
+    "base_hit": 0.6767158222057895,
+    "base_pnl": 0.004789865536908656,
+    "exc_pnl": -1.2840849722867905e-19,
+    "t": -0.1673932144392138,
+    "lift": 1.1102230246251565e-16
+   },
+   "validated": true,
+   "yearly": [
+    {
+     "year": 2010,
+     "n": 328,
+     "hit": 0.698170731707317,
+     "base_hit": 0.6983978738043869,
+     "pnl": 0.0003138380778261702,
+     "exc": -0.00556880757691006
+    },
+    {
+     "year": 2011,
+     "n": 1064,
+     "hit": 0.6719924812030075,
+     "base_hit": 0.670407048436996,
+     "pnl": 0.015180128611612276,
+     "exc": 0.01046432267167366
+    },
+    {
+     "year": 2013,
+     "n": 773,
+     "hit": 0.6597671410090556,
+     "base_hit": 0.6585388643889979,
+     "pnl": 0.00759429176634064,
+     "exc": 0.004980482197754457
+    },
+    {
+     "year": 2014,
+     "n": 1013,
+     "hit": 0.7384007897334649,
+     "base_hit": 0.6711867408575017,
+     "pnl": 0.0017082674736905706,
+     "exc": -0.003124904254630956
+    },
+    {
+     "year": 2015,
+     "n": 669,
+     "hit": 0.7384155455904334,
+     "base_hit": 0.6871447185081296,
+     "pnl": 0.010712654796601544,
+     "exc": 0.005319183041950428
+    },
+    {
+     "year": 2016,
+     "n": 245,
+     "hit": 0.8244897959183674,
+     "base_hit": 0.6871470443025182,
+     "pnl": 0.022550396526855785,
+     "exc": 0.017602079185231028
+    },
+    {
+     "year": 2017,
+     "n": 25,
+     "hit": 1.0,
+     "base_hit": 0.696472784846912,
+     "pnl": 0.037385304931629504,
+     "exc": 0.028566235125385572
+    },
+    {
+     "year": 2018,
+     "n": 1097,
+     "hit": 0.740200546946217,
+     "base_hit": 0.7040871712043428,
+     "pnl": 0.013452060229357625,
+     "exc": 0.007027007992198437
+    },
+    {
+     "year": 2019,
+     "n": 168,
+     "hit": 0.9642857142857143,
+     "base_hit": 0.7002090036909979,
+     "pnl": 0.03513177975616096,
+     "exc": 0.029467471784096446
+    },
+    {
+     "year": 2020,
+     "n": 1329,
+     "hit": 0.7547027840481565,
+     "base_hit": 0.6807277705825566,
+     "pnl": 0.029201729700716113,
+     "exc": 0.024094658849039365
+    },
+    {
+     "year": 2021,
+     "n": 104,
+     "hit": 0.7884615384615384,
+     "base_hit": 0.6439857859841871,
+     "pnl": 0.026608744748493764,
+     "exc": 0.023521333285290935
+    },
+    {
+     "year": 2022,
+     "n": 1191,
+     "hit": 0.7044500419815282,
+     "base_hit": 0.6949248838581211,
+     "pnl": 0.012684732258483688,
+     "exc": 0.00790875002638328
+    },
+    {
+     "year": 2023,
+     "n": 10,
+     "hit": 1.0,
+     "base_hit": 0.7084952169942264,
+     "pnl": 0.033559981776320344,
+     "exc": 0.02686120141650685
+    },
+    {
+     "year": 2024,
+     "n": 116,
+     "hit": 0.896551724137931,
+     "base_hit": 0.6797137966536763,
+     "pnl": 0.031909411970475574,
+     "exc": 0.02617113998223122
+    },
+    {
+     "year": 2025,
+     "n": 397,
+     "hit": 0.906801007556675,
+     "base_hit": 0.6851671033064917,
+     "pnl": 0.04360395251670227,
+     "exc": 0.03781600453208748
+    },
+    {
+     "year": 2026,
+     "n": 222,
+     "hit": 0.5990990990990991,
+     "base_hit": 0.671906472275194,
+     "pnl": -0.00852572855192464,
+     "exc": -0.012956124012527576
+    }
+   ],
+   "by_group": [
+    {
+     "group": "Bond ETFs",
+     "n": 1246,
+     "hit": 0.6203852327447833,
+     "base_hit": 0.6800443640969278,
+     "pnl": 0.0004992118304774213,
+     "exc": -0.0007492184762225667
+    },
+    {
+     "group": "Factor ETFs",
+     "n": 953,
+     "hit": 0.8006295907660022,
+     "base_hit": 0.7314193786068851,
+     "pnl": 0.019723316221950064,
+     "exc": 0.013404995030280717
+    },
+    {
+     "group": "Metals ETFs",
+     "n": 497,
+     "hit": 0.6639839034205232,
+     "base_hit": 0.6171853779326014,
+     "pnl": 0.010502178813608114,
+     "exc": 0.008313639509715608
+    },
+    {
+     "group": "Other commodity ETFs",
+     "n": 577,
+     "hit": 0.5788561525129983,
+     "base_hit": 0.6231722133307843,
+     "pnl": -0.008916737925601043,
+     "exc": -0.010722786507113825
+    },
+    {
+     "group": "Sector ETFs",
+     "n": 2650,
+     "hit": 0.7667924528301887,
+     "base_hit": 0.6939194845907669,
+     "pnl": 0.021740378403815652,
+     "exc": 0.014334499481362502
+    },
+    {
+     "group": "US equity ETFs",
+     "n": 1085,
+     "hit": 0.832258064516129,
+     "base_hit": 0.7257624688203265,
+     "pnl": 0.023224037477105115,
+     "exc": 0.015968422379393988
+    },
+    {
+     "group": "World / regional ETFs",
+     "n": 1743,
+     "hit": 0.7418244406196214,
+     "base_hit": 0.6518800637513922,
+     "pnl": 0.018345828837054105,
+     "exc": 0.014610608163898187
+    }
+   ],
+   "rules_by_year": {
+    "2010": "mom21_lo + trend_hi @70th pct",
+    "2011": "mom21_lo + vol_stressed @80th pct",
+    "2012": "mom21_lo + vol_stressed @90th pct",
+    "2013": "mom21_lo + vol_stressed @80th pct",
+    "2014": "mom21_lo + vol_stressed @80th pct",
+    "2015": "mom21_lo + vol_stressed @90th pct",
+    "2016": "mom21_lo + vol_stressed @90th pct",
+    "2017": "mom21_lo + vol_stressed @90th pct",
+    "2018": "mom21_lo + vol_stressed @90th pct",
+    "2019": "mom21_lo + vol_stressed @90th pct",
+    "2020": "mom21_lo + vol_stressed @90th pct",
+    "2021": "mom21_lo + vol_stressed @90th pct",
+    "2022": "mom21_lo + vol_stressed @90th pct",
+    "2023": "mom21_lo + vol_stressed @90th pct",
+    "2024": "mom21_lo + vol_stressed @90th pct",
+    "2025": "mom21_lo + vol_stressed @90th pct",
+    "2026": "mom21_lo + vol_stressed @90th pct"
+   },
+   "live_rule": {
+    "conditions": [
+     "mom21_lo",
+     "vol_stressed"
+    ],
+    "q": 0.9,
+    "label": "mom21_lo + vol_stressed @90th pct",
+    "selected_on": {
+     "n": 9305,
+     "n_ep": 765,
+     "n_blk": 161,
+     "hit": 0.7239118753358409,
+     "pnl": 0.014072230861432236,
+     "avg_win": 0.05079294103606595,
+     "avg_loss": 0.08221064330607755,
+     "be": 0.6181084796526668,
+     "base_hit": 0.6797437986560021,
+     "base_pnl": 0.004789795904803935,
+     "exc_pnl": 0.009282434956628298,
+     "t": 4.103690094003587,
+     "lift": 0.0441680766798388
+    }
+   }
+  },
+  "63": {
+   "oos": {
+    "n": 4229,
+    "n_ep": 390,
+    "n_blk": 59,
+    "hit": 0.7363442894301253,
+    "pnl": 0.01611302312921278,
+    "avg_win": 0.05126194893922573,
+    "avg_loss": 0.08205177953659915,
+    "be": 0.6154788443373139,
+    "base_hit": 0.7258991980022285,
+    "base_pnl": 0.013343945711298115,
+    "exc_pnl": 0.002769077417914664,
+    "t": 0.26142890766018473,
+    "lift": 0.010445091427896847
+   },
+   "always_long": {
+    "n": 209687,
+    "n_ep": 52,
+    "n_blk": 68,
+    "hit": 0.7357823804050799,
+    "pnl": 0.013670784352901963,
+    "avg_win": 0.04750103632973264,
+    "avg_loss": 0.08053831255508755,
+    "be": 0.6290122002068056,
+    "base_hit": 0.7357823804050799,
+    "base_pnl": 0.013670784352901958,
+    "exc_pnl": 1.2071842775877173e-19,
+    "t": -0.17261612863675393,
+    "lift": 0.0
+   },
+   "validated": false,
+   "yearly": [
+    {
+     "year": 2010,
+     "n": 328,
+     "hit": 0.6829268292682927,
+     "base_hit": 0.7709076611057801,
+     "pnl": 0.00827578017285373,
+     "exc": -0.008379794348206149
+    },
+    {
+     "year": 2011,
+     "n": 260,
+     "hit": 0.8038461538461539,
+     "base_hit": 0.735175813287359,
+     "pnl": 0.021832790336872975,
+     "exc": 0.007750067633655328
+    },
+    {
+     "year": 2012,
+     "n": 98,
+     "hit": 0.8367346938775511,
+     "base_hit": 0.738707598823482,
+     "pnl": 0.036332373573193195,
+     "exc": 0.01788415145645957
+    },
+    {
+     "year": 2013,
+     "n": 150,
+     "hit": 0.8066666666666666,
+     "base_hit": 0.7373639893494885,
+     "pnl": 0.030471254529836227,
+     "exc": 0.015644855105725507
+    },
+    {
+     "year": 2014,
+     "n": 55,
+     "hit": 0.8727272727272727,
+     "base_hit": 0.7436351002946603,
+     "pnl": 0.021817006159918346,
+     "exc": 0.007411732852244759
+    },
+    {
+     "year": 2015,
+     "n": 97,
+     "hit": 0.422680412371134,
+     "base_hit": 0.7060524954590981,
+     "pnl": -0.06711286567783935,
+     "exc": -0.07821633763436511
+    },
+    {
+     "year": 2016,
+     "n": 366,
+     "hit": 0.6666666666666666,
+     "base_hit": 0.6946897411512366,
+     "pnl": 0.017071862946676317,
+     "exc": 0.007779796245703551
+    },
+    {
+     "year": 2017,
+     "n": 287,
+     "hit": 0.9581881533101045,
+     "base_hit": 0.7317693057376703,
+     "pnl": 0.03393533371184202,
+     "exc": 0.019396470743971023
+    },
+    {
+     "year": 2018,
+     "n": 273,
+     "hit": 0.5934065934065934,
+     "base_hit": 0.7403331845026195,
+     "pnl": 0.005770406070769429,
+     "exc": -0.009603048823467766
+    },
+    {
+     "year": 2019,
+     "n": 136,
+     "hit": 0.8970588235294118,
+     "base_hit": 0.6991068439532,
+     "pnl": 0.030730744635226855,
+     "exc": 0.02392862308665093
+    },
+    {
+     "year": 2020,
+     "n": 621,
+     "hit": 0.8067632850241546,
+     "base_hit": 0.7404226967407636,
+     "pnl": 0.02959982881328246,
+     "exc": 0.0158852937942648
+    },
+    {
+     "year": 2021,
+     "n": 965,
+     "hit": 0.7844559585492228,
+     "base_hit": 0.7324068769479913,
+     "pnl": 0.02037490020764381,
+     "exc": 0.005789061837723247
+    },
+    {
+     "year": 2022,
+     "n": 53,
+     "hit": 0.5471698113207547,
+     "base_hit": 0.679181915903536,
+     "pnl": -0.007609140904869932,
+     "exc": -0.017711048562580548
+    },
+    {
+     "year": 2023,
+     "n": 91,
+     "hit": 0.27472527472527475,
+     "base_hit": 0.7068985611682956,
+     "pnl": -0.024893809053249026,
+     "exc": -0.03189862495191316
+    },
+    {
+     "year": 2024,
+     "n": 3,
+     "hit": 1.0,
+     "base_hit": 0.625914882081865,
+     "pnl": 0.04412705905722234,
+     "exc": 0.039820770803704435
+    },
+    {
+     "year": 2025,
+     "n": 3,
+     "hit": 1.0,
+     "base_hit": 0.6813632030505244,
+     "pnl": 0.06085916805472178,
+     "exc": 0.05306054447452615
+    },
+    {
+     "year": 2026,
+     "n": 443,
+     "hit": 0.6049661399548533,
+     "base_hit": 0.6798063576542025,
+     "pnl": -0.0011338813837143836,
+     "exc": -0.012215126105123656
+    }
+   ],
+   "by_group": [
+    {
+     "group": "Bond ETFs",
+     "n": 505,
+     "hit": 0.6455445544554456,
+     "base_hit": 0.7062035080065457,
+     "pnl": 0.0010312954749505969,
+     "exc": -0.00200329995252542
+    },
+    {
+     "group": "Factor ETFs",
+     "n": 362,
+     "hit": 0.8812154696132597,
+     "base_hit": 0.8231383584390776,
+     "pnl": 0.026034763764583496,
+     "exc": 0.007538261523655729
+    },
+    {
+     "group": "Metals ETFs",
+     "n": 480,
+     "hit": 0.4979166666666667,
+     "base_hit": 0.6515929473544362,
+     "pnl": -0.02184778709858604,
+     "exc": -0.029963399299678974
+    },
+    {
+     "group": "Other commodity ETFs",
+     "n": 461,
+     "hit": 0.8394793926247288,
+     "base_hit": 0.642614277448247,
+     "pnl": 0.042213915361884825,
+     "exc": 0.03671639133968779
+    },
+    {
+     "group": "Sector ETFs",
+     "n": 1291,
+     "hit": 0.7738187451587917,
+     "base_hit": 0.7615306582516533,
+     "pnl": 0.023371873273990762,
+     "exc": 0.0030882690844802638
+    },
+    {
+     "group": "US equity ETFs",
+     "n": 402,
+     "hit": 0.8233830845771144,
+     "base_hit": 0.8074836592575959,
+     "pnl": 0.024297387598826096,
+     "exc": 0.003992672093393102
+    },
+    {
+     "group": "World / regional ETFs",
+     "n": 728,
+     "hit": 0.7046703296703297,
+     "base_hit": 0.6847040433996744,
+     "pnl": 0.012750371881667291,
+     "exc": 0.0025513872135506342
+    }
+   ],
+   "rules_by_year": {
+    "2010": "mom21_lo + trend_hi @70th pct",
+    "2011": "mom21_lo + trend_hi @70th pct",
+    "2012": "mom21_lo + trend_hi @70th pct",
+    "2013": "mom21_lo + trend_hi @70th pct",
+    "2014": "mom21_lo + trend_hi @70th pct",
+    "2015": "mom21_lo + trend_hi @70th pct",
+    "2016": "mom21_lo + trend_hi @70th pct",
+    "2017": "mom21_lo + trend_hi @70th pct",
+    "2018": "mom21_lo + trend_hi @70th pct",
+    "2019": "mom21_lo + trend_hi @80th pct",
+    "2020": "mom21_lo + trend_hi @70th pct",
+    "2021": "mom21_lo + trend_hi @70th pct",
+    "2022": "mom21_lo + trend_hi @70th pct",
+    "2023": "trend_hi + dd_deep @70th pct",
+    "2024": "trend_hi + dd_deep @70th pct",
+    "2025": "trend_hi + dd_deep @70th pct",
+    "2026": "mom21_lo + trend_hi @70th pct"
+   },
+   "live_rule": null
+  }
+ },
+ "asof_bars": {
+  "SPY": "2026-11-25",
+  "QQQ": "2026-11-25",
+  "IWM": "2026-11-25",
+  "DIA": "2026-11-25",
+  "VTI": "2026-11-25",
+  "VT": "2026-11-25",
+  "EFA": "2026-11-25",
+  "EEM": "2026-11-25",
+  "VEA": "2026-11-25",
+  "VWO": "2026-11-25",
+  "EWJ": "2026-11-25",
+  "EWZ": "2026-11-25",
+  "FXI": "2026-11-25",
+  "INDA": "2026-11-25",
+  "EWY": "2026-11-25",
+  "XLK": "2026-11-25",
+  "XLF": "2026-11-25",
+  "XLE": "2026-11-25",
+  "XLV": "2026-11-25",
+  "XLI": "2026-11-25",
+  "XLP": "2026-11-25",
+  "XLY": "2026-11-25",
+  "XLU": "2026-11-25",
+  "XLRE": "2026-11-25",
+  "XLB": "2026-11-25",
+  "XLC": "2026-11-25",
+  "XBI": "2026-11-25",
+  "SOXX": "2026-11-25",
+  "ITB": "2026-11-25",
+  "ICLN": "2026-11-25",
+  "ARKK": "2026-11-25",
+  "VTV": "2026-11-25",
+  "VUG": "2026-11-25",
+  "MTUM": "2026-11-25",
+  "USMV": "2026-11-25",
+  "QUAL": "2026-11-25",
+  "SIZE": "2026-11-25",
+  "GLD": "2026-11-25",
+  "SLV": "2026-11-25",
+  "PPLT": "2026-11-25",
+  "PALL": "2026-11-25",
+  "USO": "2026-11-25",
+  "DBC": "2026-11-25",
+  "DBB": "2026-11-25",
+  "CPER": "2026-11-25",
+  "TLT": "2026-11-25",
+  "IEF": "2026-11-25",
+  "LQD": "2026-11-25",
+  "HYG": "2026-11-25",
+  "EMB": "2026-11-25",
+  "AGG": "2026-11-25",
+  "TIP": "2026-11-25"
+ }
+}
