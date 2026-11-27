@@ -42,13 +42,16 @@ def load_blocks(P, H):
     return ends, ret, reg
 
 
-def opponent_diff(ret, mode):
-    cls = pd.Series({t: F.ASSET_CLASS[t] for t in ret.columns})
+def opponent_diff(ret, mode, cls=None, spy_ret=None):
+    if cls is None:
+        cls = pd.Series({t: F.ASSET_CLASS[t] for t in ret.columns})
     if mode == "zero":
         return ret.copy()
     if mode == "spy":
-        d = ret.sub(ret["SPY"], axis=0)
-        d["SPY"] = 0.0
+        sr = ret["SPY"] if spy_ret is None else spy_ret
+        d = ret.sub(sr, axis=0)
+        if "SPY" in d.columns:
+            d["SPY"] = 0.0
         return d.where(ret.notna())
     out = pd.DataFrame(index=ret.index, columns=ret.columns, dtype=float)
     for c in cls.unique():
@@ -60,10 +63,10 @@ def opponent_diff(ret, mode):
     return out
 
 
-def build_cell(ret, reg, H, n_years, opp, band_pct, venue):
+def build_cell(ret, reg, H, n_years, opp, band_pct, venue, cls=None, spy_ret=None):
     N = max(4, int(round(n_years * 252 / H)))
     band = band_pct / 100.0 * np.sqrt(H / 21.0)
-    diff = opponent_diff(ret, opp)
+    diff = opponent_diff(ret, opp, cls, spy_ret)
     pts = pd.DataFrame(np.where(diff.isna(), np.nan, np.where(diff > band, 3.0, np.where(diff >= -band, 1.0, 0.0))),
                        index=ret.index, columns=ret.columns)
     B = len(pts)
@@ -83,7 +86,8 @@ def build_cell(ret, reg, H, n_years, opp, band_pct, venue):
         blk = P_[sel]
         ok = np.isfinite(blk).sum(axis=0) == N
         hppg[b, ok] = blk[:, ok].mean(axis=0)
-    cls = pd.Series({t: F.ASSET_CLASS[t] for t in ret.columns})
+    if cls is None:
+        cls = pd.Series({t: F.ASSET_CLASS[t] for t in ret.columns})
     ppg_df = pd.DataFrame(ppg, index=ret.index, columns=ret.columns)
     peer = pd.DataFrame({t: ppg_df[cls[cls == cls[t]].index.drop(t)].mean(axis=1) for t in ret.columns})
     fe = ppg_df - peer
@@ -99,7 +103,7 @@ def build_cell(ret, reg, H, n_years, opp, band_pct, venue):
     return T, band
 
 
-def picks(T, q, first_year, last_year, min_rows=800):
+def picks(T, q, first_year, last_year, min_rows=800, side="hi"):
     m = np.zeros(len(T), dtype=bool)
     yrs = T["date"].dt.year.values
     fe, hp = T["form_edge"].values, T["home_ppg"].values
@@ -108,9 +112,13 @@ def picks(T, q, first_year, last_year, min_rows=800):
         a, b = past["form_edge"].dropna(), past["home_ppg"].dropna()
         if len(a) < min_rows or len(b) < min_rows:
             continue
-        ta, tb = a.quantile(q), b.quantile(q)
         s = yrs == Y
-        m[s] = (fe[s] >= ta) & (hp[s] >= tb)
+        if side == "hi":
+            ta, tb = a.quantile(q), b.quantile(q)
+            m[s] = (fe[s] >= ta) & (hp[s] >= tb)
+        else:  # mirror: weakest form on both statistics
+            ta, tb = a.quantile(1 - q), b.quantile(1 - q)
+            m[s] = (fe[s] <= ta) & (hp[s] <= tb)
     return m
 
 
