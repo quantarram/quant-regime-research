@@ -69,6 +69,12 @@ def main(panel_path=None):
                 hz["live_rule"] = {"conditions": list(conds), "q": q, "label": C.rule_label(rules[j]),
                                    "selected_on": _clean(lst)}
         out["horizons"][str(h)] = hz
+    if out["horizons"]["21"]["validated"]:
+        import sb_sim as SIM
+        oos21 = oos[oos["h"] == 21]
+        sim = SIM.backtest_payload(oos21, P)
+        sim["data_through"] = str(asof.date())
+        (C.HERE / "stock_board_sim.json").write_text(json.dumps(sim, indent=1))
     out["asof_bars"] = {t: str(P[t].dropna().index[-1].date()) for t in C.ALL_TICKERS if t in P.columns}
     (C.HERE / "stock_board_rule.json").write_text(json.dumps(out, indent=1, default=str))
     return out

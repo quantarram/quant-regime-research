@@ -23,16 +23,18 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import sb_core as C  # noqa: E402
+import sb_sim as SIM  # noqa: E402
 
 SGT = ZoneInfo("Asia/Singapore")
 RULE_PATH = HERE / "stock_board_rule.json"
 LOG_PATH = HERE / "stock_board_log.csv"
 HTML_PATH = HERE / "stock_board.html"
+SIM_PATH = HERE / "stock_board_sim.json"
 STALE_DAYS = 6  # an instrument whose last bar is older than this (vs the panel's latest bar) is skipped
 
 LOG_COLS = ["signal_date", "ticker", "name", "group", "horizon", "rule", "ref_close", "sigma_h", "target_pct", "stop_pct",
             "status", "entry_date", "entry_px", "target_px", "stop_px", "exit_date", "exit_px", "outcome", "win", "pnl",
-            "bet_placed", "actual_stake", "actual_entry_px", "logged_at"]
+            "bet_placed", "actual_stake", "actual_entry_px", "logged_at", "mom21"]
 
 
 def load_log():
@@ -116,12 +118,148 @@ def update_log(log, sigs, feats, rule, now_utc):
         new_rows.append({"signal_date": sd, "ticker": g["ticker"], "name": rule["universe"][g["ticker"]]["name"],
                          "group": rule["universe"][g["ticker"]]["group"], "horizon": g["horizon"], "rule": g["rule"],
                          "ref_close": g["ref_close"], "sigma_h": g["sigma_h"], "target_pct": a, "stop_pct": b,
-                         "status": "PENDING_ENTRY", "bet_placed": False,
+                         "status": "PENDING_ENTRY", "bet_placed": False, "mom21": g["mom21"],
                          "logged_at": now_utc.strftime("%Y-%m-%d %H:%M UTC")})
     if new_rows:
         new = pd.DataFrame(new_rows).reindex(columns=LOG_COLS)
         log = new if log.empty else pd.concat([log, new], ignore_index=True)
     return log
+
+
+# ------------------------------------------------------------------------------------------- paper account
+
+def usd(x, d=0, sign=False):
+    return f"{'+' if sign and x >= 0 else ''}{'-' if x < 0 else ''}US${abs(x):,.{d}f}"
+
+
+def live_account(log, prices):
+    """Paper account built from the ledger: every bet that has entered, sized by sb_sim's rules."""
+    ent = log[log["status"].isin(["OPEN", "RESOLVED"])].copy()
+    if ent.empty:
+        return None
+    ent["rank"] = pd.to_numeric(ent["mom21"], errors="coerce").fillna(0.0)
+    tr = ent[["ticker", "entry_date", "entry_px", "exit_date", "pnl", "rank"]].copy()
+    tr["entry_px"] = tr["entry_px"].astype(float)
+    tr["pnl"] = pd.to_numeric(tr["pnl"], errors="coerce")
+    cols = sorted(set(tr["ticker"]) | {"SPY"})
+    irx = prices["^IRX"].dropna()
+    res = SIM.simulate(tr, prices[cols], cash_rate=irx)
+    E = res["equity"]
+    spy = prices["SPY"].dropna().reindex(E.index).ffill()
+    pos = res["positions"].copy()
+    last = prices[cols].ffill().iloc[-1]
+    rows = []
+    for _, p in pos.iterrows():
+        closed = pd.notna(p["exit_date"]) and pd.Timestamp(p["exit_date"]) <= E.index[-1]
+        ret = p["pnl"] if closed else last[p["ticker"]] / p["entry_px"] - 1
+        rows.append(dict(ticker=p["ticker"], entry_date=p["entry_date"], entry_px=p["entry_px"], last_px=float(last[p["ticker"]]),
+                         alloc=p["alloc"], ret=float(ret), dollars=float(p["alloc"] * ret), closed=bool(closed),
+                         exit_date=p["exit_date"] if closed else None))
+    return dict(E=E, spy=spy, positions=pd.DataFrame(rows), skipped=res["skipped"],
+                start=E.index[0], spy_ret=float(spy.iloc[-1] / spy.iloc[0] - 1))
+
+
+def paper_svg(m):
+    """Log-scale lines: paper account, SPY buy-and-hold, SPY at the account's own exposure (+ T-bills)."""
+    W, H, PL, PR, PT, PB = 900, 260, 52, 16, 14, 24
+    d = pd.to_datetime(m["dates"])
+    series = [("strategy", "#C9A84C", "Paper account (rule picks)"), ("spy", "#7A8F7A", "SPY buy and hold"),
+              ("matched", "#4D8FB8", "SPY at the account's average exposure + T-bills")]
+    allv = np.log(np.array([v for k, _, _ in series for v in m[k]]))
+    lo, hi = allv.min(), allv.max()
+    span = hi - lo or 1
+    x = lambda i: PL + i / max(len(d) - 1, 1) * (W - PL - PR)
+    y = lambda v: H - PB - (np.log(v) - lo) / span * (H - PT - PB)
+    out = [f'<svg viewBox="0 0 {W} {H}" style="width:100%;height:260px;">']
+    for lvl in (100, 200, 400, 800):
+        if np.log(lvl) < lo - 0.05 or np.log(lvl) > hi + 0.05:
+            continue
+        out.append(f'<line x1="{PL}" y1="{y(lvl):.1f}" x2="{W - PR}" y2="{y(lvl):.1f}" stroke="#2C302C" stroke-dasharray="3,3"/>'
+                   f'<text x="{PL - 8}" y="{y(lvl) + 4:.1f}" text-anchor="end" font-family="monospace" font-size="10" fill="#7A8F7A">{lvl}</text>')
+    for yr in sorted(set(d.year)):
+        if yr % 2:
+            continue
+        i = int(np.argmax(d.year == yr))
+        out.append(f'<text x="{x(i):.1f}" y="{H - 6}" text-anchor="middle" font-family="monospace" font-size="9" fill="#7A8F7A">{yr}</text>')
+    for k, col, _ in series:
+        pts = " ".join(f"{x(i):.1f},{y(v):.1f}" for i, v in enumerate(m[k]))
+        out.append(f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2"/>')
+        out.append(f'<text x="{W - PR - 2}" y="{y(m[k][-1]) - 5:.1f}" text-anchor="end" font-family="monospace" font-size="10" fill="{col}">{m[k][-1]:.0f}</text>')
+    out.append("</svg>")
+    legend = "".join(f'<span style="margin-right:16px;"><span style="display:inline-block;width:10px;height:3px;background:{c};vertical-align:middle;margin-right:5px;"></span>{lab}</span>' for _, c, lab in series)
+    return "".join(out) + f'<div class="note" style="margin-top:4px;">{legend} &nbsp; (start = 100, log scale, month-end)</div>'
+
+
+def paper_section(sim, live, rule):
+    p = sim["params"] if sim else dict(start_equity=SIM.START_EQUITY, weight=SIM.WEIGHT, max_pos=SIM.MAX_POS)
+    start_eq = p["start_equity"]
+    # ---- live account
+    if live is None:
+        live_html = f"""<div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+          <div><div class="buy-stat-l">Paper account</div><span>{usd(start_eq)}</span></div>
+          <div><div class="buy-stat-l">Status</div><span style="color:var(--gold)">waiting for the first entry (next close after the first signal)</span></div></div>"""
+    else:
+        E, pos = live["E"], live["positions"]
+        eq = float(E["equity"].iloc[-1])
+        inv = float(E["exposure"].iloc[-1])
+        n_open = int((~pos["closed"]).sum()) if len(pos) else 0
+        col = "var(--green)" if eq >= start_eq else "var(--red)"
+        live_html = f"""<div class="buy-stats" style="border-top:none;padding-top:0;margin-top:0;">
+          <div><div class="buy-stat-l">Account value</div><span style="color:{col}">{usd(eq)}</span></div>
+          <div><div class="buy-stat-l">Return since {live['start'].strftime('%d %b %Y')}</div><span style="color:{col}">{(eq / start_eq - 1) * 100:+.2f}%</span></div>
+          <div><div class="buy-stat-l">SPY over the same days</div><span>{live['spy_ret'] * 100:+.2f}%</span></div>
+          <div><div class="buy-stat-l">Invested</div><span>{inv * 100:.0f}%</span></div>
+          <div><div class="buy-stat-l">Open positions</div><span>{n_open}</span></div>
+          <div><div class="buy-stat-l">Picks skipped (account full)</div><span>{live['skipped']}</span></div></div>"""
+        rows = ""
+        for _, r in pos.sort_values("entry_date").iterrows():
+            c = "var(--green)" if r["dollars"] >= 0 else "var(--red)"
+            rows += (f'<tr><td class="mono">{r["ticker"]}</td><td class="mono">{pd.Timestamp(r["entry_date"]).strftime("%d %b %Y")}</td>'
+                     f'<td class="mono" style="text-align:right;">{r["entry_px"]:.2f}</td><td class="mono" style="text-align:right;">{r["last_px"]:.2f}</td>'
+                     f'<td class="mono" style="text-align:right;">{usd(r["alloc"])}</td>'
+                     f'<td class="mono" style="text-align:right;color:{c};">{usd(r["dollars"], 0, True)} ({r["ret"] * 100:+.1f}%)</td>'
+                     f'<td class="mono">{"closed " + pd.Timestamp(r["exit_date"]).strftime("%d %b") if r["closed"] else "open"}</td></tr>')
+        live_html += f"""<div class="card" style="padding:0;overflow:hidden;margin-top:14px;"><table class="tilt-table"><thead><tr>
+          <th>ETF</th><th>Bought</th><th style="text-align:right">Entry</th><th style="text-align:right">Last</th><th style="text-align:right">Size</th>
+          <th style="text-align:right">P&amp;L</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table></div>"""
+    # ---- backtest
+    bt = ""
+    if sim:
+        s = sim["stats"]
+        w = sim["worst"]
+        yrs = sim["yearly"]
+        yrow = "".join(f'<td class="mono" style="text-align:right;color:{"var(--green)" if v["strategy"] >= 0 else "var(--red)"};">{v["strategy"] * 100:+.0f}%</td>' for v in yrs.values())
+        yrow_s = "".join(f'<td class="mono" style="text-align:right;color:var(--muted);">{v["spy"] * 100:+.0f}%</td>' for v in yrs.values())
+        yhead = "".join(f'<th style="text-align:right">{y[2:]}</th>' for y in yrs)
+        bt = f"""
+    <div class="section-title" style="margin-top:26px;">What following every pick would have done, 2010 &ndash; {sim['data_through'][:4]} (walk-forward rules, same sizing)</div>
+    {paper_svg(sim['monthly'])}
+    <table class="tilt-table" style="margin-top:12px;"><thead><tr><th></th><th style="text-align:right">Total return</th><th style="text-align:right">Per year</th>
+      <th style="text-align:right">Worst drop</th></tr></thead><tbody>
+      <tr><td>Paper account (rule picks)</td><td class="mono" style="text-align:right;">{s['total_return'] * 100:+.0f}%</td><td class="mono" style="text-align:right;">{s['cagr'] * 100:.1f}%</td><td class="mono" style="text-align:right;color:var(--red);">{s['max_drawdown'] * 100:.0f}%</td></tr>
+      <tr><td>SPY at the account's average exposure ({s['avg_exposure'] * 100:.0f}%) + T-bills</td><td class="mono" style="text-align:right;">{s['matched_total'] * 100:+.0f}%</td><td class="mono" style="text-align:right;">{s['matched_cagr'] * 100:.1f}%</td><td class="mono" style="text-align:right;color:var(--red);">{s['matched_dd'] * 100:.0f}%</td></tr>
+      <tr><td>SPY buy and hold (fully invested)</td><td class="mono" style="text-align:right;">{s['bench_total'] * 100:+.0f}%</td><td class="mono" style="text-align:right;">{s['bench_cagr'] * 100:.1f}%</td><td class="mono" style="text-align:right;color:var(--red);">{s['bench_dd'] * 100:.0f}%</td></tr>
+    </tbody></table>
+    <div style="overflow-x:auto;margin-top:12px;"><table class="tilt-table"><thead><tr><th>Year</th>{yhead}</tr></thead><tbody>
+      <tr><td>Paper account</td>{yrow}</tr><tr><td style="color:var(--muted);">SPY</td>{yrow_s}</tr></tbody></table></div>
+    <div class="note"><b>Read this plainly:</b> following these picks with 10% per ETF would have returned about {s['cagr'] * 100:.1f}% a year, less than SPY at the same average
+    exposure ({s['matched_cagr'] * 100:.1f}%) and far less than holding SPY ({s['bench_cagr'] * 100:.1f}%). The account was invested only {s['avg_exposure'] * 100:.0f}% of the time on average,
+    then went from {w['exposure_peak'] * 100:.0f}% to {w['exposure_trough'] * 100:.0f}% invested as dips piled up in the February&ndash;March 2020 fall and lost {abs(w['dd']) * 100:.0f}%
+    ({w['peak']} to {w['trough']}). The picks that were funded won {sim['funded_hit'] * 100:.0f}% of the time for an average {sim['funded_mean_pnl'] * 100:+.2f}% per pick
+    ({sim['n_funded']} funded, {sim['n_skipped']} skipped because the account was full or already held the ETF), far below the {rule['horizons']['21']['oos']['pnl'] * 100:+.2f}% per bet in the
+    evidence table, because that table counts every qualifying ETF on every day, mostly the same market bounce many times over. The rule's per-bet statistics are real;
+    they do not add up to a strategy that beats holding SPY.</div>"""
+    return f"""<div class="section">
+  <div class="section-title">Paper Account &mdash; {usd(start_eq)} of simulated money, {p['weight'] * 100:.0f}% per pick, at most {p['max_pos']} positions</div>
+  <div class="card">
+    {live_html}
+    <div class="note">Rules: each pick is bought at its entry close with {p['weight'] * 100:.0f}% of the account's value, no leverage; at most {p['max_pos']} positions at once and one per ETF
+    (the deepest 1-month drop is funded first); sold at the target, stop or time limit; 5 bps round-trip cost; idle cash earns the 13-week T-bill yield. Prices are in US$ with no currency conversion.
+    Nothing here is real money.</div>
+    {bt}
+  </div>
+</div>
+"""
 
 
 # ----------------------------------------------------------------------------------------------- HTML
@@ -251,7 +389,7 @@ def cum_svg(resolved):
             f'<text x="{xs[-1] - 6:.1f}" y="{ys[-1] - 8:.1f}" text-anchor="end" font-family="monospace" font-size="10" fill="{col}">{cum[-1]:+.1f}%</text></svg>')
 
 
-def render(rule, sigs, feats, log, generated_at, panel_end):
+def render(rule, sigs, feats, log, generated_at, panel_end, paper_html=""):
     hz21 = rule["horizons"]["21"]
     hz63 = rule["horizons"]["63"]
     oos21, base21 = hz21["oos"], hz21["always_long"]
@@ -390,6 +528,8 @@ def render(rule, sigs, feats, log, generated_at, panel_end):
   {open_html}
 </div>
 
+{paper_html}
+
 <div class="section">
   <div class="section-title">Walk-Forward Evidence (2010 &ndash; {panel_end.year}, out of sample) &mdash; rule: {rule_label}</div>
   <div class="card">
@@ -444,7 +584,9 @@ def main():
     sigs, feats = live_signals(prices, rule, panel_end)
     log = update_log(load_log(), sigs, feats, rule, now_utc)
     log.to_csv(LOG_PATH, index=False)
-    html = render(rule, sigs, feats, log, now_utc, panel_end)
+    sim = json.loads(SIM_PATH.read_text()) if SIM_PATH.exists() else None
+    paper_html = paper_section(sim, live_account(log, prices), rule)
+    html = render(rule, sigs, feats, log, now_utc, panel_end, paper_html)
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"Stock board: {len(sigs)} qualifying ({', '.join(g['ticker'] for g in sigs) or 'none'}); "
           f"log {len(log)} rows ({int((log['status'] == 'RESOLVED').sum())} resolved); prices through {panel_end.date()}")
